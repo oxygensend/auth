@@ -2,7 +2,7 @@ package com.oxygensend.auth.helper;
 
 import com.oxygensend.auth.domain.User;
 import com.oxygensend.auth.domain.UserRole;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public final class UserMother {
@@ -17,7 +17,7 @@ public final class UserMother {
                 .password("test")
                 .enabled(true)
                 .locked(false)
-                .roles(List.of(UserRole.USER))
+                .roles(Set.of(UserRole.ROLE_USER))
                 .email("test@test.com")
                 .build();
     }

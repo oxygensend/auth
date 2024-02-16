@@ -2,7 +2,7 @@ package com.oxygensend.auth.domain;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.Builder;
 import org.springframework.data.annotation.Id;
@@ -20,9 +20,21 @@ public record User(@Id UUID id,
                    String password,
                    Boolean enabled,
                    Boolean locked,
-                   List<UserRole> roles,
+                   Set<UserRole> roles,
                    LocalDateTime emailValidated,
                    LocalDateTime createdAt) implements UserDetails {
+
+    public User withNewRole(UserRole role) {
+        roles.add(role);
+        return this;
+    }
+
+    public User withoutRole(UserRole role) {
+        roles.remove(role);
+        return this;
+    }
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()

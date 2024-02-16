@@ -1,16 +1,19 @@
 package com.oxygensend.auth.unit.infrastructure.security;
 
-import com.oxygensend.auth.context.jwt.TokenStorage;
-import com.oxygensend.auth.context.jwt.factory.AccessTokenPayloadFactory;
-import com.oxygensend.auth.context.jwt.payload.AccessTokenPayload;
+import com.oxygensend.auth.context.auth.jwt.TokenStorage;
+import com.oxygensend.auth.context.auth.jwt.factory.AccessTokenPayloadFactory;
+import com.oxygensend.auth.context.auth.jwt.payload.AccessTokenPayload;
 import com.oxygensend.auth.domain.TokenType;
 import com.oxygensend.auth.domain.User;
+import com.oxygensend.auth.domain.UserRole;
 import com.oxygensend.auth.infrastructure.security.JwtAuthenticationFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.Set;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,11 +68,13 @@ public class JwtAuthenticationFilterTest {
         accessTokenPayloadFactory = new AccessTokenPayloadFactory();
 
         user = User.builder()
-                .firstName("John")
-                .lastName("Doe")
-                .email("test@test.com")
-                .password("test123")
-                .build();
+                   .id(UUID.randomUUID())
+                   .firstName("John")
+                   .lastName("Doe")
+                   .email("test@test.com")
+                   .password("test123")
+                   .roles(Set.of(UserRole.ADMIN))
+                   .build();
     }
 
     @Test
@@ -138,7 +143,6 @@ public class JwtAuthenticationFilterTest {
         when(tokenStorage.validate(jwtToken, TokenType.ACCESS)).thenReturn(tokenPayload);
         when(userDetailsService.loadUserByUsername(tokenPayload.email())).thenReturn(userDetails);
         when(userDetails.getAuthorities()).thenReturn(null);
-        when(userDetails.getUsername()).thenReturn(tokenPayload.email());
         when(securityContext.getAuthentication()).thenReturn(null);
         doNothing().when(securityContext).setAuthentication(any(Authentication.class));
 

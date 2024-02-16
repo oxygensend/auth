@@ -1,7 +1,7 @@
 package com.oxygensend.auth.infrastructure.security;
 
-import com.oxygensend.auth.context.jwt.TokenStorage;
-import com.oxygensend.auth.context.jwt.payload.AccessTokenPayload;
+import com.oxygensend.auth.context.auth.jwt.TokenStorage;
+import com.oxygensend.auth.context.auth.jwt.payload.AccessTokenPayload;
 import com.oxygensend.auth.domain.TokenType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -58,8 +58,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
                 securityContext.setAuthentication(authToken);
 
-                request.setAttribute("username", userDetails.getUsername());
-                request.setAttribute("authorities", userDetails.getAuthorities());
+                request.setAttribute("X-USER-ID", tokenPayload.userId());
+                request.setAttribute("X-AUTHORITIES", userDetails.getAuthorities());
 
             }
             filterChain.doFilter(request, response);
