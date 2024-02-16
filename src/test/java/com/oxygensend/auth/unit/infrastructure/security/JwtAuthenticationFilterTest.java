@@ -73,7 +73,7 @@ public class JwtAuthenticationFilterTest {
                    .lastName("Doe")
                    .email("test@test.com")
                    .password("test123")
-                   .roles(Set.of(UserRole.ADMIN))
+                   .roles(Set.of(UserRole.ROLE_ADMIN))
                    .build();
     }
 

@@ -3,5 +3,5 @@ package com.oxygensend.auth.domain;
 
 public enum UserRole {
     ROLE_USER,
-    ADMIN
+    ROLE_ADMIN
 }

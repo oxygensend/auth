@@ -38,7 +38,7 @@ public class AccessTokenPayloadFactoryTest {
                        .firstName("John")
                        .lastName("Doe")
                        .email("test@test.pl")
-                       .roles(Set.of(UserRole.ADMIN))
+                       .roles(Set.of(UserRole.ROLE_ADMIN))
                        .build();
 
         // Act
@@ -80,7 +80,7 @@ public class AccessTokenPayloadFactoryTest {
         assertEquals("Doe", accessTokenPayload.lastName());
         assertEquals("john.doe@example.com", accessTokenPayload.email());
         assertEquals("1", accessTokenPayload.userId());
-        assertTrue(accessTokenPayload.roles().contains(UserRole.ADMIN));
+        assertTrue(accessTokenPayload.roles().contains(UserRole.ROLE_ADMIN));
     }
 
     private Claims createClaims(Date iat, Date exp, String firstName, String lastName, String email) {
@@ -92,7 +92,7 @@ public class AccessTokenPayloadFactoryTest {
         when(claims.getExpiration()).thenReturn(exp);
         when(claims.getSubject()).thenReturn(email);
         when(claims.get("userId")).thenReturn("1");
-        when(claims.get("roles")).thenReturn(List.of(UserRole.ADMIN));
+        when(claims.get("roles")).thenReturn(List.of(UserRole.ROLE_ADMIN));
 
         return claims;
     }

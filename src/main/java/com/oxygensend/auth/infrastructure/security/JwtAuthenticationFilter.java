@@ -23,6 +23,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    private static final String AUTHORITIES_ATTRIBUTE = "X-AUTHORITIES";
+    private static final String USER_ID_ATTRIBUTE = "X-USER-ID";
+    private static final String BEARER = "Bearer ";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
 
     private final UserDetailsService userDetailsService;
     private final TokenStorage tokenStorage;
@@ -33,9 +37,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader(AUTHORIZATION_HEADER);
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith(BEARER)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -47,23 +51,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             AccessTokenPayload tokenPayload = (AccessTokenPayload) tokenStorage.validate(jwtToken, TokenType.ACCESS);
             if (tokenPayload.exp().after(new Date())) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(tokenPayload.email());
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
+                UsernamePasswordAuthenticationToken authToken = getAuthToken(userDetails, request);
                 securityContext.setAuthentication(authToken);
 
-                request.setAttribute("X-USER-ID", tokenPayload.userId());
-                request.setAttribute("X-AUTHORITIES", userDetails.getAuthorities());
-
+                request.setAttribute(USER_ID_ATTRIBUTE, tokenPayload.userId());
+                request.setAttribute(AUTHORITIES_ATTRIBUTE, userDetails.getAuthorities());
             }
             filterChain.doFilter(request, response);
         }
 
+    }
+
+    private UsernamePasswordAuthenticationToken getAuthToken(UserDetails userDetails, HttpServletRequest request) {
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities()
+        );
+
+        authToken.setDetails(
+                new WebAuthenticationDetailsSource().buildDetails(request)
+        );
+        return authToken;
     }
 }

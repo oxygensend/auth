@@ -18,7 +18,7 @@ public class TokenPayloadTest {
     @Test
     public void test_AccessTokenPayloadToClaims() {
         // Arrange
-        var accessTokenPayload = new AccessTokenPayload("test", "test", "test@tes.com", "1", Set.of(UserRole.ADMIN), new Date(), new Date());
+        var accessTokenPayload = new AccessTokenPayload("test", "test", "test@tes.com", "1", Set.of(UserRole.ROLE_ADMIN), new Date(), new Date());
 
         // Act
         var claims = accessTokenPayload.toClaims();
