@@ -32,4 +32,14 @@ public class UserMongoRepository implements UserRepository {
     public Optional<User> findById(UUID id) {
         return importedUserRepository.findById(id).map(adapter::toDomain);
     }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return importedUserRepository.existsById(id);
+    }
+
+    @Override
+    public void deleteById(UUID uuid) {
+        importedUserRepository.deleteById(uuid);
+    }
 }

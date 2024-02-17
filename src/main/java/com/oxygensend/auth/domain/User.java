@@ -31,6 +31,14 @@ public record User(UUID id,
         return this;
     }
 
+    public User blocked() {
+        return new User(id, firstName, lastName, email, password, enabled, true, roles, emailValidated, createdAt);
+    }
+
+    public User unblocked() {
+        return new User(id, firstName, lastName, email, password, enabled, false, roles, emailValidated, createdAt);
+    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
