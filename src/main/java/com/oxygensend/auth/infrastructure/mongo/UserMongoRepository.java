@@ -10,23 +10,26 @@ import org.springframework.stereotype.Repository;
 public class UserMongoRepository implements UserRepository {
 
     private final ImportedUserRepository importedUserRepository;
+    private final UserMongoAdapter adapter;
 
-    public UserMongoRepository(ImportedUserRepository importedUserRepository) {
+    UserMongoRepository(ImportedUserRepository importedUserRepository, UserMongoAdapter userMongoAdapter) {
         this.importedUserRepository = importedUserRepository;
+        this.adapter = userMongoAdapter;
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return importedUserRepository.findByEmail(email);
+        return importedUserRepository.findByEmail(email).map(adapter::toDomain);
     }
 
     @Override
     public User save(User user) {
-        return importedUserRepository.save(user);
+        var dataSource = adapter.toDataSource(user);
+        return adapter.toDomain(importedUserRepository.save(dataSource));
     }
 
     @Override
     public Optional<User> findById(UUID id) {
-        return importedUserRepository.findById(id);
+        return importedUserRepository.findById(id).map(adapter::toDomain);
     }
 }

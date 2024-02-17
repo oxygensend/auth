@@ -5,15 +5,12 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Builder;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Builder
-@Document("users")
-public record User(@Id UUID id,
+public record User(UUID id,
                    String firstName,
                    String lastName,
                    String email,

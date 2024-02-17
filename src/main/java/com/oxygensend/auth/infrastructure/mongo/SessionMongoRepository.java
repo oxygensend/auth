@@ -10,24 +10,26 @@ import org.springframework.stereotype.Repository;
 public class SessionMongoRepository implements SessionRepository {
 
     private final ImportedSessionRepository importedSessionRepository;
+    private final SessionMongoAdapter adapter;
 
-    public SessionMongoRepository(ImportedSessionRepository importedSessionRepository) {
+    SessionMongoRepository(ImportedSessionRepository importedSessionRepository, SessionMongoAdapter adapter) {
         this.importedSessionRepository = importedSessionRepository;
+        this.adapter = adapter;
     }
 
     @Override
     public Session save(Session session) {
-        return importedSessionRepository.save(session);
+        var dataSource = adapter.toDataSource(session);
+        return adapter.toDomain(importedSessionRepository.save(dataSource));
     }
 
     @Override
     public void deleteById(UUID id) {
         importedSessionRepository.deleteById(id);
-
     }
 
     @Override
     public Optional<Session> findById(UUID id) {
-        return importedSessionRepository.findById(id);
+        return importedSessionRepository.findById(id).map(adapter::toDomain);
     }
 }
