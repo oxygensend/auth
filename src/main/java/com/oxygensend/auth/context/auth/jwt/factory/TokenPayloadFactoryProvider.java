@@ -17,7 +17,7 @@ public class TokenPayloadFactoryProvider {
 
     private final Map<TokenType, TokenPayloadFactory> factoryMap;
 
-    public TokenPayloadFactoryProvider(List<TokenPayloadFactory> factories) {
+    TokenPayloadFactoryProvider(List<TokenPayloadFactory> factories) {
         this.factoryMap = factories.stream()
                                    .collect(Collectors.toMap(TokenPayloadFactory::getType, factory -> factory, detectDuplicatedImplementations()));
     }

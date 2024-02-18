@@ -15,3 +15,15 @@ management:
     mongo:
       enabled: true
 
+
+services:
+  notifications:
+    url: http://localhost:9001
+    login: '1234'
+    serviceId: '000000'
+
+
+auth:
+  settings:
+    sign-in:
+      account-activation: change_password

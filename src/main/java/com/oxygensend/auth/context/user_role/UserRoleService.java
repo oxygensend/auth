@@ -5,10 +5,12 @@ import com.oxygensend.auth.domain.UserRepository;
 import com.oxygensend.auth.domain.exception.MissingUserException;
 import com.oxygensend.auth.domain.exception.RoleAlreadyExistsException;
 import com.oxygensend.auth.domain.exception.RoleNotAssignedException;
+import com.oxygensend.auth.infrastructure.settings.UserRoleEndpointEnabled;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+@UserRoleEndpointEnabled
 @Service
 @RequiredArgsConstructor
 public class UserRoleService {

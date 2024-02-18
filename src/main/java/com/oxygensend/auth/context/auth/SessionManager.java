@@ -1,7 +1,7 @@
 package com.oxygensend.auth.context.auth;
 
 
-import com.oxygensend.auth.config.TokenProperties;
+import com.oxygensend.auth.config.properties.TokenProperties;
 import com.oxygensend.auth.context.auth.jwt.TokenStorage;
 import com.oxygensend.auth.context.auth.jwt.factory.TokenPayloadFactoryProvider;
 import com.oxygensend.auth.context.auth.response.AuthenticationResponse;

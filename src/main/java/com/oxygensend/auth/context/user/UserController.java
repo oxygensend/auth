@@ -2,6 +2,7 @@ package com.oxygensend.auth.context.user;
 
 
 import com.oxygensend.auth.infrastructure.security.Admin;
+import com.oxygensend.commons_jdk.DefaultView;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -42,6 +43,24 @@ public class UserController {
     @PostMapping("/{id}/unblock")
     void unblock(@PathVariable UUID id) {
         service.unblock(id);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/validate")
+    DefaultView validate() {
+        return DefaultView.of("User successfully validated");
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/generate_password_change_token")
+    DefaultView generatePasswordChangeToken() {
+        return DefaultView.of("Password change token successfully generated");
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/change_password")
+    DefaultView changePassword() {
+        return DefaultView.of("Password successfully changed");
     }
 
 }

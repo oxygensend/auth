@@ -1,5 +1,7 @@
 package com.oxygensend.auth.config;
 
+import com.oxygensend.auth.config.properties.SettingsProperties;
+import com.oxygensend.auth.config.properties.TokenProperties;
 import com.oxygensend.auth.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -16,15 +18,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @RequiredArgsConstructor
-@EnableConfigurationProperties(TokenProperties.class)
+@EnableConfigurationProperties( {TokenProperties.class, SettingsProperties.class})
 public class AppConfiguration {
 
-     private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                                         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     @Bean

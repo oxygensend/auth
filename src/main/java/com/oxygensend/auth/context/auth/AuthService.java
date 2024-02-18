@@ -1,5 +1,6 @@
 package com.oxygensend.auth.context.auth;
 
+import com.oxygensend.auth.config.properties.SettingsProperties;
 import com.oxygensend.auth.context.auth.jwt.TokenStorage;
 import com.oxygensend.auth.context.auth.jwt.payload.AccessTokenPayload;
 import com.oxygensend.auth.context.auth.jwt.payload.RefreshTokenPayload;
@@ -8,9 +9,12 @@ import com.oxygensend.auth.context.auth.request.RefreshTokenRequest;
 import com.oxygensend.auth.context.auth.request.RegisterRequest;
 import com.oxygensend.auth.context.auth.response.AuthenticationResponse;
 import com.oxygensend.auth.context.auth.response.ValidationResponse;
+import com.oxygensend.auth.domain.AccountActivation;
 import com.oxygensend.auth.domain.TokenType;
 import com.oxygensend.auth.domain.User;
 import com.oxygensend.auth.domain.UserRepository;
+import com.oxygensend.auth.domain.event.EventPublisher;
+import com.oxygensend.auth.domain.event.RegisterEvent;
 import com.oxygensend.auth.domain.exception.SessionExpiredException;
 import com.oxygensend.auth.domain.exception.TokenException;
 import com.oxygensend.auth.domain.exception.UnauthorizedException;
@@ -18,7 +22,6 @@ import com.oxygensend.auth.domain.exception.UserAlreadyExistsException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,18 +32,32 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-@RequiredArgsConstructor
 public class AuthService {
     private final SessionManager sessionManager;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenStorage tokenStorage;
+    private final SettingsProperties.SignInProperties signInProperties;
+    private final EventPublisher eventPublisher;
+
+    public AuthService(SessionManager sessionManager, UserRepository userRepository, PasswordEncoder passwordEncoder,
+                       AuthenticationManager authenticationManager, TokenStorage tokenStorage, SettingsProperties settingsProperties,
+                       EventPublisher eventPublisher) {
+        this.sessionManager = sessionManager;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.tokenStorage = tokenStorage;
+        this.signInProperties = settingsProperties.signIn();
+        this.eventPublisher = eventPublisher;
+    }
 
     public AuthenticationResponse register(RegisterRequest request) {
         userRepository.findByEmail(request.email()).ifPresent(user -> {
             throw new UserAlreadyExistsException();
         });
+        var enabled = signInProperties.accountActivation() != AccountActivation.NONE;
 
         var user = User.builder()
                        .id(UUID.randomUUID())
@@ -48,12 +65,13 @@ public class AuthService {
                        .firstName(request.firstName())
                        .lastName(request.lastName())
                        .password(passwordEncoder.encode(request.password()))
-                       .enabled(true)
+                       .enabled(enabled)
                        .locked(false)
                        .roles(request.roles())
                        .build();
 
         userRepository.save(user);
+        eventPublisher.publish(new RegisterEvent(user.id(), user.email(), user.createdAt(), signInProperties.accountActivation()));
 
         return sessionManager.prepareSession(user);
     }

@@ -6,7 +6,7 @@ import com.oxygensend.auth.domain.User;
 import io.jsonwebtoken.Claims;
 import java.util.Date;
 
-public interface TokenPayloadFactory {
+interface TokenPayloadFactory {
 
     TokenPayload createToken(Date exp, Date iat, User user);
     TokenPayload createToken(Claims claims);

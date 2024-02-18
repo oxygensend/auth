@@ -77,4 +77,8 @@ public record User(UUID id,
     public boolean isEnabled() {
         return enabled;
     }
+
+    public String fullName() {
+        return firstName + " " + lastName;
+    }
 }

@@ -9,11 +9,10 @@ import io.jsonwebtoken.Claims;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AccessTokenPayloadFactory implements TokenPayloadFactory {
+final class AccessTokenPayloadFactory implements TokenPayloadFactory {
     @Override
     public TokenPayload createToken(Date exp, Date iat, User user) {
         return new AccessTokenPayload(
