@@ -14,7 +14,8 @@ import org.springframework.validation.annotation.Validated;
 public record TokenProperties(@NotNull @NotBlank String secretKey,
                               @Positive int authExpirationMs,
                               @Positive int refreshExpirationMs,
-                              @Positive int passwordChangeExpirationMs){
+                              @Positive int passwordResetExpirationDays,
+                              @Positive int emailVerificationExpirationDays){
 
     public SecretKey getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);

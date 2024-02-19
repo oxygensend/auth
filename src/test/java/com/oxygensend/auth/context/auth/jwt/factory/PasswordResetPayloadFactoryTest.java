@@ -1,6 +1,6 @@
 package com.oxygensend.auth.context.auth.jwt.factory;
 
-import com.oxygensend.auth.context.auth.jwt.payload.PasswordChangeTokenPayload;
+import com.oxygensend.auth.context.auth.jwt.payload.PasswordResetTokenPayload;
 import com.oxygensend.auth.domain.User;
 import io.jsonwebtoken.Claims;
 import java.util.Date;
@@ -15,10 +15,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class PasswordChangePayloadFactoryTest {
+class PasswordResetPayloadFactoryTest {
 
     @InjectMocks
-    private PasswordChangeTokenPayloadFactory factory;
+    private PasswordResetTokenPayloadFactory factory;
 
 
     @Test
@@ -31,10 +31,10 @@ class PasswordChangePayloadFactoryTest {
 
 
         // Act
-        PasswordChangeTokenPayload payload = (PasswordChangeTokenPayload) factory.createToken(exp, iat, user);
+        PasswordResetTokenPayload payload = (PasswordResetTokenPayload) factory.createToken(exp, iat, user);
 
         // Assert
-        assertEquals(PasswordChangeTokenPayload.class, payload.getClass());
+        assertEquals(PasswordResetTokenPayload.class, payload.getClass());
         assertEquals(iat, payload.iat());
         assertEquals(exp, payload.exp());
         assertEquals(user.id().toString(), payload.userId());
@@ -52,10 +52,10 @@ class PasswordChangePayloadFactoryTest {
 
 
         // Act
-        PasswordChangeTokenPayload payload = (PasswordChangeTokenPayload) factory.createToken(claims);
+        PasswordResetTokenPayload payload = (PasswordResetTokenPayload) factory.createToken(claims);
 
         // Assert
-        assertEquals(PasswordChangeTokenPayload.class, payload.getClass());
+        assertEquals(PasswordResetTokenPayload.class, payload.getClass());
         assertEquals(issuedAt, payload.iat());
         assertEquals(expiration, payload.exp());
         assertEquals(claims.getSubject(), payload.userId());

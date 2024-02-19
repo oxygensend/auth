@@ -1,11 +1,10 @@
-package com.oxygensend.auth.security;
+package com.oxygensend.auth.infrastructure.security;
 
-import com.oxygensend.auth.context.auth.jwt.TokenStorage;
+import com.oxygensend.auth.context.auth.jwt.JwtFacade;
 import com.oxygensend.auth.context.auth.jwt.payload.AccessTokenPayload;
 import com.oxygensend.auth.domain.TokenType;
 import com.oxygensend.auth.domain.User;
 import com.oxygensend.auth.domain.UserRole;
-import com.oxygensend.auth.infrastructure.security.JwtAuthenticationFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,7 +50,7 @@ public class JwtAuthenticationFilterTest {
     private UserDetailsService userDetailsService;
 
     @Mock
-    private TokenStorage tokenStorage;
+    private JwtFacade jwtFacade;
 
     @Mock
     private SecurityContext securityContext;
@@ -84,7 +83,7 @@ public class JwtAuthenticationFilterTest {
 
         // Assert
         verify(filterChain).doFilter(request, response);
-        verifyNoInteractions(tokenStorage, userDetailsService, securityContext);
+        verifyNoInteractions(jwtFacade, userDetailsService, securityContext);
     }
 
     @Test
@@ -97,7 +96,7 @@ public class JwtAuthenticationFilterTest {
 
         // Assert
         verify(filterChain).doFilter(request, response);
-        verifyNoInteractions(tokenStorage, userDetailsService, securityContext);
+        verifyNoInteractions(jwtFacade, userDetailsService, securityContext);
     }
 
     @Test
@@ -110,13 +109,13 @@ public class JwtAuthenticationFilterTest {
                                                   "id", Set.of(UserRole.ROLE_ADMIN), new Date(), new Date());
 
         when(request.getHeader("Authorization")).thenReturn("Bearer " + jwtToken);
-        when(tokenStorage.validate(jwtToken, TokenType.ACCESS)).thenReturn(tokenPayload);
+        when(jwtFacade.validateToken(jwtToken, TokenType.ACCESS)).thenReturn(tokenPayload);
 
         // Act
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
         // Assert
-        verify(tokenStorage).validate(jwtToken, TokenType.ACCESS);
+        verify(jwtFacade).validateToken(jwtToken, TokenType.ACCESS);
         verify(filterChain).doFilter(request, response);
         verifyNoInteractions(userDetailsService);
     }
@@ -133,7 +132,7 @@ public class JwtAuthenticationFilterTest {
         Authentication authentication = mock(Authentication.class);
 
         when(request.getHeader("Authorization")).thenReturn("Bearer " + jwtToken);
-        when(tokenStorage.validate(jwtToken, TokenType.ACCESS)).thenReturn(tokenPayload);
+        when(jwtFacade.validateToken(jwtToken, TokenType.ACCESS)).thenReturn(tokenPayload);
         when(userDetailsService.loadUserByUsername(tokenPayload.email())).thenReturn(userDetails);
         when(userDetails.getAuthorities()).thenReturn(null);
         when(securityContext.getAuthentication()).thenReturn(null);
@@ -143,7 +142,7 @@ public class JwtAuthenticationFilterTest {
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
         // Assert
-        verify(tokenStorage).validate(jwtToken, TokenType.ACCESS);
+        verify(jwtFacade).validateToken(jwtToken, TokenType.ACCESS);
         verify(userDetailsService).loadUserByUsername(tokenPayload.email());
         verify(userDetails, times(2)).getAuthorities();
         verify(securityContext).getAuthentication();

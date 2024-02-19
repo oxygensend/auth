@@ -1,7 +1,8 @@
 jwt:
   authExpirationMs: 3600000
   refreshExpirationMs: 86400000
-  password-change-expiration-ms: 86400000
+  password-reset-expiration-days: 2
+  email-verification-expiration-days: 5
 
 server:
   port: 9002

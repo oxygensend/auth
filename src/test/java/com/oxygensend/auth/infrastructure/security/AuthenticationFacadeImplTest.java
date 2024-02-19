@@ -1,6 +1,7 @@
-package com.oxygensend.auth.context.auth;
+package com.oxygensend.auth.infrastructure.security;
 
 import com.oxygensend.auth.domain.User;
+import com.oxygensend.auth.infrastructure.security.AuthenticationFacadeImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

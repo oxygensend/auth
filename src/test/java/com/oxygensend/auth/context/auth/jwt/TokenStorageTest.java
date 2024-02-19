@@ -130,7 +130,7 @@ public class TokenStorageTest {
         @Bean
         public TokenProperties tokenProperties() {
             var secretKey = "614E645267556B58703273357638792F413F4428472B4B6250655368566D597133743677397A244326452948404D635166546A576E5A7234753778214125442A";
-            return new TokenProperties(secretKey, 3600000, 86400000, 123);
+            return new TokenProperties(secretKey, 3600000, 86400000, 1, 1);
         }
     }
 }

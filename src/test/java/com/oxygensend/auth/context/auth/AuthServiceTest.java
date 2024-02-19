@@ -1,7 +1,7 @@
 package com.oxygensend.auth.context.auth;
 
 import com.oxygensend.auth.config.properties.SettingsProperties;
-import com.oxygensend.auth.context.auth.jwt.TokenStorage;
+import com.oxygensend.auth.context.auth.jwt.JwtFacade;
 import com.oxygensend.auth.context.auth.jwt.payload.RefreshTokenPayload;
 import com.oxygensend.auth.context.auth.request.AuthenticationRequest;
 import com.oxygensend.auth.context.auth.request.RefreshTokenRequest;
@@ -59,7 +59,7 @@ public class AuthServiceTest {
     private AuthenticationManager authenticationManager;
 
     @Mock
-    private TokenStorage tokenStorage;
+    private JwtFacade jwtFacade;
 
     @Mock
     private SessionManager sessionManager;
@@ -152,7 +152,7 @@ public class AuthServiceTest {
         // Act & Assert
         assertThrows(UserAlreadyExistsException.class, () -> authService.register(request));
         verify(userRepository, times(1)).findByEmail(email);
-        verifyNoMoreInteractions(passwordEncoder, userRepository, sessionManager, tokenStorage);
+        verifyNoMoreInteractions(passwordEncoder, userRepository, sessionManager, jwtFacade);
     }
 
 
@@ -171,7 +171,7 @@ public class AuthServiceTest {
         );
         Session session = new Session(id);
 
-        when(tokenStorage.validate(anyString(), any(TokenType.class))).thenReturn(refreshTokenPayload);
+        when(jwtFacade.validateToken(anyString(), any(TokenType.class))).thenReturn(refreshTokenPayload);
         when(sessionManager.getSession(id)).thenReturn(session);
         when(userRepository.findById(id)).thenReturn(Optional.of(mock(User.class)));
         when(sessionManager.prepareSession(any(User.class))).thenReturn(expectedResponse);
@@ -181,7 +181,7 @@ public class AuthServiceTest {
 
         // Assert
         assertEquals(response, expectedResponse);
-        verify(tokenStorage, times(1)).validate(anyString(), any(TokenType.class));
+        verify(jwtFacade, times(1)).validateToken(anyString(), any(TokenType.class));
         verify(userRepository, times(1)).findById(id);
         verify(sessionManager, times(1)).getSession(id);
         verify(sessionManager, times(1)).prepareSession(any(User.class));
@@ -202,7 +202,7 @@ public class AuthServiceTest {
         );
         Session session = new Session(id);
 
-        when(tokenStorage.validate(anyString(), any(TokenType.class))).thenReturn(refreshTokenPayload);
+        when(jwtFacade.validateToken(anyString(), any(TokenType.class))).thenReturn(refreshTokenPayload);
         when(sessionManager.getSession(id)).thenReturn(session);
         when(userRepository.findById(id)).thenReturn(Optional.empty());
 
@@ -224,7 +224,7 @@ public class AuthServiceTest {
                 new Date(System.currentTimeMillis() - 1000)
         );
 
-        when(tokenStorage.validate(anyString(), any(TokenType.class))).thenReturn(refreshTokenPayload);
+        when(jwtFacade.validateToken(anyString(), any(TokenType.class))).thenReturn(refreshTokenPayload);
 
         // Act
         assertThrows(TokenException.class, () -> authService.refreshToken(request));

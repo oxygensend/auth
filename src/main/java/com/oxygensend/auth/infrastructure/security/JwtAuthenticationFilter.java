@@ -1,6 +1,6 @@
 package com.oxygensend.auth.infrastructure.security;
 
-import com.oxygensend.auth.context.auth.jwt.TokenStorage;
+import com.oxygensend.auth.context.auth.jwt.JwtFacade;
 import com.oxygensend.auth.context.auth.jwt.payload.AccessTokenPayload;
 import com.oxygensend.auth.domain.TokenType;
 import jakarta.servlet.FilterChain;
@@ -29,7 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
     private final UserDetailsService userDetailsService;
-    private final TokenStorage tokenStorage;
+    private final JwtFacade jwtFacade;
 
     @Override
     public void doFilterInternal(
@@ -48,7 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SecurityContext securityContext = SecurityContextHolder.getContext();
 
         if (securityContext.getAuthentication() == null) {
-            AccessTokenPayload tokenPayload = (AccessTokenPayload) tokenStorage.validate(jwtToken, TokenType.ACCESS);
+            AccessTokenPayload tokenPayload = (AccessTokenPayload) jwtFacade.validateToken(jwtToken, TokenType.ACCESS);
             if (tokenPayload.exp().after(new Date())) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(tokenPayload.email());
                 UsernamePasswordAuthenticationToken authToken = getAuthToken(userDetails, request);

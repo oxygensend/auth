@@ -9,7 +9,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-class NotificationRestRepository implements NotificationRepository {
+final class NotificationRestRepository implements NotificationRepository {
 
     private final NotificationsClient notificationsClient;
     private final String login;

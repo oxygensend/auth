@@ -1,16 +1,12 @@
 package com.oxygensend.auth.context.auth;
 
-import com.oxygensend.auth.context.auth.jwt.TokenStorage;
-import com.oxygensend.auth.context.auth.jwt.factory.TokenPayloadFactoryProvider;
-import com.oxygensend.auth.context.auth.jwt.payload.TokenPayload;
+import com.oxygensend.auth.context.auth.jwt.JwtFacade;
 import com.oxygensend.auth.context.auth.response.AuthenticationResponse;
-import com.oxygensend.auth.config.properties.TokenProperties;
 import com.oxygensend.auth.domain.Session;
 import com.oxygensend.auth.domain.SessionRepository;
 import com.oxygensend.auth.domain.TokenType;
 import com.oxygensend.auth.domain.User;
 import com.oxygensend.auth.domain.exception.SessionExpiredException;
-import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -23,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,13 +33,7 @@ public class SessionManagerTest {
     private SessionRepository sessionRepository;
 
     @Mock
-    private TokenStorage tokenStorage;
-
-    @Mock
-    private TokenPayloadFactoryProvider tokenPayloadFactory;
-
-    @Mock
-    private TokenProperties tokenProperties;
+    private JwtFacade jwtFacade;
 
 
     @Test
@@ -93,25 +82,20 @@ public class SessionManagerTest {
     public void testPrepareSession() {
         // Arrange
         var user = User.builder()
-                .id(UUID.randomUUID())
-                .firstName("John")
-                .lastName("Doe")
-                .email("john@doe.pl")
-                .password("password")
-                .build();
+                       .id(UUID.randomUUID())
+                       .firstName("John")
+                       .lastName("Doe")
+                       .email("john@doe.pl")
+                       .password("password")
+                       .build();
 
-
-        TokenPayload refreshPayload = mock(TokenPayload.class);
-        TokenPayload accessPayload = mock(TokenPayload.class);
 
         String expectedRefreshToken = "valid_refresh_token";
         String expectedAccessToken = "valid_access_token";
 
 
-        when(tokenPayloadFactory.createToken(eq(TokenType.REFRESH), any(Date.class), any(Date.class), eq(user))).thenReturn(refreshPayload);
-        when(tokenPayloadFactory.createToken(eq(TokenType.ACCESS), any(Date.class), any(Date.class), eq(user))).thenReturn(accessPayload);
-        when(tokenStorage.generateToken(refreshPayload)).thenReturn(expectedRefreshToken);
-        when(tokenStorage.generateToken(accessPayload)).thenReturn(expectedAccessToken);
+        when(jwtFacade.generateToken(eq(user), eq(TokenType.REFRESH))).thenReturn(expectedRefreshToken);
+        when(jwtFacade.generateToken(eq(user), eq(TokenType.ACCESS))).thenReturn(expectedAccessToken);
 
         // Act
         AuthenticationResponse response = sessionManager.prepareSession(user);
@@ -121,9 +105,7 @@ public class SessionManagerTest {
         assertEquals(expectedRefreshToken, response.refreshToken());
         verify(sessionRepository, times(1)).deleteById(any(UUID.class));
         verify(sessionRepository, times(1)).save(any(Session.class));
-        verify(tokenPayloadFactory, times(1)).createToken(eq(TokenType.REFRESH), any(Date.class), any(Date.class), eq(user));
-        verify(tokenPayloadFactory, times(1)).createToken(eq(TokenType.ACCESS), any(Date.class), any(Date.class), eq(user));
-        verify(tokenStorage, times(1)).generateToken(refreshPayload);
-        verify(tokenStorage, times(1)).generateToken(accessPayload);
+        verify(jwtFacade, times(1)).generateToken(eq(user), eq(TokenType.REFRESH));
+        verify(jwtFacade, times(1)).generateToken(eq(user), eq(TokenType.ACCESS));
     }
 }

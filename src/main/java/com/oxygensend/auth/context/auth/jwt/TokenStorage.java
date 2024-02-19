@@ -1,9 +1,9 @@
 package com.oxygensend.auth.context.auth.jwt;
 
 import com.oxygensend.auth.config.properties.TokenProperties;
+import com.oxygensend.auth.context.auth.jwt.factory.TokenPayloadFactoryProvider;
 import com.oxygensend.auth.context.auth.jwt.payload.ClaimsPayload;
 import com.oxygensend.auth.context.auth.jwt.payload.TokenPayload;
-import com.oxygensend.auth.context.auth.jwt.factory.TokenPayloadFactoryProvider;
 import com.oxygensend.auth.domain.TokenType;
 import com.oxygensend.auth.domain.exception.TokenException;
 import io.jsonwebtoken.Claims;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class TokenStorage {
+final class TokenStorage {
 
     private final TokenProperties tokenProperties;
     private final TokenPayloadFactoryProvider tokenPayloadFactory;

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class InternalEventPublisher implements EventPublisher {
+final class InternalEventPublisher implements EventPublisher {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 

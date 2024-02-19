@@ -1,7 +1,7 @@
 package com.oxygensend.auth.context.auth;
 
 import com.oxygensend.auth.config.properties.SettingsProperties;
-import com.oxygensend.auth.context.auth.jwt.TokenStorage;
+import com.oxygensend.auth.context.auth.jwt.JwtFacade;
 import com.oxygensend.auth.context.auth.jwt.payload.AccessTokenPayload;
 import com.oxygensend.auth.context.auth.jwt.payload.RefreshTokenPayload;
 import com.oxygensend.auth.context.auth.request.AuthenticationRequest;
@@ -37,18 +37,18 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final TokenStorage tokenStorage;
+    private final JwtFacade jwtFacade;
     private final SettingsProperties.SignInProperties signInProperties;
     private final EventPublisher eventPublisher;
 
     public AuthService(SessionManager sessionManager, UserRepository userRepository, PasswordEncoder passwordEncoder,
-                       AuthenticationManager authenticationManager, TokenStorage tokenStorage, SettingsProperties settingsProperties,
+                       AuthenticationManager authenticationManager, JwtFacade jwtFacade, SettingsProperties settingsProperties,
                        EventPublisher eventPublisher) {
         this.sessionManager = sessionManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
-        this.tokenStorage = tokenStorage;
+        this.jwtFacade = jwtFacade;
         this.signInProperties = settingsProperties.signIn();
         this.eventPublisher = eventPublisher;
     }
@@ -100,7 +100,7 @@ public class AuthService {
     }
 
     private RefreshTokenPayload getRefreshTokenPayload(String token) {
-        var payload = (RefreshTokenPayload) tokenStorage.validate(token, TokenType.REFRESH);
+        var payload = (RefreshTokenPayload) jwtFacade.validateToken(token, TokenType.REFRESH);
         if (payload.exp().before(new Date())) {
             throw new TokenException("Token expired");
         }
@@ -108,7 +108,7 @@ public class AuthService {
     }
 
     private AccessTokenPayload getAccessTokenPayload(String token) {
-        var payload = (AccessTokenPayload) tokenStorage.validate(token, TokenType.ACCESS);
+        var payload = (AccessTokenPayload) jwtFacade.validateToken(token, TokenType.ACCESS);
         if (payload.exp().before(new Date())) {
             throw new TokenException("Token expired");
         }

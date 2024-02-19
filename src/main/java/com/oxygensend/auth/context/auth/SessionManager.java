@@ -1,16 +1,13 @@
 package com.oxygensend.auth.context.auth;
 
 
-import com.oxygensend.auth.config.properties.TokenProperties;
-import com.oxygensend.auth.context.auth.jwt.TokenStorage;
-import com.oxygensend.auth.context.auth.jwt.factory.TokenPayloadFactoryProvider;
+import com.oxygensend.auth.context.auth.jwt.JwtFacade;
 import com.oxygensend.auth.context.auth.response.AuthenticationResponse;
 import com.oxygensend.auth.domain.Session;
 import com.oxygensend.auth.domain.SessionRepository;
 import com.oxygensend.auth.domain.TokenType;
 import com.oxygensend.auth.domain.User;
 import com.oxygensend.auth.domain.exception.SessionExpiredException;
-import java.util.Date;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,9 +17,7 @@ import org.springframework.stereotype.Component;
 public class SessionManager {
 
     private final SessionRepository sessionRepository;
-    private final TokenPayloadFactoryProvider tokenPayloadFactory;
-    private final TokenProperties tokenProperties;
-    private final TokenStorage tokenStorage;
+    private final JwtFacade jwtFacade;
 
     public void startSession(UUID sessionId) {
         sessionRepository.deleteById(sessionId);
@@ -34,28 +29,14 @@ public class SessionManager {
     }
 
     public AuthenticationResponse prepareSession(User user) {
-
         // Generate refresh token
-        var refreshPayload = tokenPayloadFactory.createToken(
-                TokenType.REFRESH,
-                new Date(System.currentTimeMillis() + tokenProperties.authExpirationMs()),
-                new Date(System.currentTimeMillis()),
-                user
-        );
-        String refreshToken = tokenStorage.generateToken(refreshPayload);
+        String refreshToken = jwtFacade.generateToken(user, TokenType.REFRESH);
 
         // Start session for this user
         startSession(user.id());
 
         // Generate access token
-        var accessPayload = tokenPayloadFactory.createToken(
-                TokenType.ACCESS,
-                new Date(System.currentTimeMillis() + tokenProperties.authExpirationMs()),
-                new Date(System.currentTimeMillis()),
-                user
-        );
-
-        String accessToken = tokenStorage.generateToken(accessPayload);
+        var accessToken = jwtFacade.generateToken(user, TokenType.ACCESS);
         return new AuthenticationResponse(accessToken, refreshToken);
 
     }

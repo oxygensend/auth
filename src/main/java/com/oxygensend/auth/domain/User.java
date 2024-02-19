@@ -39,6 +39,13 @@ public record User(UUID id,
         return new User(id, firstName, lastName, email, password, enabled, false, roles, emailValidated, createdAt);
     }
 
+    public User withNewPassword(String newPassword) {
+        return new User(id, firstName, lastName, email, newPassword, enabled, locked, roles, emailValidated, createdAt);
+    }
+
+    public User withEmailVerified() {
+        return new User(id, firstName, lastName, email, password, true, locked, roles, LocalDateTime.now(), createdAt);
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,10 +1,7 @@
 package com.oxygensend.auth.context.auth;
 
-import com.oxygensend.auth.config.properties.TokenProperties;
 import com.oxygensend.auth.context.SendMailCommand;
-import com.oxygensend.auth.context.auth.jwt.TokenStorage;
-import com.oxygensend.auth.context.auth.jwt.factory.TokenPayloadFactoryProvider;
-import com.oxygensend.auth.context.auth.jwt.payload.TokenPayload;
+import com.oxygensend.auth.context.auth.jwt.JwtFacade;
 import com.oxygensend.auth.domain.AccountActivation;
 import com.oxygensend.auth.domain.NotificationRepository;
 import com.oxygensend.auth.domain.TokenType;
@@ -12,13 +9,14 @@ import com.oxygensend.auth.domain.User;
 import com.oxygensend.auth.domain.UserRepository;
 import com.oxygensend.auth.domain.event.RegisterEvent;
 import com.oxygensend.auth.domain.exception.UserNotFoundException;
-import java.util.Date;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import static com.oxygensend.auth.domain.NotificationMessages.ACTIVATE_ACCOUNT_BY_EMAIL_VERIFICATION_MESSAGE;
+import static com.oxygensend.auth.domain.NotificationMessages.ACTIVATE_ACCOUNT_BY_EMAIL_VERIFICATION_SUBJECT;
 import static com.oxygensend.auth.domain.NotificationMessages.ACTIVATE_ACCOUNT_BY_PASSWORD_CHANGE_MESSAGE;
 import static com.oxygensend.auth.domain.NotificationMessages.ACTIVATE_ACCOUNT_BY_PASSWORD_CHANGE_SUBJECT;
 
@@ -28,13 +26,11 @@ import static com.oxygensend.auth.domain.NotificationMessages.ACTIVATE_ACCOUNT_B
 @Component
 final class RegisterEventListener {
 
-    private final TokenPayloadFactoryProvider tokenPayloadFactory;
-    private final TokenProperties tokenProperties;
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
-    private final TokenStorage tokenStorage;
+    private final JwtFacade jwtFacade;
     private final Map<AccountActivation, AccountActivationHandler> strategies = Map.of(
-            AccountActivation.VALIDATE_EMAIL, this::handleEmailValidation,
+            AccountActivation.VERIFY_EMAIL, this::handleEmailVerification,
             AccountActivation.CHANGE_PASSWORD, this::handlePasswordChange
     );
 
@@ -54,22 +50,27 @@ final class RegisterEventListener {
 
     private void handlePasswordChange(RegisterEvent event) {
         var user = userRepository.findById(event.userId()).orElseThrow(() -> UserNotFoundException.withId(event.userId()));
-        var token = tokenPayloadFactory.createToken(TokenType.PASSWORD_CHANGE,
-                                                    new Date(System.currentTimeMillis() + tokenProperties.passwordChangeExpirationMs()),
-                                                    new Date(System.currentTimeMillis()),
-                                                    user);
+        var token = jwtFacade.generateToken(user, TokenType.PASSWORD_RESET);
 
         this.sendPasswordChangeEmail(user, token);
     }
 
-    private void handleEmailValidation(RegisterEvent event) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    private void handleEmailVerification(RegisterEvent event) {
+        var user = userRepository.findById(event.userId()).orElseThrow(() -> UserNotFoundException.withId(event.userId()));
+        var token = jwtFacade.generateToken(user, TokenType.EMAIL_VERIFICATION);
+
+        this.sendEmailVerificationEmail(user, token);
     }
 
-    private void sendPasswordChangeEmail(User user, TokenPayload token) {
-        var tokenString = tokenStorage.generateToken(token);
+    private void sendPasswordChangeEmail(User user, String token) {
         var command = new SendMailCommand(user, ACTIVATE_ACCOUNT_BY_PASSWORD_CHANGE_SUBJECT,
-                                          ACTIVATE_ACCOUNT_BY_PASSWORD_CHANGE_MESSAGE.formatted(user.fullName(), tokenString));
+                                          ACTIVATE_ACCOUNT_BY_PASSWORD_CHANGE_MESSAGE.formatted(user.fullName(), token));
+        notificationRepository.sendMail(command);
+    }
+
+    private void sendEmailVerificationEmail(User user, String token) {
+        var command = new SendMailCommand(user, ACTIVATE_ACCOUNT_BY_EMAIL_VERIFICATION_SUBJECT,
+                                          ACTIVATE_ACCOUNT_BY_EMAIL_VERIFICATION_MESSAGE.formatted(user.fullName(), token));
         notificationRepository.sendMail(command);
     }
 

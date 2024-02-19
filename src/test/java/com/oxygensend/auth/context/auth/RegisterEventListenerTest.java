@@ -1,12 +1,10 @@
 package com.oxygensend.auth.context.auth;
 
-import com.oxygensend.auth.config.properties.TokenProperties;
 import com.oxygensend.auth.context.SendMailCommand;
-import com.oxygensend.auth.context.auth.jwt.TokenStorage;
-import com.oxygensend.auth.context.auth.jwt.factory.TokenPayloadFactoryProvider;
-import com.oxygensend.auth.context.auth.jwt.payload.PasswordChangeTokenPayload;
+import com.oxygensend.auth.context.auth.jwt.JwtFacade;
 import com.oxygensend.auth.domain.AccountActivation;
 import com.oxygensend.auth.domain.NotificationRepository;
+import com.oxygensend.auth.domain.TokenType;
 import com.oxygensend.auth.domain.UserRepository;
 import com.oxygensend.auth.domain.event.RegisterEvent;
 import com.oxygensend.auth.domain.exception.UserNotFoundException;
@@ -21,11 +19,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static com.oxygensend.auth.domain.NotificationMessages.ACTIVATE_ACCOUNT_BY_EMAIL_VERIFICATION_MESSAGE;
+import static com.oxygensend.auth.domain.NotificationMessages.ACTIVATE_ACCOUNT_BY_EMAIL_VERIFICATION_SUBJECT;
 import static com.oxygensend.auth.domain.NotificationMessages.ACTIVATE_ACCOUNT_BY_PASSWORD_CHANGE_MESSAGE;
 import static com.oxygensend.auth.domain.NotificationMessages.ACTIVATE_ACCOUNT_BY_PASSWORD_CHANGE_SUBJECT;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -34,19 +33,15 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class RegisterEventListenerTest {
 
-    @Mock
-    private TokenPayloadFactoryProvider tokenPayloadFactoryProvider;
-    @Mock
-    private TokenProperties tokenProperties;
 
+    @Mock
+    private JwtFacade jwtFacade;
     @Mock
     private UserRepository userRepository;
 
     @Mock
     private NotificationRepository notificationRepository;
 
-    @Mock
-    private TokenStorage tokenStorage;
 
     @InjectMocks
     private RegisterEventListener listener;
@@ -59,7 +54,7 @@ class RegisterEventListenerTest {
 
         // Act & Assert
         listener.listen(event);
-        verifyNoInteractions(userRepository, tokenPayloadFactoryProvider, tokenStorage, notificationRepository);
+        verifyNoInteractions(userRepository, jwtFacade, notificationRepository);
     }
 
     @Test
@@ -83,8 +78,28 @@ class RegisterEventListenerTest {
                                           ACTIVATE_ACCOUNT_BY_PASSWORD_CHANGE_MESSAGE.formatted(user.fullName(), token));
 
         when(userRepository.findById(event.userId())).thenReturn(Optional.of(user));
-        when(tokenPayloadFactoryProvider.createToken(any(), any(), any(), any())).thenReturn(mock(PasswordChangeTokenPayload.class));
-        when(tokenStorage.generateToken(any(PasswordChangeTokenPayload.class))).thenReturn(token);
+        when(jwtFacade.generateToken(eq(user), eq(TokenType.PASSWORD_RESET))).thenReturn(token);
+
+        // Act & Assert
+        listener.listen(event);
+
+        // Assert
+        verify(notificationRepository, times(1)).sendMail(command);
+
+    }
+
+    @Test
+    void listen_withEmailVerificationAccountActivation_shouldHandleEmailVerification() {
+        // Arrange
+        var event = new RegisterEvent(UUID.randomUUID(), "test@test.com", LocalDateTime.now(), AccountActivation.VERIFY_EMAIL);
+        var token = RandomStringUtils.randomAlphabetic(20);
+        var user = UserMother.getRandom();
+
+        var command = new SendMailCommand(user, ACTIVATE_ACCOUNT_BY_EMAIL_VERIFICATION_SUBJECT,
+                                          ACTIVATE_ACCOUNT_BY_EMAIL_VERIFICATION_MESSAGE.formatted(user.fullName(), token));
+
+        when(userRepository.findById(event.userId())).thenReturn(Optional.of(user));
+        when(jwtFacade.generateToken(eq(user), eq(TokenType.EMAIL_VERIFICATION))).thenReturn(token);
 
         // Act & Assert
         listener.listen(event);
