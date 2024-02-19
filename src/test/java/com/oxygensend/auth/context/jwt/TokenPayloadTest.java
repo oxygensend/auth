@@ -1,7 +1,7 @@
-package com.oxygensend.auth.context.auth.jwt;
+package com.oxygensend.auth.context.jwt;
 
-import com.oxygensend.auth.context.auth.jwt.payload.AccessTokenPayload;
-import com.oxygensend.auth.context.auth.jwt.payload.RefreshTokenPayload;
+import com.oxygensend.auth.context.jwt.payload.AccessTokenPayload;
+import com.oxygensend.auth.context.jwt.payload.RefreshTokenPayload;
 import com.oxygensend.auth.domain.UserRole;
 import io.jsonwebtoken.Claims;
 import java.util.Date;

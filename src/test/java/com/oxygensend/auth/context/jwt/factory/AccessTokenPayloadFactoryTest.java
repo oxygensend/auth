@@ -1,8 +1,7 @@
-package com.oxygensend.auth.context.auth.jwt.factory;
+package com.oxygensend.auth.context.jwt.factory;
 
-import com.oxygensend.auth.context.auth.jwt.factory.AccessTokenPayloadFactory;
-import com.oxygensend.auth.context.auth.jwt.payload.AccessTokenPayload;
-import com.oxygensend.auth.context.auth.jwt.payload.TokenPayload;
+import com.oxygensend.auth.context.jwt.payload.AccessTokenPayload;
+import com.oxygensend.auth.context.jwt.payload.TokenPayload;
 import com.oxygensend.auth.domain.User;
 import com.oxygensend.auth.domain.UserRole;
 import io.jsonwebtoken.Claims;

@@ -1,6 +1,6 @@
 package com.oxygensend.auth.context.auth;
 
-import com.oxygensend.auth.context.auth.jwt.JwtFacade;
+import com.oxygensend.auth.context.jwt.JwtFacade;
 import com.oxygensend.auth.context.auth.response.AuthenticationResponse;
 import com.oxygensend.auth.domain.Session;
 import com.oxygensend.auth.domain.SessionRepository;

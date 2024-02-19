@@ -2,9 +2,9 @@ package com.oxygensend.auth.context.user;
 
 import com.oxygensend.auth.context.SendMailCommand;
 import com.oxygensend.auth.context.auth.AuthenticationFacade;
-import com.oxygensend.auth.context.auth.jwt.JwtFacade;
-import com.oxygensend.auth.context.auth.jwt.payload.EmailVerificationTokenPayload;
-import com.oxygensend.auth.context.auth.jwt.payload.PasswordResetTokenPayload;
+import com.oxygensend.auth.context.jwt.JwtFacade;
+import com.oxygensend.auth.context.jwt.payload.EmailVerificationTokenPayload;
+import com.oxygensend.auth.context.jwt.payload.PasswordResetTokenPayload;
 import com.oxygensend.auth.context.auth.request.PasswordChangeRequest;
 import com.oxygensend.auth.context.auth.request.PasswordResetRequest;
 import com.oxygensend.auth.context.auth.request.VerifyEmailRequest;

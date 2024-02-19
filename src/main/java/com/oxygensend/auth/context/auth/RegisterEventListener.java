@@ -1,7 +1,7 @@
 package com.oxygensend.auth.context.auth;
 
 import com.oxygensend.auth.context.SendMailCommand;
-import com.oxygensend.auth.context.auth.jwt.JwtFacade;
+import com.oxygensend.auth.context.jwt.JwtFacade;
 import com.oxygensend.auth.domain.AccountActivation;
 import com.oxygensend.auth.domain.NotificationRepository;
 import com.oxygensend.auth.domain.TokenType;

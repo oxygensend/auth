@@ -1,8 +1,8 @@
 package com.oxygensend.auth.context.auth;
 
 import com.oxygensend.auth.config.properties.SettingsProperties;
-import com.oxygensend.auth.context.auth.jwt.JwtFacade;
-import com.oxygensend.auth.context.auth.jwt.payload.RefreshTokenPayload;
+import com.oxygensend.auth.context.jwt.JwtFacade;
+import com.oxygensend.auth.context.jwt.payload.RefreshTokenPayload;
 import com.oxygensend.auth.context.auth.request.AuthenticationRequest;
 import com.oxygensend.auth.context.auth.request.RefreshTokenRequest;
 import com.oxygensend.auth.context.auth.request.RegisterRequest;

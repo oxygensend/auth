@@ -1,4 +1,4 @@
-package com.oxygensend.auth.context.auth.jwt.payload;
+package com.oxygensend.auth.context.jwt.payload;
 
 import com.oxygensend.auth.domain.TokenType;
 import com.oxygensend.auth.domain.UserRole;

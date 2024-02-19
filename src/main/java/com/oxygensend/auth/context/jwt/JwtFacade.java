@@ -1,8 +1,8 @@
-package com.oxygensend.auth.context.auth.jwt;
+package com.oxygensend.auth.context.jwt;
 
 import com.oxygensend.auth.config.properties.TokenProperties;
-import com.oxygensend.auth.context.auth.jwt.factory.TokenPayloadFactoryProvider;
-import com.oxygensend.auth.context.auth.jwt.payload.TokenPayload;
+import com.oxygensend.auth.context.jwt.factory.TokenPayloadFactoryProvider;
+import com.oxygensend.auth.context.jwt.payload.TokenPayload;
 import com.oxygensend.auth.domain.TokenType;
 import com.oxygensend.auth.domain.User;
 import java.util.Date;
