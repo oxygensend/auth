@@ -30,41 +30,41 @@ import static com.oxygensend.auth.config.SwaggerConstants.REGISTER_API_DESCRIPTI
 import static com.oxygensend.auth.config.SwaggerConstants.VALIDATE_TOKEN_API_DESCRIPTION;
 
 
-@Tag(name =AUTH_NAME, description = AUTH_DESCRIPTION)
+@Tag(name = AUTH_NAME, description = AUTH_DESCRIPTION)
 @CrossOrigin
 @RestController
 @RequestMapping("/v1/auth")
 @RequiredArgsConstructor
-public class AuthController {
+class AuthController {
 
     private final AuthService authService;
 
     @Operation(summary = REGISTER_API_DESCRIPTION)
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public AuthenticationResponse register(@RequestBody @Validated RegisterRequest request) {
+    AuthenticationResponse register(@RequestBody @Validated RegisterRequest request) {
         return authService.register(request);
     }
 
-    @Operation(summary =AUTHENTICATE_API_DESCRIPTION)
+    @Operation(summary = AUTHENTICATE_API_DESCRIPTION)
     @PostMapping("/access_token")
     @ResponseStatus(HttpStatus.OK)
-    public AuthenticationResponse authenticate(@RequestBody @Validated AuthenticationRequest request) {
+    AuthenticationResponse authenticate(@RequestBody @Validated AuthenticationRequest request) {
         return authService.authenticate(request);
     }
 
     @Operation(summary = REFRESH_TOKEN_API_DESCRIPTION)
     @PostMapping("/refresh_token")
     @ResponseStatus(HttpStatus.OK)
-    public AuthenticationResponse refreshToken(@RequestBody @Validated RefreshTokenRequest request) {
+    AuthenticationResponse refreshToken(@RequestBody @Validated RefreshTokenRequest request) {
         return authService.refreshToken(request);
     }
 
     @Operation(summary = VALIDATE_TOKEN_API_DESCRIPTION)
     @PostMapping("/validate_token")
     @ResponseStatus(HttpStatus.OK)
-    public ValidationResponse validateToken(@RequestAttribute(value = "X-USER-ID", required = false) UUID userId,
-                                            @RequestAttribute(value = "X-AUTHORITIES", required = false) List<GrantedAuthority> authorities) {
+    ValidationResponse validateToken(@RequestAttribute(value = "X-USER-ID", required = false) UUID userId,
+                                     @RequestAttribute(value = "X-AUTHORITIES", required = false) List<GrantedAuthority> authorities) {
         return authService.validateToken(userId, authorities);
     }
 
