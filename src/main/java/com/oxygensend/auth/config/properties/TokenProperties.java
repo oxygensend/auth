@@ -12,8 +12,8 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @ConfigurationProperties(prefix = "jwt")
 public record TokenProperties(@NotNull @NotBlank String secretKey,
-                              @Positive int authExpirationMs,
-                              @Positive int refreshExpirationMs,
+                              @Positive long authExpirationMs,
+                              @Positive long refreshExpirationMs,
                               @Positive int passwordResetExpirationDays,
                               @Positive int emailVerificationExpirationDays){
 
