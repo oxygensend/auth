@@ -26,4 +26,4 @@ services:
 auth:
   settings:
     sign-in:
-      account-activation: change_password
+      account-activation: none

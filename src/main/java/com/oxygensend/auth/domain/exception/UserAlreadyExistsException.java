@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.UNAUTHORIZED)
 public class UserAlreadyExistsException extends ApiException {
     public UserAlreadyExistsException() {
-        super("User with this email already exists");
+        super("User with this identity already exists");
     }
 
 }

@@ -18,16 +18,16 @@ import lombok.experimental.Accessors;
 public class AccessTokenPayload extends TokenPayload {
     private final String firstName;
     private final String lastName;
-    private final String email;
+    private final String identity;
     private final String userId;
     private final Set<UserRole> roles;
 
 
-    public AccessTokenPayload(String firstName, String lastName, String email, String userId, Set<UserRole> roles, Date iat, Date exp) {
+    public AccessTokenPayload(String firstName, String lastName, String identity, String userId, Set<UserRole> roles, Date iat, Date exp) {
         super(TokenType.ACCESS, iat, exp);
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
+        this.identity = identity;
         this.userId = userId;
         this.roles = roles;
     }
@@ -35,7 +35,7 @@ public class AccessTokenPayload extends TokenPayload {
     @Override
     public Claims toClaims() {
         return Jwts.claims()
-                   .subject(email)
+                   .subject(identity)
                    .issuedAt(iat)
                    .expiration(exp)
                    .add("type", type)

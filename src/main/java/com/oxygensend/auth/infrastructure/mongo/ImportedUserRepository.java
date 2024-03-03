@@ -6,4 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 interface ImportedUserRepository extends MongoRepository<UserMongo, UUID> {
     Optional<UserMongo> findByEmail(String email);
+
+    Optional<UserMongo> findByUsername(String username);
 }

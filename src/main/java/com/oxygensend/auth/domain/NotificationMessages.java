@@ -12,5 +12,5 @@ public class NotificationMessages {
 
 
     public static final String EMAIL_VERIFICATION_SUBJECT = "Email verification";
-    public static final String EMAIL_VERIFICATION_MESSAGE = "Hi %s.\nTo verify your email, please click the link below:\n%s".formatted("%s", "%s");
+    public static final String EMAIL_VERIFICATION_MESSAGE = "Hi %s.\nTo verify your identity, please click the link below:\n%s".formatted("%s", "%s");
 }

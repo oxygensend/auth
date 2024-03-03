@@ -133,7 +133,7 @@ public class JwtAuthenticationFilterTest {
 
         when(request.getHeader("Authorization")).thenReturn("Bearer " + jwtToken);
         when(jwtFacade.validateToken(jwtToken, TokenType.ACCESS)).thenReturn(tokenPayload);
-        when(userDetailsService.loadUserByUsername(tokenPayload.email())).thenReturn(userDetails);
+        when(userDetailsService.loadUserByUsername(tokenPayload.identity())).thenReturn(userDetails);
         when(userDetails.getAuthorities()).thenReturn(null);
         when(securityContext.getAuthentication()).thenReturn(null);
         doNothing().when(securityContext).setAuthentication(any(Authentication.class));
@@ -143,7 +143,7 @@ public class JwtAuthenticationFilterTest {
 
         // Assert
         verify(jwtFacade).validateToken(jwtToken, TokenType.ACCESS);
-        verify(userDetailsService).loadUserByUsername(tokenPayload.email());
+        verify(userDetailsService).loadUserByUsername(tokenPayload.identity());
         verify(userDetails, times(2)).getAuthorities();
         verify(securityContext).getAuthentication();
         verify(securityContext).setAuthentication(any(Authentication.class));

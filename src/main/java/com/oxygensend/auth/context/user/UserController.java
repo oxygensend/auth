@@ -72,7 +72,7 @@ class UserController {
     @PostMapping("/verify_email")
     DefaultView verifyEmail(@Validated @RequestBody VerifyEmailRequest request) {
         service.verifyEmail(request);
-        return DefaultView.of("User email successfully verified");
+        return DefaultView.of("User identity successfully verified");
     }
 
     @Operation(summary = USER_GENERATE_EMAIL_VERIFICATION_TOKEN_API_DESCRIPTION)

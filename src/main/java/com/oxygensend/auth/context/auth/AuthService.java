@@ -1,15 +1,17 @@
 package com.oxygensend.auth.context.auth;
 
 import com.oxygensend.auth.config.properties.SettingsProperties;
-import com.oxygensend.auth.context.jwt.JwtFacade;
-import com.oxygensend.auth.context.jwt.payload.AccessTokenPayload;
-import com.oxygensend.auth.context.jwt.payload.RefreshTokenPayload;
+import com.oxygensend.auth.context.IdentityProvider;
 import com.oxygensend.auth.context.auth.request.AuthenticationRequest;
 import com.oxygensend.auth.context.auth.request.RefreshTokenRequest;
 import com.oxygensend.auth.context.auth.request.RegisterRequest;
 import com.oxygensend.auth.context.auth.response.AuthenticationResponse;
 import com.oxygensend.auth.context.auth.response.ValidationResponse;
+import com.oxygensend.auth.context.jwt.JwtFacade;
+import com.oxygensend.auth.context.jwt.payload.AccessTokenPayload;
+import com.oxygensend.auth.context.jwt.payload.RefreshTokenPayload;
 import com.oxygensend.auth.domain.AccountActivation;
+import com.oxygensend.auth.domain.IdentityType;
 import com.oxygensend.auth.domain.TokenType;
 import com.oxygensend.auth.domain.User;
 import com.oxygensend.auth.domain.UserRepository;
@@ -40,10 +42,11 @@ public class AuthService {
     private final JwtFacade jwtFacade;
     private final SettingsProperties.SignInProperties signInProperties;
     private final EventPublisher eventPublisher;
+    private final IdentityProvider identityProvider;
 
     public AuthService(SessionManager sessionManager, UserRepository userRepository, PasswordEncoder passwordEncoder,
                        AuthenticationManager authenticationManager, JwtFacade jwtFacade, SettingsProperties settingsProperties,
-                       EventPublisher eventPublisher) {
+                       EventPublisher eventPublisher, IdentityProvider identityProvider) {
         this.sessionManager = sessionManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -51,17 +54,22 @@ public class AuthService {
         this.jwtFacade = jwtFacade;
         this.signInProperties = settingsProperties.signIn();
         this.eventPublisher = eventPublisher;
+        this.identityProvider = identityProvider;
     }
 
     public AuthenticationResponse register(RegisterRequest request) {
-        userRepository.findByEmail(request.email()).ifPresent(user -> {
+        userRepository.findByUsername(request.identity()).ifPresent(user -> {
             throw new UserAlreadyExistsException();
         });
-        var enabled = signInProperties.accountActivation() != AccountActivation.NONE;
+
+        var enabled = signInProperties.accountActivation() == AccountActivation.NONE;
+        var username = identityProvider.getIdentityType() == IdentityType.USERNAME ? request.identity() : null;
+        var email = identityProvider.getIdentityType() == IdentityType.EMAIL ? request.identity() : null;
 
         var user = User.builder()
                        .id(UUID.randomUUID())
-                       .email(request.email())
+                       .username(username)
+                       .email(email)
                        .firstName(request.firstName())
                        .lastName(request.lastName())
                        .password(passwordEncoder.encode(request.password()))
@@ -80,7 +88,7 @@ public class AuthService {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            request.email(),
+                            request.identity(),
                             request.password()
                     )
             );

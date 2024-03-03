@@ -1,5 +1,6 @@
 package com.oxygensend.auth.context.jwt.factory;
 
+import com.oxygensend.auth.context.IdentityProvider;
 import com.oxygensend.auth.context.jwt.payload.AccessTokenPayload;
 import com.oxygensend.auth.context.jwt.payload.TokenPayload;
 import com.oxygensend.auth.domain.TokenType;
@@ -9,16 +10,21 @@ import io.jsonwebtoken.Claims;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 final class AccessTokenPayloadFactory implements TokenPayloadFactory {
+
+    private final IdentityProvider identityProvider;
+
     @Override
     public TokenPayload createToken(Date exp, Date iat, User user) {
         return new AccessTokenPayload(
                 user.firstName(),
                 user.lastName(),
-                user.email(),
+                identityProvider.getIdentity(user),
                 user.id().toString(),
                 user.roles(),
                 iat,

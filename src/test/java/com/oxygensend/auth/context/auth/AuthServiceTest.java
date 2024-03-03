@@ -1,14 +1,16 @@
 package com.oxygensend.auth.context.auth;
 
 import com.oxygensend.auth.config.properties.SettingsProperties;
-import com.oxygensend.auth.context.jwt.JwtFacade;
-import com.oxygensend.auth.context.jwt.payload.RefreshTokenPayload;
+import com.oxygensend.auth.context.IdentityProvider;
 import com.oxygensend.auth.context.auth.request.AuthenticationRequest;
 import com.oxygensend.auth.context.auth.request.RefreshTokenRequest;
 import com.oxygensend.auth.context.auth.request.RegisterRequest;
 import com.oxygensend.auth.context.auth.response.AuthenticationResponse;
 import com.oxygensend.auth.context.auth.response.ValidationResponse;
+import com.oxygensend.auth.context.jwt.JwtFacade;
+import com.oxygensend.auth.context.jwt.payload.RefreshTokenPayload;
 import com.oxygensend.auth.domain.AccountActivation;
+import com.oxygensend.auth.domain.IdentityType;
 import com.oxygensend.auth.domain.Session;
 import com.oxygensend.auth.domain.TokenType;
 import com.oxygensend.auth.domain.User;
@@ -66,6 +68,8 @@ public class AuthServiceTest {
 
     @Mock
     private EventPublisher eventPublisher;
+    @Mock
+    private IdentityProvider identityProvider;
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private SettingsProperties settingsProperties;
@@ -122,9 +126,10 @@ public class AuthServiceTest {
 
         when(settingsProperties.signIn().accountActivation()).thenReturn(AccountActivation.NONE);
         when(passwordEncoder.encode(password)).thenReturn("encoded_password");
-        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+        when(userRepository.findByUsername(email)).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(mock(User.class));
         when(sessionManager.prepareSession(any(User.class))).thenReturn(expectedResponse);
+        when(identityProvider.getIdentityType()).thenReturn(IdentityType.EMAIL);
 
 
         // Act
@@ -133,7 +138,7 @@ public class AuthServiceTest {
         // Assert
         assertEquals(response, expectedResponse);
         verify(eventPublisher, times(1)).publish(any(RegisterEvent.class));
-        verify(userRepository, times(1)).findByEmail(email);
+        verify(userRepository, times(1)).findByUsername(email);
         verify(passwordEncoder, times(1)).encode(password);
         verify(userRepository, times(1)).save(any(User.class));
         verify(sessionManager, times(1)).prepareSession(any(User.class));
@@ -147,11 +152,11 @@ public class AuthServiceTest {
         String password = "password";
         RegisterRequest request = new RegisterRequest("John", "Doe", email, password);
 
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(mock(User.class)));
+        when(userRepository.findByUsername(email)).thenReturn(Optional.of(mock(User.class)));
 
         // Act & Assert
         assertThrows(UserAlreadyExistsException.class, () -> authService.register(request));
-        verify(userRepository, times(1)).findByEmail(email);
+        verify(userRepository, times(1)).findByUsername(email);
         verifyNoMoreInteractions(passwordEncoder, userRepository, sessionManager, jwtFacade);
     }
 

@@ -2,6 +2,7 @@ package com.oxygensend.auth.config;
 
 import com.oxygensend.auth.config.properties.SettingsProperties;
 import com.oxygensend.auth.config.properties.TokenProperties;
+import com.oxygensend.auth.context.IdentityProvider;
 import com.oxygensend.auth.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -25,7 +26,7 @@ public class AppConfiguration {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByEmail(username)
+        return username -> userRepository.findByUsername(username)
                                          .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
@@ -46,5 +47,10 @@ public class AppConfiguration {
         authProvider.setPasswordEncoder(passwordEncoder());
 
         return authProvider;
+    }
+
+    @Bean
+    public IdentityProvider identityProvider(SettingsProperties settingsProperties) {
+        return new IdentityProvider(settingsProperties.identity());
     }
 }

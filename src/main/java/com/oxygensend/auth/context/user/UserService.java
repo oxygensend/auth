@@ -64,7 +64,7 @@ public class UserService {
                              .orElseThrow(() -> new MissingUserException("User with id %s not found".formatted(token.userId())));
 
         var newPassword = passwordEncoder.encode(request.newPassword());
-        repository.save(user.withNewPassword(newPassword));
+        repository.save(user.withPasswordReset(newPassword));
     }
 
     public void changePassword(PasswordChangeRequest request) {

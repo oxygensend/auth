@@ -14,6 +14,7 @@ public record User(UUID id,
                    String firstName,
                    String lastName,
                    String email,
+                   String username,
                    String password,
                    Boolean enabled,
                    Boolean locked,
@@ -32,19 +33,23 @@ public record User(UUID id,
     }
 
     public User blocked() {
-        return new User(id, firstName, lastName, email, password, enabled, true, roles, emailValidated, createdAt);
+        return new User(id, firstName, lastName, email, username, password, enabled, true, roles, emailValidated, createdAt);
     }
 
     public User unblocked() {
-        return new User(id, firstName, lastName, email, password, enabled, false, roles, emailValidated, createdAt);
+        return new User(id, firstName, lastName, email, username, password, enabled, false, roles, emailValidated, createdAt);
     }
 
     public User withNewPassword(String newPassword) {
-        return new User(id, firstName, lastName, email, newPassword, enabled, locked, roles, emailValidated, createdAt);
+        return new User(id, firstName, lastName, email, username, newPassword, enabled, locked, roles, emailValidated, createdAt);
+    }
+
+    public User withPasswordReset(String newPassword) {
+        return new User(id, firstName, lastName, email, username, newPassword, true, locked, roles, emailValidated, createdAt);
     }
 
     public User withEmailVerified() {
-        return new User(id, firstName, lastName, email, password, true, locked, roles, LocalDateTime.now(), createdAt);
+        return new User(id, firstName, lastName, email, username, password, true, locked, roles, LocalDateTime.now(), createdAt);
     }
 
     @Override

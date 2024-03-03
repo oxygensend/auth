@@ -1,5 +1,6 @@
 package com.oxygensend.auth.context.jwt.factory;
 
+import com.oxygensend.auth.context.IdentityProvider;
 import com.oxygensend.auth.context.jwt.payload.AccessTokenPayload;
 import com.oxygensend.auth.context.jwt.payload.TokenPayload;
 import com.oxygensend.auth.domain.User;
@@ -12,20 +13,25 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class AccessTokenPayloadFactoryTest {
 
+    @Mock
+    private IdentityProvider identityProvider;
 
     @InjectMocks
     private AccessTokenPayloadFactory factory;
+
 
     @Test
     public void testCreateTokenPayload_ValidArguments() {
@@ -40,6 +46,8 @@ public class AccessTokenPayloadFactoryTest {
                        .roles(Set.of(UserRole.ROLE_ADMIN))
                        .build();
 
+        when(identityProvider.getIdentity(eq(user))).thenReturn(user.email());
+
         // Act
         TokenPayload tokenPayload = factory.createToken(expDate, iatDate, user);
 
@@ -52,7 +60,7 @@ public class AccessTokenPayloadFactoryTest {
         assertEquals(expDate, accessTokenPayload.exp());
         assertEquals(user.firstName(), accessTokenPayload.firstName());
         assertEquals(user.lastName(), accessTokenPayload.lastName());
-        assertEquals(user.email(), accessTokenPayload.email());
+        assertEquals(user.email(), accessTokenPayload.identity());
         assertEquals(user.id().toString(), accessTokenPayload.userId());
         assertEquals(user.roles(), accessTokenPayload.roles());
     }
@@ -77,7 +85,7 @@ public class AccessTokenPayloadFactoryTest {
         assertEquals(expDate, accessTokenPayload.exp());
         assertEquals("John", accessTokenPayload.firstName());
         assertEquals("Doe", accessTokenPayload.lastName());
-        assertEquals("john.doe@example.com", accessTokenPayload.email());
+        assertEquals("john.doe@example.com", accessTokenPayload.identity());
         assertEquals("1", accessTokenPayload.userId());
         assertTrue(accessTokenPayload.roles().contains(UserRole.ROLE_ADMIN));
     }

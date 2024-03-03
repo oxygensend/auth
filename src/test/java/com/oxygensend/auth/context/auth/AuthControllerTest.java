@@ -1,10 +1,12 @@
 package com.oxygensend.auth.context.auth;
 
+import com.oxygensend.auth.context.IdentityProvider;
 import com.oxygensend.auth.context.auth.request.AuthenticationRequest;
 import com.oxygensend.auth.context.auth.request.RefreshTokenRequest;
 import com.oxygensend.auth.context.auth.request.RegisterRequest;
 import com.oxygensend.auth.context.auth.response.AuthenticationResponse;
 import com.oxygensend.auth.context.auth.response.ValidationResponse;
+import com.oxygensend.auth.domain.IdentityType;
 import com.oxygensend.auth.domain.exception.UnauthorizedException;
 import com.oxygensend.auth.helper.ValidationResponseMother;
 import com.oxygensend.commons_jdk.exception.ApiExceptionHandler;
@@ -16,6 +18,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -24,21 +28,24 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthControllerTest {
-
     @InjectMocks
     private AuthController authController;
 
     private MockMvc mockMvc;
     @Mock
     private AuthService authService;
+    @MockBean
+    private IdentityProvider identityProvider;
 
     @BeforeEach
     public void setUp() {
+        identityProvider = mock(IdentityProvider.class);
         mockMvc = MockMvcBuilders.standaloneSetup(authController)
                                  .setValidator(new LocalValidatorFactoryBean())
                                  .setControllerAdvice(new ApiExceptionHandler())
@@ -76,7 +83,7 @@ public class AuthControllerTest {
                                               .contentType(MediaType.APPLICATION_JSON)
                                               .content("{" +
                                                                "\"firstName\":\"John\"," +
-                                                               "\"email\":\"testcom\"" +
+                                                               "\"identity\":\"testcom\"" +
                                                                "}"
                                               )
                )

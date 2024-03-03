@@ -29,6 +29,7 @@ auth:
       account-activation: none
     user-role-endpoint:
       enabled: true
+    identity: username
 
 feign:
   connection:

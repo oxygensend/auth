@@ -1,9 +1,9 @@
 package com.oxygensend.auth.context.auth.request;
 
-import com.oxygensend.commons_jdk.validation.ValidEmail;
+import com.oxygensend.auth.infrastructure.validation.ValidIdentity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record AuthenticationRequest(@NotNull @ValidEmail String email,
+public record AuthenticationRequest(@NotNull @ValidIdentity String identity,
                                     @NotBlank String password) {
 }
