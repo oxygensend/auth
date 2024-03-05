@@ -2,7 +2,6 @@ package com.oxygensend.auth.context.user_role;
 
 
 import com.oxygensend.auth.domain.UserRepository;
-import com.oxygensend.auth.domain.UserRole;
 import com.oxygensend.auth.domain.exception.RoleAlreadyExistsException;
 import com.oxygensend.auth.domain.exception.RoleNotAssignedException;
 import com.oxygensend.auth.helper.UserMother;

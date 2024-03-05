@@ -4,7 +4,6 @@ import com.oxygensend.auth.context.IdentityProvider;
 import com.oxygensend.auth.context.jwt.payload.AccessTokenPayload;
 import com.oxygensend.auth.context.jwt.payload.TokenPayload;
 import com.oxygensend.auth.domain.User;
-import com.oxygensend.auth.domain.UserRole;
 import io.jsonwebtoken.Claims;
 import java.util.Date;
 import java.util.List;
