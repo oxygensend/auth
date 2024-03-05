@@ -4,8 +4,10 @@ import com.oxygensend.auth.domain.Session;
 import com.oxygensend.auth.domain.SessionRepository;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
+@Profile("mongo")
 @Repository
 public class SessionMongoRepository implements SessionRepository {
 

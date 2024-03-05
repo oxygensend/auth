@@ -64,13 +64,13 @@ final class RegisterEventListener {
 
     private void sendPasswordChangeEmail(User user, String token) {
         var command = new SendMailCommand(user, ACTIVATE_ACCOUNT_BY_PASSWORD_CHANGE_SUBJECT,
-                                          ACTIVATE_ACCOUNT_BY_PASSWORD_CHANGE_MESSAGE.formatted(user.fullName(), token));
+                                          ACTIVATE_ACCOUNT_BY_PASSWORD_CHANGE_MESSAGE.formatted(token));
         notificationRepository.sendMail(command);
     }
 
     private void sendEmailVerificationEmail(User user, String token) {
         var command = new SendMailCommand(user, ACTIVATE_ACCOUNT_BY_EMAIL_VERIFICATION_SUBJECT,
-                                          ACTIVATE_ACCOUNT_BY_EMAIL_VERIFICATION_MESSAGE.formatted(user.fullName(), token));
+                                          ACTIVATE_ACCOUNT_BY_EMAIL_VERIFICATION_MESSAGE.formatted(token));
         notificationRepository.sendMail(command);
     }
 

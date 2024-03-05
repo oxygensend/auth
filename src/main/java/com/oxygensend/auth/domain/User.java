@@ -1,6 +1,5 @@
 package com.oxygensend.auth.domain;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
@@ -11,51 +10,47 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 @Builder
 public record User(UUID id,
-                   String firstName,
-                   String lastName,
                    String email,
                    String username,
                    String password,
-                   Boolean enabled,
-                   Boolean locked,
-                   Set<UserRole> roles,
-                   LocalDateTime emailValidated,
-                   LocalDateTime createdAt) implements UserDetails {
+                   boolean locked,
+                   Set<String> roles,
+                   boolean verified) implements UserDetails {
 
-    public User withNewRole(UserRole role) {
+
+    public User withNewRole(String role) {
         roles.add(role);
         return this;
     }
 
-    public User withoutRole(UserRole role) {
+    public User withoutRole(String role) {
         roles.remove(role);
         return this;
     }
 
     public User blocked() {
-        return new User(id, firstName, lastName, email, username, password, enabled, true, roles, emailValidated, createdAt);
+        return new User(id, email, username, password, true, roles, verified);
     }
 
     public User unblocked() {
-        return new User(id, firstName, lastName, email, username, password, enabled, false, roles, emailValidated, createdAt);
+        return new User(id, email, username, password, false, roles, verified);
     }
 
     public User withNewPassword(String newPassword) {
-        return new User(id, firstName, lastName, email, username, newPassword, enabled, locked, roles, emailValidated, createdAt);
+        return new User(id, email, username, newPassword, locked, roles, verified);
     }
 
     public User withPasswordReset(String newPassword) {
-        return new User(id, firstName, lastName, email, username, newPassword, true, locked, roles, emailValidated, createdAt);
+        return new User(id, email, username, newPassword, locked, roles, true);
     }
 
     public User withEmailVerified() {
-        return new User(id, firstName, lastName, email, username, password, true, locked, roles, LocalDateTime.now(), createdAt);
+        return new User(id, email, username, password, locked, roles, true);
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                    .map(UserRole::name)
                     .map(SimpleGrantedAuthority::new)
                     .toList();
     }
@@ -87,10 +82,7 @@ public record User(UUID id,
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return true;
     }
 
-    public String fullName() {
-        return firstName + " " + lastName;
-    }
 }

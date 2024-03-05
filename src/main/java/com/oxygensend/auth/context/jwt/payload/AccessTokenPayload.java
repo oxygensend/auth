@@ -1,7 +1,6 @@
 package com.oxygensend.auth.context.jwt.payload;
 
 import com.oxygensend.auth.domain.TokenType;
-import com.oxygensend.auth.domain.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import java.util.Date;
@@ -16,20 +15,18 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode
 @ToString
 public class AccessTokenPayload extends TokenPayload {
-    private final String firstName;
-    private final String lastName;
     private final String identity;
     private final String userId;
-    private final Set<UserRole> roles;
+    private final Set<String> roles;
+    private final boolean verified;
 
 
-    public AccessTokenPayload(String firstName, String lastName, String identity, String userId, Set<UserRole> roles, Date iat, Date exp) {
+    public AccessTokenPayload(String identity, String userId, Set<String> roles, Date iat, Date exp, boolean verified) {
         super(TokenType.ACCESS, iat, exp);
-        this.firstName = firstName;
-        this.lastName = lastName;
         this.identity = identity;
         this.userId = userId;
         this.roles = roles;
+        this.verified = verified;
     }
 
     @Override
@@ -39,10 +36,9 @@ public class AccessTokenPayload extends TokenPayload {
                    .issuedAt(iat)
                    .expiration(exp)
                    .add("type", type)
-                   .add("firstName", firstName)
-                   .add("lastName", lastName)
                    .add("userId", userId)
                    .add("roles", roles)
+                   .add("verified", verified)
                    .build();
     }
 }

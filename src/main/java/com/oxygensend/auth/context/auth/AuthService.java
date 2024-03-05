@@ -8,7 +8,6 @@ import com.oxygensend.auth.context.auth.request.RegisterRequest;
 import com.oxygensend.auth.context.auth.response.AuthenticationResponse;
 import com.oxygensend.auth.context.auth.response.ValidationResponse;
 import com.oxygensend.auth.context.jwt.JwtFacade;
-import com.oxygensend.auth.context.jwt.payload.AccessTokenPayload;
 import com.oxygensend.auth.context.jwt.payload.RefreshTokenPayload;
 import com.oxygensend.auth.domain.AccountActivation;
 import com.oxygensend.auth.domain.IdentityType;
@@ -21,6 +20,7 @@ import com.oxygensend.auth.domain.exception.SessionExpiredException;
 import com.oxygensend.auth.domain.exception.TokenException;
 import com.oxygensend.auth.domain.exception.UnauthorizedException;
 import com.oxygensend.auth.domain.exception.UserAlreadyExistsException;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -62,7 +62,7 @@ public class AuthService {
             throw new UserAlreadyExistsException();
         });
 
-        var enabled = signInProperties.accountActivation() == AccountActivation.NONE;
+        var verified = signInProperties.accountActivation() == AccountActivation.NONE;
         var username = identityProvider.getIdentityType() == IdentityType.USERNAME ? request.identity() : null;
         var email = identityProvider.getIdentityType() == IdentityType.EMAIL ? request.identity() : null;
 
@@ -70,16 +70,14 @@ public class AuthService {
                        .id(UUID.randomUUID())
                        .username(username)
                        .email(email)
-                       .firstName(request.firstName())
-                       .lastName(request.lastName())
                        .password(passwordEncoder.encode(request.password()))
-                       .enabled(enabled)
-                       .locked(false)
                        .roles(request.roles())
+                       .locked(false)
+                       .verified(verified)
                        .build();
 
         userRepository.save(user);
-        eventPublisher.publish(new RegisterEvent(user.id(), user.email(), user.createdAt(), signInProperties.accountActivation()));
+        eventPublisher.publish(new RegisterEvent(user.id(), user.email(), LocalDateTime.now(), signInProperties.accountActivation()));
 
         return sessionManager.prepareSession(user);
     }
@@ -115,13 +113,6 @@ public class AuthService {
         return payload;
     }
 
-    private AccessTokenPayload getAccessTokenPayload(String token) {
-        var payload = (AccessTokenPayload) jwtFacade.validateToken(token, TokenType.ACCESS);
-        if (payload.exp().before(new Date())) {
-            throw new TokenException("Token expired");
-        }
-        return payload;
-    }
 
     public ValidationResponse validateToken(UUID userId, List<GrantedAuthority> authorities) {
         boolean isAuthorized = userId != null && authorities != null;

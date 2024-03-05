@@ -40,10 +40,8 @@ public class AccessTokenPayloadFactoryTest {
         Date iatDate = new Date();
         var user = User.builder()
                        .id(UUID.randomUUID())
-                       .firstName("John")
-                       .lastName("Doe")
                        .email("test@test.pl")
-                       .roles(Set.of(UserRole.ROLE_ADMIN))
+                       .roles(Set.of("ROLE_ADMIN"))
                        .build();
 
         when(identityProvider.getIdentity(eq(user))).thenReturn(user.email());
@@ -58,8 +56,6 @@ public class AccessTokenPayloadFactoryTest {
         AccessTokenPayload accessTokenPayload = (AccessTokenPayload) tokenPayload;
         assertEquals(iatDate, accessTokenPayload.iat());
         assertEquals(expDate, accessTokenPayload.exp());
-        assertEquals(user.firstName(), accessTokenPayload.firstName());
-        assertEquals(user.lastName(), accessTokenPayload.lastName());
         assertEquals(user.email(), accessTokenPayload.identity());
         assertEquals(user.id().toString(), accessTokenPayload.userId());
         assertEquals(user.roles(), accessTokenPayload.roles());
@@ -83,23 +79,20 @@ public class AccessTokenPayloadFactoryTest {
         AccessTokenPayload accessTokenPayload = (AccessTokenPayload) tokenPayload;
         assertEquals(iatDate, accessTokenPayload.iat());
         assertEquals(expDate, accessTokenPayload.exp());
-        assertEquals("John", accessTokenPayload.firstName());
-        assertEquals("Doe", accessTokenPayload.lastName());
         assertEquals("john.doe@example.com", accessTokenPayload.identity());
         assertEquals("1", accessTokenPayload.userId());
-        assertTrue(accessTokenPayload.roles().contains(UserRole.ROLE_ADMIN));
+        assertTrue(accessTokenPayload.roles().contains("ROLE_ADMIN"));
     }
 
     private Claims createClaims(Date iat, Date exp, String firstName, String lastName, String email) {
 
         Claims claims = mock(Claims.class);
-        when(claims.get("firstName")).thenReturn(firstName);
-        when(claims.get("lastName")).thenReturn(lastName);
         when(claims.getIssuedAt()).thenReturn(iat);
         when(claims.getExpiration()).thenReturn(exp);
         when(claims.getSubject()).thenReturn(email);
-        when(claims.get("userId")).thenReturn("1");
-        when(claims.get("roles")).thenReturn(List.of(UserRole.ROLE_ADMIN));
+        when(claims.get("userId", String.class)).thenReturn("1");
+        when(claims.get("roles")).thenReturn(List.of("ROLE_ADMIN"));
+        when(claims.get("verified", Boolean.class)).thenReturn(true);
 
         return claims;
     }

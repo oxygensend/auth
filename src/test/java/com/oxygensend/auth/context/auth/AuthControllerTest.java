@@ -62,8 +62,6 @@ public class AuthControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/v1/auth/register")
                                               .contentType(MediaType.APPLICATION_JSON)
                                               .content("{" +
-                                                               "\"firstName\":\"John\"," +
-                                                               "\"lastName\":\"Doe\"," +
                                                                "\"email\":\"test@example.com\"," +
                                                                "\"password\":\"password\"" +
                                                                "}"
@@ -82,7 +80,6 @@ public class AuthControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/v1/auth/register")
                                               .contentType(MediaType.APPLICATION_JSON)
                                               .content("{" +
-                                                               "\"firstName\":\"John\"," +
                                                                "\"identity\":\"testcom\"" +
                                                                "}"
                                               )

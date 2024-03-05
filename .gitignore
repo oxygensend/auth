@@ -33,3 +33,8 @@ build/
 .vscode/
 
 .idea
+
+mongo
+.mvn
+mvnw
+mvnw.cmd

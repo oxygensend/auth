@@ -9,6 +9,8 @@ server:
 spring:
   application:
     name: auth-service
+  profiles:
+    active: mongo
 
 
 eureka:
@@ -29,7 +31,10 @@ auth:
       account-activation: none
     user-role-endpoint:
       enabled: true
-    identity: username
+    identity: email
+    roles:
+      - ROLE_USER
+      - ROLE_ADMIN
 
 feign:
   connection:

@@ -2,7 +2,6 @@ package com.oxygensend.auth.context.jwt;
 
 import com.oxygensend.auth.context.jwt.payload.AccessTokenPayload;
 import com.oxygensend.auth.context.jwt.payload.RefreshTokenPayload;
-import com.oxygensend.auth.domain.UserRole;
 import io.jsonwebtoken.Claims;
 import java.util.Date;
 import java.util.Set;
@@ -18,7 +17,7 @@ public class TokenPayloadTest {
     @Test
     public void test_AccessTokenPayloadToClaims() {
         // Arrange
-        var accessTokenPayload = new AccessTokenPayload("test", "test", "test@tes.com", "1", Set.of(UserRole.ROLE_ADMIN), new Date(), new Date());
+        var accessTokenPayload = new AccessTokenPayload("test@tes.com", "1", Set.of("ROLE_ADMIN"), new Date(), new Date(), true);
 
         // Act
         var claims = accessTokenPayload.toClaims();
@@ -29,8 +28,6 @@ public class TokenPayloadTest {
         assertEquals(claims.getSubject(), accessTokenPayload.identity());
         assertEquals(claims.getIssuedAt().toString(), accessTokenPayload.iat().toString());
         assertEquals(claims.get("type"), accessTokenPayload.type());
-        assertEquals(claims.get("lastName"), accessTokenPayload.lastName());
-        assertEquals(claims.get("firstName"), accessTokenPayload.firstName());
         assertEquals(claims.get("userId"), accessTokenPayload.userId());
         assertEquals(claims.get("roles"), accessTokenPayload.roles());
     }

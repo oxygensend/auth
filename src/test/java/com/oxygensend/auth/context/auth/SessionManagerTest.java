@@ -83,8 +83,6 @@ public class SessionManagerTest {
         // Arrange
         var user = User.builder()
                        .id(UUID.randomUUID())
-                       .firstName("John")
-                       .lastName("Doe")
                        .email("john@doe.pl")
                        .password("password")
                        .build();

@@ -88,7 +88,7 @@ public class UserService {
                              .orElseThrow(() -> UserNotFoundException.withId(userId));
 
         var token = jwtFacade.generateToken(user, tokenType);
-        var command = new SendMailCommand(user, subject, message.formatted(user.fullName(), token));
+        var command = new SendMailCommand(user, subject, message.formatted(token));
         notificationRepository.sendMail(command);
     }
 

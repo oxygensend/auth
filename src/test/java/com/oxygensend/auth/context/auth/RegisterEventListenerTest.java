@@ -33,7 +33,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class RegisterEventListenerTest {
 
-
     @Mock
     private JwtFacade jwtFacade;
     @Mock
@@ -75,7 +74,7 @@ class RegisterEventListenerTest {
         var user = UserMother.getRandom();
 
         var command = new SendMailCommand(user, ACTIVATE_ACCOUNT_BY_PASSWORD_CHANGE_SUBJECT,
-                                          ACTIVATE_ACCOUNT_BY_PASSWORD_CHANGE_MESSAGE.formatted(user.fullName(), token));
+                                          ACTIVATE_ACCOUNT_BY_PASSWORD_CHANGE_MESSAGE.formatted(token));
 
         when(userRepository.findById(event.userId())).thenReturn(Optional.of(user));
         when(jwtFacade.generateToken(eq(user), eq(TokenType.PASSWORD_RESET))).thenReturn(token);
@@ -96,7 +95,7 @@ class RegisterEventListenerTest {
         var user = UserMother.getRandom();
 
         var command = new SendMailCommand(user, ACTIVATE_ACCOUNT_BY_EMAIL_VERIFICATION_SUBJECT,
-                                          ACTIVATE_ACCOUNT_BY_EMAIL_VERIFICATION_MESSAGE.formatted(user.fullName(), token));
+                                          ACTIVATE_ACCOUNT_BY_EMAIL_VERIFICATION_MESSAGE.formatted(token));
 
         when(userRepository.findById(event.userId())).thenReturn(Optional.of(user));
         when(jwtFacade.generateToken(eq(user), eq(TokenType.EMAIL_VERIFICATION))).thenReturn(token);

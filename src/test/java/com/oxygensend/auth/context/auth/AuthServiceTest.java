@@ -84,8 +84,6 @@ public class AuthServiceTest {
 
         var user = User.builder()
                        .id(UUID.randomUUID())
-                       .firstName("John")
-                       .lastName("Doe")
                        .email(email)
                        .password(passwordEncoder.encode(password))
                        .build();
@@ -121,7 +119,7 @@ public class AuthServiceTest {
         // Arrange
         String email = "test@example.com";
         String password = "password";
-        RegisterRequest request = new RegisterRequest("John", "Doe", email, password);
+        RegisterRequest request = new RegisterRequest(email, password);
         AuthenticationResponse expectedResponse = new AuthenticationResponse("access_token", "refresh_token");
 
         when(settingsProperties.signIn().accountActivation()).thenReturn(AccountActivation.NONE);
@@ -150,7 +148,7 @@ public class AuthServiceTest {
         // Arrange
         String email = "test@example.com";
         String password = "password";
-        RegisterRequest request = new RegisterRequest("John", "Doe", email, password);
+        RegisterRequest request = new RegisterRequest(email, password);
 
         when(userRepository.findByUsername(email)).thenReturn(Optional.of(mock(User.class)));
 

@@ -1,0 +1,14 @@
+version: '3.9'
+services:
+  mongo:
+    container_name: auth_mongo
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo:/data/db
+    networks:
+      - auth
+
+networks:
+  auth:

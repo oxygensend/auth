@@ -4,7 +4,6 @@ import com.oxygensend.auth.context.jwt.JwtFacade;
 import com.oxygensend.auth.context.jwt.payload.AccessTokenPayload;
 import com.oxygensend.auth.domain.TokenType;
 import com.oxygensend.auth.domain.User;
-import com.oxygensend.auth.domain.UserRole;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,11 +64,9 @@ public class JwtAuthenticationFilterTest {
 
         user = User.builder()
                    .id(UUID.randomUUID())
-                   .firstName("John")
-                   .lastName("Doe")
                    .email("test@test.com")
                    .password("test123")
-                   .roles(Set.of(UserRole.ROLE_ADMIN))
+                   .roles(Set.of("ROLE_ADMIN"))
                    .build();
     }
 
@@ -105,8 +102,8 @@ public class JwtAuthenticationFilterTest {
         // Arrange
         String jwtToken = "valid_token";
 
-        var tokenPayload = new AccessTokenPayload("test", "test", "test@test.com",
-                                                  "id", Set.of(UserRole.ROLE_ADMIN), new Date(), new Date());
+        var tokenPayload = new AccessTokenPayload("test@test.com",
+                                                  "id", Set.of("ROLE_ADMIN"), new Date(), new Date(), true);
 
         when(request.getHeader("Authorization")).thenReturn("Bearer " + jwtToken);
         when(jwtFacade.validateToken(jwtToken, TokenType.ACCESS)).thenReturn(tokenPayload);
@@ -125,8 +122,8 @@ public class JwtAuthenticationFilterTest {
         // Arrange
         String jwtToken = "valid_token";
 
-        var tokenPayload = new AccessTokenPayload("test", "test", "test@test.com",
-                                                  "id", Set.of(UserRole.ROLE_ADMIN), new Date(), new Date(System.currentTimeMillis() + 3600));
+        var tokenPayload = new AccessTokenPayload("test@test.com",
+                                                  "id", Set.of("ROLE_ADMIN"), new Date(), new Date(System.currentTimeMillis() + 3600), true);
 
         UserDetails userDetails = mock(UserDetails.class);
         Authentication authentication = mock(Authentication.class);

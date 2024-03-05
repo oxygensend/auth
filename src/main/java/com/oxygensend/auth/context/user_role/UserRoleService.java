@@ -6,6 +6,7 @@ import com.oxygensend.auth.domain.exception.MissingUserException;
 import com.oxygensend.auth.domain.exception.RoleAlreadyExistsException;
 import com.oxygensend.auth.domain.exception.RoleNotAssignedException;
 import com.oxygensend.auth.infrastructure.settings.UserRoleEndpointEnabled;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class UserRoleService {
         var newRole = request.role();
 
         user.roles().stream()
-            .filter(role -> role == newRole)
+            .filter(role -> Objects.equals(role, newRole))
             .findAny()
             .ifPresentOrElse(
                     role -> {
@@ -40,7 +41,7 @@ public class UserRoleService {
         var roleToRemove = request.role();
 
         user.roles().stream()
-            .filter(role -> role == roleToRemove)
+            .filter(role -> Objects.equals(role, roleToRemove))
             .findAny()
             .ifPresentOrElse(
                     role -> {

@@ -1,7 +1,7 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:27017/dams_db
+      uri: mongodb://localhost:27017/auth
 
 eureka:
   client:
@@ -27,3 +27,5 @@ auth:
   settings:
     sign-in:
       account-activation: none
+
+

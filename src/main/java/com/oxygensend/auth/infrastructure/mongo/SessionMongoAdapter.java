@@ -2,8 +2,10 @@ package com.oxygensend.auth.infrastructure.mongo;
 
 import com.oxygensend.auth.domain.DataSourceObjectAdapter;
 import com.oxygensend.auth.domain.Session;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+@Profile("mongo")
 @Component
 final class SessionMongoAdapter implements DataSourceObjectAdapter<Session, SessionMongo> {
     @Override

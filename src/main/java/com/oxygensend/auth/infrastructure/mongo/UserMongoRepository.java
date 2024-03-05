@@ -6,8 +6,10 @@ import com.oxygensend.auth.domain.User;
 import com.oxygensend.auth.domain.UserRepository;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
+@Profile("mongo")
 @Repository
 public class UserMongoRepository implements UserRepository {
 

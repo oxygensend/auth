@@ -30,21 +30,21 @@ public class UserRoleServiceTest {
     public void addRoleToUser_roleNotExists_addsRole() {
         // Arrange
         var user = UserMother.getRandom();
-        var request = new UserRoleRequest(user.id(), UserRole.ROLE_ADMIN);
+        var request = new UserRoleRequest(user.id(), "ROLE_ADMIN");
         when(userRepository.findById(user.id())).thenReturn(Optional.of(user));
 
         // Act
         userRoleService.addRoleToUser(request);
 
         // Assert
-        verify(userRepository, times(1)).save(user.withNewRole(UserRole.ROLE_ADMIN));
+        verify(userRepository, times(1)).save(user.withNewRole("ROLE_ADMIN"));
     }
 
     @Test
     public void addRoleToUser_roleExists_throwsException() {
         // Arrange
-        var user = UserMother.getRandom().withNewRole(UserRole.ROLE_ADMIN);
-        var request = new UserRoleRequest(user.id(), UserRole.ROLE_ADMIN);
+        var user = UserMother.getRandom().withNewRole("ROLE_ADMIN");
+        var request = new UserRoleRequest(user.id(), "ROLE_ADMIN");
         when(userRepository.findById(user.id())).thenReturn(Optional.of(user));
 
         // Act & Assert
@@ -54,22 +54,22 @@ public class UserRoleServiceTest {
     @Test
     public void removeRoleFromUser_roleExists_removesRole() {
         // Arrange
-        var user = UserMother.getRandom().withNewRole(UserRole.ROLE_ADMIN);
-        var request = new UserRoleRequest(user.id(), UserRole.ROLE_ADMIN);
+        var user = UserMother.getRandom().withNewRole("ROLE_ADMIN");
+        var request = new UserRoleRequest(user.id(), "ROLE_ADMIN");
         when(userRepository.findById(user.id())).thenReturn(Optional.of(user));
 
         // Act
         userRoleService.removeRoleFromUser(request);
 
         // Assert
-        verify(userRepository, times(1)).save(user.withoutRole(UserRole.ROLE_ADMIN));
+        verify(userRepository, times(1)).save(user.withoutRole("ROLE_ADMIN"));
     }
 
     @Test
     public void removeRoleFromUser_roleNotExists_throwsException() {
         // Arrange
         var user = UserMother.getRandom();
-        var request = new UserRoleRequest(user.id(), UserRole.ROLE_ADMIN);
+        var request = new UserRoleRequest(user.id(), "ROLE_ADMIN");
         when(userRepository.findById(user.id())).thenReturn(Optional.of(user));
 
         // Act & Assert
