@@ -1,14 +1,12 @@
 package com.oxygensend.auth.context.user;
 
-import com.oxygensend.auth.context.SendMailCommand;
 import com.oxygensend.auth.context.auth.AuthenticationFacade;
-import com.oxygensend.auth.context.jwt.JwtFacade;
-import com.oxygensend.auth.context.jwt.payload.EmailVerificationTokenPayload;
-import com.oxygensend.auth.context.jwt.payload.PasswordResetTokenPayload;
 import com.oxygensend.auth.context.auth.request.PasswordChangeRequest;
 import com.oxygensend.auth.context.auth.request.PasswordResetRequest;
 import com.oxygensend.auth.context.auth.request.VerifyEmailRequest;
-import com.oxygensend.auth.domain.NotificationRepository;
+import com.oxygensend.auth.context.jwt.JwtFacade;
+import com.oxygensend.auth.context.jwt.payload.EmailVerificationTokenPayload;
+import com.oxygensend.auth.context.jwt.payload.PasswordResetTokenPayload;
 import com.oxygensend.auth.domain.TokenType;
 import com.oxygensend.auth.domain.UserRepository;
 import com.oxygensend.auth.domain.exception.MissingUserException;
@@ -19,16 +17,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import static com.oxygensend.auth.domain.NotificationMessages.EMAIL_VERIFICATION_MESSAGE;
-import static com.oxygensend.auth.domain.NotificationMessages.EMAIL_VERIFICATION_SUBJECT;
-import static com.oxygensend.auth.domain.NotificationMessages.PASSWORD_RESET_MESSAGE;
-import static com.oxygensend.auth.domain.NotificationMessages.PASSWORD_RESET_SUBJECT;
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository repository;
-    private final NotificationRepository notificationRepository;
     private final JwtFacade jwtFacade;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationFacade authenticationFacade;
@@ -54,8 +46,11 @@ public class UserService {
         repository.save(user.unblocked());
     }
 
-    public void generatePasswordResetToken(UUID userId) {
-        generateAndSendToken(userId, TokenType.PASSWORD_RESET, PASSWORD_RESET_SUBJECT, PASSWORD_RESET_MESSAGE);
+    public String generatePasswordResetToken(UUID userId) {
+        var user = repository.findById(userId)
+                             .orElseThrow(() -> UserNotFoundException.withId(userId));
+
+        return jwtFacade.generateToken(user, TokenType.PASSWORD_RESET);
     }
 
     public void resetPassword(PasswordResetRequest request) {
@@ -78,20 +73,12 @@ public class UserService {
         repository.save(user.withNewPassword(newPassword));
     }
 
-    public void generateEmailVerificationToken(UUID userId) {
-        generateAndSendToken(userId, TokenType.EMAIL_VERIFICATION, EMAIL_VERIFICATION_SUBJECT, EMAIL_VERIFICATION_MESSAGE);
-    }
-
-
-    private void generateAndSendToken(UUID userId, TokenType tokenType, String subject, String message) {
+    public String generateEmailVerificationToken(UUID userId) {
         var user = repository.findById(userId)
                              .orElseThrow(() -> UserNotFoundException.withId(userId));
 
-        var token = jwtFacade.generateToken(user, tokenType);
-        var command = new SendMailCommand(user, subject, message.formatted(token));
-        notificationRepository.sendMail(command);
+        return jwtFacade.generateToken(user, TokenType.EMAIL_VERIFICATION);
     }
-
 
     public void verifyEmail(VerifyEmailRequest request) {
         var token = (EmailVerificationTokenPayload) jwtFacade.validateToken(request.token(), TokenType.EMAIL_VERIFICATION);

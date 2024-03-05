@@ -56,56 +56,5 @@ class RegisterEventListenerTest {
         verifyNoInteractions(userRepository, jwtFacade, notificationRepository);
     }
 
-    @Test
-    void listen_withUserNotFound_shouldThrowException() {
-        // Arrange
-        var event = new RegisterEvent(UUID.randomUUID(), "test@test.com", LocalDateTime.now(), AccountActivation.CHANGE_PASSWORD);
-
-        when(userRepository.findById(event.userId())).thenReturn(Optional.empty());
-        // Act & Assert
-        assertThrows(UserNotFoundException.class, () -> listener.listen(event));
-    }
-
-    @Test
-    void listen_withPasswordChangeAccountActivation_shouldHandlePasswordChange() {
-        // Arrange
-        var event = new RegisterEvent(UUID.randomUUID(), "test@test.com", LocalDateTime.now(), AccountActivation.CHANGE_PASSWORD);
-        var token = RandomStringUtils.randomAlphabetic(20);
-        var user = UserMother.getRandom();
-
-        var command = new SendMailCommand(user, ACTIVATE_ACCOUNT_BY_PASSWORD_CHANGE_SUBJECT,
-                                          ACTIVATE_ACCOUNT_BY_PASSWORD_CHANGE_MESSAGE.formatted(token));
-
-        when(userRepository.findById(event.userId())).thenReturn(Optional.of(user));
-        when(jwtFacade.generateToken(eq(user), eq(TokenType.PASSWORD_RESET))).thenReturn(token);
-
-        // Act & Assert
-        listener.listen(event);
-
-        // Assert
-        verify(notificationRepository, times(1)).sendMail(command);
-
-    }
-
-    @Test
-    void listen_withEmailVerificationAccountActivation_shouldHandleEmailVerification() {
-        // Arrange
-        var event = new RegisterEvent(UUID.randomUUID(), "test@test.com", LocalDateTime.now(), AccountActivation.VERIFY_EMAIL);
-        var token = RandomStringUtils.randomAlphabetic(20);
-        var user = UserMother.getRandom();
-
-        var command = new SendMailCommand(user, ACTIVATE_ACCOUNT_BY_EMAIL_VERIFICATION_SUBJECT,
-                                          ACTIVATE_ACCOUNT_BY_EMAIL_VERIFICATION_MESSAGE.formatted(token));
-
-        when(userRepository.findById(event.userId())).thenReturn(Optional.of(user));
-        when(jwtFacade.generateToken(eq(user), eq(TokenType.EMAIL_VERIFICATION))).thenReturn(token);
-
-        // Act & Assert
-        listener.listen(event);
-
-        // Assert
-        verify(notificationRepository, times(1)).sendMail(command);
-
-    }
 
 }

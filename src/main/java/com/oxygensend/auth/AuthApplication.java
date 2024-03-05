@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
-@Import( {ExceptionConfiguration.class, CommonFeignConfiguration.class})
+@Import( {ExceptionConfiguration.class})
 public class AuthApplication {
 
     public static void main(String[] args) {

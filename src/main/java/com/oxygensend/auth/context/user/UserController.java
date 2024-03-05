@@ -78,17 +78,17 @@ class UserController {
     @Operation(summary = USER_GENERATE_EMAIL_VERIFICATION_TOKEN_API_DESCRIPTION)
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/generate_email_verification_token")
-    DefaultView generateEmailVerificationToken(@Validated @RequestBody UserIdRequest request) {
-        service.generateEmailVerificationToken(request.id());
-        return DefaultView.of("Email verification token successfully generated");
+    TokenView generateEmailVerificationToken(@Validated @RequestBody UserIdRequest request) {
+        var token = service.generateEmailVerificationToken(request.id());
+        return new TokenView(token);
     }
 
     @Operation(summary = USER_GENERATE_PASSWORD_RESET_TOKEN_API_DESCRIPTION)
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/generate_password_reset_token")
-    DefaultView generatePasswordResetToken(@Validated @RequestBody UserIdRequest request) {
-        service.generatePasswordResetToken(request.id());
-        return DefaultView.of("Password reset token successfully generated");
+    TokenView generatePasswordResetToken(@Validated @RequestBody UserIdRequest request) {
+        var token = service.generatePasswordResetToken(request.id());
+        return new TokenView(token);
     }
 
     @Operation(summary = USER_RESET_PASSWORD_API_DESCRIPTION)

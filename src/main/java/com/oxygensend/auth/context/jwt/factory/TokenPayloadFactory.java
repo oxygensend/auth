@@ -10,6 +10,5 @@ interface TokenPayloadFactory {
 
     TokenPayload createToken(Date exp, Date iat, User user);
     TokenPayload createToken(Claims claims);
-
     TokenType getType();
 }
