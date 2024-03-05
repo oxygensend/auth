@@ -11,6 +11,9 @@ spring:
     name: auth-service
   profiles:
     active: mongo
+  threads:
+    virtual:
+      enabled: true
 
 
 eureka:
