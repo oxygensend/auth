@@ -1,6 +1,6 @@
 package com.oxygensend.auth.context;
 
-import com.oxygensend.auth.domain.IdentityType;
+import com.oxygensend.auth.config.IdentityType;
 import com.oxygensend.auth.domain.User;
 import org.junit.jupiter.api.Test;
 

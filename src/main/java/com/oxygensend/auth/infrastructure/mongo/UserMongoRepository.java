@@ -1,7 +1,7 @@
 package com.oxygensend.auth.infrastructure.mongo;
 
 import com.oxygensend.auth.config.properties.SettingsProperties;
-import com.oxygensend.auth.domain.IdentityType;
+import com.oxygensend.auth.config.IdentityType;
 import com.oxygensend.auth.domain.User;
 import com.oxygensend.auth.domain.UserRepository;
 import java.util.Optional;

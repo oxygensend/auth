@@ -1,7 +1,7 @@
 package com.oxygensend.auth.config.properties;
 
 import com.oxygensend.auth.domain.AccountActivation;
-import com.oxygensend.auth.domain.IdentityType;
+import com.oxygensend.auth.config.IdentityType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
