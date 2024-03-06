@@ -22,10 +22,6 @@ class RegisterEventListenerTest {
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private NotificationRepository notificationRepository;
-
-
     @InjectMocks
     private RegisterEventListener listener;
 
@@ -33,11 +29,11 @@ class RegisterEventListenerTest {
     @Test
     void listen_withUnsupportedAccountActivation_shouldReturn() {
         // Arrange
-        var event = new RegisterEvent(UUID.randomUUID(), "test@test.com", LocalDateTime.now(), AccountActivation.NONE);
+        var event = new RegisterEvent(UUID.randomUUID(), "test@test.com", AccountActivation.NONE);
 
         // Act & Assert
         listener.listen(event);
-        verifyNoInteractions(userRepository, jwtFacade, notificationRepository);
+        verifyNoInteractions(userRepository, jwtFacade);
     }
 
 

@@ -14,8 +14,7 @@ final class RegisterEventListener {
 
     @EventListener
     public void listen(RegisterEvent event) {
-        // TODO implement logic
-        log.info("Handling register event: {}", event);
+        log.info("Ignoring register event: {}", event);
     }
 
 }

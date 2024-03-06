@@ -1,5 +1,6 @@
 package com.oxygensend.auth.context.auth;
 
+import com.oxygensend.auth.config.IdentityType;
 import com.oxygensend.auth.config.properties.SettingsProperties;
 import com.oxygensend.auth.context.IdentityProvider;
 import com.oxygensend.auth.context.auth.request.AuthenticationRequest;
@@ -10,17 +11,16 @@ import com.oxygensend.auth.context.auth.response.ValidationResponse;
 import com.oxygensend.auth.context.jwt.JwtFacade;
 import com.oxygensend.auth.context.jwt.payload.RefreshTokenPayload;
 import com.oxygensend.auth.domain.AccountActivation;
-import com.oxygensend.auth.config.IdentityType;
 import com.oxygensend.auth.domain.TokenType;
 import com.oxygensend.auth.domain.User;
 import com.oxygensend.auth.domain.UserRepository;
 import com.oxygensend.auth.domain.event.EventPublisher;
+import com.oxygensend.auth.domain.event.EventWrapper;
 import com.oxygensend.auth.domain.event.RegisterEvent;
 import com.oxygensend.auth.domain.exception.SessionExpiredException;
 import com.oxygensend.auth.domain.exception.TokenException;
 import com.oxygensend.auth.domain.exception.UnauthorizedException;
 import com.oxygensend.auth.domain.exception.UserAlreadyExistsException;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -77,7 +77,8 @@ public class AuthService {
                        .build();
 
         userRepository.save(user);
-        eventPublisher.publish(new RegisterEvent(user.id(), user.email(), LocalDateTime.now(), signInProperties.accountActivation()));
+
+        publishRegisterEvent(user);
 
         return sessionManager.prepareSession(user);
     }
@@ -119,4 +120,8 @@ public class AuthService {
         return new ValidationResponse(isAuthorized, userId, authorities);
     }
 
+    private void publishRegisterEvent(User user) {
+        var event = new RegisterEvent(user.id(), user.email(), signInProperties.accountActivation());
+        eventPublisher.publish(new EventWrapper(event, signInProperties.registerEventTopic()));
+    }
 }

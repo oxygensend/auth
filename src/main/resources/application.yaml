@@ -38,3 +38,19 @@ auth:
     roles:
       - ROLE_USER
       - ROLE_ADMIN
+    event-broker: internal
+
+kafka:
+  securityProtocol: SASL_SSL
+  saslMechanism: SCRAM-SHA-512
+  retry-backoff-in-ms: 100
+  retries: 5
+  ssl:
+    #    keyStore: ${server.ssl.keystore}
+    #    keyStoreType: ${server.ssl.keystoretype}
+    #    keyStorePassword: ${server.ssl.keystorepassword}
+    #    keyPassword: ${server.ssl.keypassword}
+    #    trustStore: ${server.ssl.truststore}
+    #    trustStorePassword: ${server.ssl.truststorepassword}
+    #    trustStoreType: ${server.ssl.truststoretype}
+    enabled: false

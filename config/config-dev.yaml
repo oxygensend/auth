@@ -19,6 +19,14 @@ management:
 auth:
   settings:
     sign-in:
-      account-activation: none
+      account-activation: VERIFY_EMAIL
+      register-event-topic: user-registered
+
+    event-broker: kafka
 
 
+
+
+kafka:
+  bootstrap-servers: localhost:29092
+  security-protocol: PLAINTEXT

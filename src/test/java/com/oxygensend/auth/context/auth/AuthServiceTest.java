@@ -1,5 +1,6 @@
 package com.oxygensend.auth.context.auth;
 
+import com.oxygensend.auth.config.IdentityType;
 import com.oxygensend.auth.config.properties.SettingsProperties;
 import com.oxygensend.auth.context.IdentityProvider;
 import com.oxygensend.auth.context.auth.request.AuthenticationRequest;
@@ -10,13 +11,12 @@ import com.oxygensend.auth.context.auth.response.ValidationResponse;
 import com.oxygensend.auth.context.jwt.JwtFacade;
 import com.oxygensend.auth.context.jwt.payload.RefreshTokenPayload;
 import com.oxygensend.auth.domain.AccountActivation;
-import com.oxygensend.auth.config.IdentityType;
 import com.oxygensend.auth.domain.Session;
 import com.oxygensend.auth.domain.TokenType;
 import com.oxygensend.auth.domain.User;
 import com.oxygensend.auth.domain.UserRepository;
 import com.oxygensend.auth.domain.event.EventPublisher;
-import com.oxygensend.auth.domain.event.RegisterEvent;
+import com.oxygensend.auth.domain.event.EventWrapper;
 import com.oxygensend.auth.domain.exception.SessionExpiredException;
 import com.oxygensend.auth.domain.exception.TokenException;
 import com.oxygensend.auth.domain.exception.UnauthorizedException;
@@ -135,7 +135,7 @@ public class AuthServiceTest {
 
         // Assert
         assertEquals(response, expectedResponse);
-        verify(eventPublisher, times(1)).publish(any(RegisterEvent.class));
+        verify(eventPublisher, times(1)).publish(any(EventWrapper.class));
         verify(userRepository, times(1)).findByUsername(email);
         verify(passwordEncoder, times(1)).encode(password);
         verify(userRepository, times(1)).save(any(User.class));
