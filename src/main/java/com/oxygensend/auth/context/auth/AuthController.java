@@ -5,6 +5,7 @@ import com.oxygensend.auth.context.auth.request.AuthenticationRequest;
 import com.oxygensend.auth.context.auth.request.RefreshTokenRequest;
 import com.oxygensend.auth.context.auth.request.RegisterRequest;
 import com.oxygensend.auth.context.auth.response.AuthenticationResponse;
+import com.oxygensend.auth.context.auth.response.RegisterResponse;
 import com.oxygensend.auth.context.auth.response.ValidationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,7 +43,7 @@ class AuthController {
     @Operation(summary = REGISTER_API_DESCRIPTION)
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    AuthenticationResponse register(@RequestBody @Validated RegisterRequest request) {
+    RegisterResponse register(@RequestBody @Validated RegisterRequest request) {
         return authService.register(request);
     }
 

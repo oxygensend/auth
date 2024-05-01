@@ -16,6 +16,7 @@ record UserMongo(@Id UUID id,
                  String password,
                  Boolean locked,
                  Set<String> roles,
-                 boolean verified) {
+                 boolean verified,
+                 String businessId) {
 
 }

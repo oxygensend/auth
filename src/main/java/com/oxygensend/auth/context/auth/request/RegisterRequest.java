@@ -10,10 +10,11 @@ import java.util.Set;
 
 public record RegisterRequest(@NotNull @ValidIdentity String identity,
                               @Size(min = 4, max = 64) @NotBlank String password,
-                              @NotEmpty Set<@ValidRole String> roles) {
+                              @NotEmpty Set<@ValidRole String> roles,
+                              String businessId) {
 
     public RegisterRequest(String identity, String password) {
-        this(identity, password, Set.of("ROLE_USER"));
+        this(identity, password, Set.of("ROLE_USER"), null);
     }
 
     public RegisterRequest {

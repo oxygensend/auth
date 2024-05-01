@@ -1,11 +1,11 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:27017/auth
+      uri: mongodb://localhost:27018/auth
 
 eureka:
   client:
-    enabled: false
+    enabled: true
 
 jwt:
   secretKey: '614E645267556B58703273357638792F413F4428472B4B6250655368566D597133743677397A244326452948404D635166546A576E5A7234753778214125442A'
@@ -20,7 +20,11 @@ auth:
   settings:
     sign-in:
       account-activation: VERIFY_EMAIL
-      register-event-topic: user-registered
+      register-event-topic: outsource-me-api-user-registered
+    roles:
+      - ROLE_DEVELOPER
+      - ROLE_PRINCIPLE
+      - ROLE_ADMIN
 
     event-broker: kafka
 

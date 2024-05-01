@@ -7,9 +7,11 @@ import com.oxygensend.auth.context.auth.request.AuthenticationRequest;
 import com.oxygensend.auth.context.auth.request.RefreshTokenRequest;
 import com.oxygensend.auth.context.auth.request.RegisterRequest;
 import com.oxygensend.auth.context.auth.response.AuthenticationResponse;
+import com.oxygensend.auth.context.auth.response.RegisterResponse;
 import com.oxygensend.auth.context.auth.response.ValidationResponse;
 import com.oxygensend.auth.context.jwt.JwtFacade;
 import com.oxygensend.auth.context.jwt.payload.RefreshTokenPayload;
+import com.oxygensend.auth.context.user.UserIdProvider;
 import com.oxygensend.auth.domain.AccountActivation;
 import com.oxygensend.auth.domain.Session;
 import com.oxygensend.auth.domain.TokenType;
@@ -74,6 +76,9 @@ public class AuthServiceTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private SettingsProperties settingsProperties;
 
+    @Mock
+    private UserIdProvider userIdProvider;
+
 
     @Test
     public void testAuthenticate_ValidCredentials() {
@@ -120,18 +125,21 @@ public class AuthServiceTest {
         String email = "test@example.com";
         String password = "password";
         RegisterRequest request = new RegisterRequest(email, password);
-        AuthenticationResponse expectedResponse = new AuthenticationResponse("access_token", "refresh_token");
+        UUID id = UUID.randomUUID();
+        RegisterResponse expectedResponse = new RegisterResponse(id, "access_token", "refresh_token");
+        AuthenticationResponse sessionReponse = new AuthenticationResponse("access_token", "refresh_token");
 
         when(settingsProperties.signIn().accountActivation()).thenReturn(AccountActivation.NONE);
         when(passwordEncoder.encode(password)).thenReturn("encoded_password");
         when(userRepository.findByUsername(email)).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(mock(User.class));
-        when(sessionManager.prepareSession(any(User.class))).thenReturn(expectedResponse);
+        when(sessionManager.prepareSession(any(User.class))).thenReturn(sessionReponse);
         when(identityProvider.getIdentityType()).thenReturn(IdentityType.EMAIL);
+        when(userIdProvider.get()).thenReturn(id);
 
 
         // Act
-        AuthenticationResponse response = authService.register(request);
+        RegisterResponse response = authService.register(request);
 
         // Assert
         assertEquals(response, expectedResponse);

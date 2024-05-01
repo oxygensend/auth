@@ -7,9 +7,11 @@ import com.oxygensend.auth.context.auth.request.AuthenticationRequest;
 import com.oxygensend.auth.context.auth.request.RefreshTokenRequest;
 import com.oxygensend.auth.context.auth.request.RegisterRequest;
 import com.oxygensend.auth.context.auth.response.AuthenticationResponse;
+import com.oxygensend.auth.context.auth.response.RegisterResponse;
 import com.oxygensend.auth.context.auth.response.ValidationResponse;
 import com.oxygensend.auth.context.jwt.JwtFacade;
 import com.oxygensend.auth.context.jwt.payload.RefreshTokenPayload;
+import com.oxygensend.auth.context.user.UserIdProvider;
 import com.oxygensend.auth.domain.AccountActivation;
 import com.oxygensend.auth.domain.TokenType;
 import com.oxygensend.auth.domain.User;
@@ -43,10 +45,11 @@ public class AuthService {
     private final SettingsProperties.SignInProperties signInProperties;
     private final EventPublisher eventPublisher;
     private final IdentityProvider identityProvider;
+    private final UserIdProvider userIdProvider;
 
     public AuthService(SessionManager sessionManager, UserRepository userRepository, PasswordEncoder passwordEncoder,
                        AuthenticationManager authenticationManager, JwtFacade jwtFacade, SettingsProperties settingsProperties,
-                       EventPublisher eventPublisher, IdentityProvider identityProvider) {
+                       EventPublisher eventPublisher, IdentityProvider identityProvider, UserIdProvider userIdProvider) {
         this.sessionManager = sessionManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -55,9 +58,10 @@ public class AuthService {
         this.signInProperties = settingsProperties.signIn();
         this.eventPublisher = eventPublisher;
         this.identityProvider = identityProvider;
+        this.userIdProvider = userIdProvider;
     }
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    public RegisterResponse register(RegisterRequest request) {
         userRepository.findByUsername(request.identity()).ifPresent(user -> {
             throw new UserAlreadyExistsException();
         });
@@ -67,20 +71,23 @@ public class AuthService {
         var email = identityProvider.getIdentityType() == IdentityType.EMAIL ? request.identity() : null;
 
         var user = User.builder()
-                       .id(UUID.randomUUID())
+                       .id(userIdProvider.get())
                        .username(username)
                        .email(email)
                        .password(passwordEncoder.encode(request.password()))
                        .roles(request.roles())
                        .locked(false)
                        .verified(verified)
+                       .businessId(request.businessId())
                        .build();
 
         userRepository.save(user);
 
         publishRegisterEvent(user);
 
-        return sessionManager.prepareSession(user);
+        var tokens = sessionManager.prepareSession(user);
+
+        return new RegisterResponse(user.id(), tokens.accessToken(), tokens.refreshToken());
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -106,18 +113,17 @@ public class AuthService {
         return sessionManager.prepareSession(user);
     }
 
+    public ValidationResponse validateToken(UUID userId, List<GrantedAuthority> authorities) {
+        boolean isAuthorized = userId != null && authorities != null;
+        return new ValidationResponse(isAuthorized, userId, authorities);
+    }
+
     private RefreshTokenPayload getRefreshTokenPayload(String token) {
         var payload = (RefreshTokenPayload) jwtFacade.validateToken(token, TokenType.REFRESH);
         if (payload.exp().before(new Date())) {
             throw new TokenException("Token expired");
         }
         return payload;
-    }
-
-
-    public ValidationResponse validateToken(UUID userId, List<GrantedAuthority> authorities) {
-        boolean isAuthorized = userId != null && authorities != null;
-        return new ValidationResponse(isAuthorized, userId, authorities);
     }
 
     private void publishRegisterEvent(User user) {

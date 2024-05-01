@@ -5,6 +5,7 @@ import com.oxygensend.auth.context.auth.request.AuthenticationRequest;
 import com.oxygensend.auth.context.auth.request.RefreshTokenRequest;
 import com.oxygensend.auth.context.auth.request.RegisterRequest;
 import com.oxygensend.auth.context.auth.response.AuthenticationResponse;
+import com.oxygensend.auth.context.auth.response.RegisterResponse;
 import com.oxygensend.auth.context.auth.response.ValidationResponse;
 import com.oxygensend.auth.domain.exception.UnauthorizedException;
 import com.oxygensend.auth.helper.ValidationResponseMother;
@@ -53,7 +54,7 @@ public class AuthControllerTest {
     @Test
     public void testRegister_Successful() throws Exception {
         // Arrange
-        AuthenticationResponse response = new AuthenticationResponse("accessToken", "refreshToken");
+        RegisterResponse response = new RegisterResponse(UUID.randomUUID(), "accessToken", "refreshToken");
         when(authService.register(any(RegisterRequest.class))).thenReturn(response);
 
         // Act & Assert

@@ -19,14 +19,16 @@ public class AccessTokenPayload extends TokenPayload {
     private final String userId;
     private final Set<String> roles;
     private final boolean verified;
+    private final String businessId;
 
 
-    public AccessTokenPayload(String identity, String userId, Set<String> roles, Date iat, Date exp, boolean verified) {
+    public AccessTokenPayload(String identity, String userId, Set<String> roles, Date iat, Date exp, boolean verified, String businessId) {
         super(TokenType.ACCESS, iat, exp);
         this.identity = identity;
         this.userId = userId;
         this.roles = roles;
         this.verified = verified;
+        this.businessId = businessId;
     }
 
     @Override
@@ -36,7 +38,8 @@ public class AccessTokenPayload extends TokenPayload {
                    .issuedAt(iat)
                    .expiration(exp)
                    .add("type", type)
-                   .add("userId", userId)
+                   .add("id", userId)
+                   .add("businessId", businessId)
                    .add("roles", roles)
                    .add("verified", verified)
                    .build();

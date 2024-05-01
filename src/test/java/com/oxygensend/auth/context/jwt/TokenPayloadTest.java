@@ -17,7 +17,8 @@ public class TokenPayloadTest {
     @Test
     public void test_AccessTokenPayloadToClaims() {
         // Arrange
-        var accessTokenPayload = new AccessTokenPayload("test@tes.com", "1", Set.of("ROLE_ADMIN"), new Date(), new Date(), true);
+        var accessTokenPayload = new AccessTokenPayload("test@tes.com", "1", Set.of("ROLE_ADMIN"), new Date(), new Date(), true,
+                                                        "1234");
 
         // Act
         var claims = accessTokenPayload.toClaims();
@@ -28,8 +29,10 @@ public class TokenPayloadTest {
         assertEquals(claims.getSubject(), accessTokenPayload.identity());
         assertEquals(claims.getIssuedAt().toString(), accessTokenPayload.iat().toString());
         assertEquals(claims.get("type"), accessTokenPayload.type());
-        assertEquals(claims.get("userId"), accessTokenPayload.userId());
+        assertEquals(claims.get("id"), accessTokenPayload.userId());
         assertEquals(claims.get("roles"), accessTokenPayload.roles());
+        assertEquals(claims.get("verified"), accessTokenPayload.verified());
+        assertEquals(claims.get("businessId"), accessTokenPayload.businessId());
     }
 
     @Test
