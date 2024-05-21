@@ -4,6 +4,7 @@ import com.oxygensend.auth.domain.AccountActivation;
 import java.util.UUID;
 
 public record RegisterEvent(UUID userId,
+                            String businessId,
                             String email,
                             AccountActivation accountActivation) implements Event {
 

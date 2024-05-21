@@ -64,7 +64,7 @@ class AuthController {
     @Operation(summary = VALIDATE_TOKEN_API_DESCRIPTION)
     @PostMapping("/validate_token")
     @ResponseStatus(HttpStatus.OK)
-    ValidationResponse validateToken(@RequestAttribute(value = "X-USER-ID", required = false) UUID userId,
+    ValidationResponse validateToken(@RequestAttribute(value = "X-USER-ID", required = false) String userId,
                                      @RequestAttribute(value = "X-AUTHORITIES", required = false) List<GrantedAuthority> authorities) {
         return authService.validateToken(userId, authorities);
     }

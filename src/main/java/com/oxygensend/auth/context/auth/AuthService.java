@@ -25,7 +25,6 @@ import com.oxygensend.auth.domain.exception.UnauthorizedException;
 import com.oxygensend.auth.domain.exception.UserAlreadyExistsException;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -113,9 +112,8 @@ public class AuthService {
         return sessionManager.prepareSession(user);
     }
 
-    public ValidationResponse validateToken(UUID userId, List<GrantedAuthority> authorities) {
-        boolean isAuthorized = userId != null && authorities != null;
-        return new ValidationResponse(isAuthorized, userId, authorities);
+    public ValidationResponse validateToken(String userId, List<GrantedAuthority> authorities) {
+        return new ValidationResponse(userId, authorities);
     }
 
     private RefreshTokenPayload getRefreshTokenPayload(String token) {
@@ -127,7 +125,7 @@ public class AuthService {
     }
 
     private void publishRegisterEvent(User user) {
-        var event = new RegisterEvent(user.id(), user.email(), signInProperties.accountActivation());
+        var event = new RegisterEvent(user.id(), user.businessId(), user.email(), signInProperties.accountActivation());
         eventPublisher.publish(new EventWrapper(event, signInProperties.registerEventTopic()));
     }
 }
