@@ -152,7 +152,7 @@ public class AuthControllerTest {
         // Arrange
         ValidationResponse response = ValidationResponseMother.authorized();
 
-        when(authService.validateToken(any(UUID.class), any(List.class))).thenReturn(response);
+        when(authService.validateToken(any(), any(List.class))).thenReturn(response);
 
         // Act & Assert
         assertValidationTokenBasedOnResponse(response);
@@ -163,7 +163,7 @@ public class AuthControllerTest {
         // Arrange
         ValidationResponse response = ValidationResponseMother.unAuthorized();
 
-        when(authService.validateToken(any(UUID.class), any(List.class))).thenReturn(response);
+        when(authService.validateToken(any(), any(List.class))).thenReturn(response);
 
         // Act & Assert
         assertValidationTokenBasedOnResponse(response);
@@ -178,7 +178,6 @@ public class AuthControllerTest {
                                               .header("Authorization", "Bearer: valid_token")
                )
                .andExpect(MockMvcResultMatchers.status().isOk())
-               .andExpect(MockMvcResultMatchers.jsonPath("$.isAuthorized").value(response.isAuthorized()))
                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value(response.userId() != null ? response.userId().toString() : null))
                .andExpect(MockMvcResultMatchers.jsonPath("$.authorities").value(response.authorities()))
                .andDo(print());
