@@ -27,6 +27,7 @@ public class SecurityConfiguration {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> registry.requestMatchers("/swagger-ui/**",
+                                                                            "/manage/**",
                                                                             "/v3/api-docs/**",
                                                                             "/v1/auth/**",
                                                                             "/v1/users/verify_email",
