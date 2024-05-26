@@ -32,6 +32,7 @@ public class SecurityConfiguration {
                                                                             "/v1/auth/**",
                                                                             "/v1/users/verify_email",
                                                                             "/v1/users/reset_password",
+                                                                            "/v1/users/create",
                                                                             "/v1/users/generate_password_reset_token",
                                                                             "/v1/users/generate_email_verification_token")
                                                            .permitAll()

@@ -107,4 +107,10 @@ class UserController {
         return DefaultView.of("Password successfully changed");
     }
 
+
+    @PostMapping("/create")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void createUser(@Validated @RequestBody CreateUserRequest request) {
+        service.createUser(request);
+    }
 }

@@ -1,6 +1,7 @@
 package com.oxygensend.auth.domain;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Builder;
@@ -18,6 +19,11 @@ public record User(UUID id,
                    boolean verified,
                    String businessId) implements UserDetails {
 
+    public User {
+        if (roles == null) {
+            roles = new HashSet<>();
+        }
+    }
 
     public User withNewRole(String role) {
         roles.add(role);
@@ -38,7 +44,7 @@ public record User(UUID id,
     }
 
     public User withNewPassword(String newPassword) {
-        return new User(id, email, username, newPassword, locked, roles, verified,businessId);
+        return new User(id, email, username, newPassword, locked, roles, verified, businessId);
     }
 
     public User withPasswordReset(String newPassword) {
