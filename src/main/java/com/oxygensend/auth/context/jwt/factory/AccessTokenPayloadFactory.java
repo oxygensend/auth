@@ -26,7 +26,8 @@ final class AccessTokenPayloadFactory implements TokenPayloadFactory {
                 user.roles(),
                 iat,
                 exp,
-                user.verified());
+                user.verified(),
+                user.businessId());
     }
 
     @Override
@@ -37,7 +38,8 @@ final class AccessTokenPayloadFactory implements TokenPayloadFactory {
                 new HashSet<>(((List<String>) claims.get("roles"))),
                 claims.getIssuedAt(),
                 claims.getExpiration(),
-                claims.get("verified", Boolean.class));
+                claims.get("verified", Boolean.class),
+                claims.get("businessId", String.class));
     }
 
     @Override

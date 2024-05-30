@@ -1,29 +1,30 @@
 package com.oxygensend.auth.context.auth;
 
+import com.oxygensend.auth.config.IdentityType;
 import com.oxygensend.auth.config.properties.SettingsProperties;
 import com.oxygensend.auth.context.IdentityProvider;
 import com.oxygensend.auth.context.auth.request.AuthenticationRequest;
 import com.oxygensend.auth.context.auth.request.RefreshTokenRequest;
 import com.oxygensend.auth.context.auth.request.RegisterRequest;
 import com.oxygensend.auth.context.auth.response.AuthenticationResponse;
+import com.oxygensend.auth.context.auth.response.RegisterResponse;
 import com.oxygensend.auth.context.auth.response.ValidationResponse;
 import com.oxygensend.auth.context.jwt.JwtFacade;
 import com.oxygensend.auth.context.jwt.payload.RefreshTokenPayload;
+import com.oxygensend.auth.context.user.UserIdProvider;
 import com.oxygensend.auth.domain.AccountActivation;
-import com.oxygensend.auth.config.IdentityType;
 import com.oxygensend.auth.domain.TokenType;
 import com.oxygensend.auth.domain.User;
 import com.oxygensend.auth.domain.UserRepository;
 import com.oxygensend.auth.domain.event.EventPublisher;
+import com.oxygensend.auth.domain.event.EventWrapper;
 import com.oxygensend.auth.domain.event.RegisterEvent;
 import com.oxygensend.auth.domain.exception.SessionExpiredException;
 import com.oxygensend.auth.domain.exception.TokenException;
 import com.oxygensend.auth.domain.exception.UnauthorizedException;
 import com.oxygensend.auth.domain.exception.UserAlreadyExistsException;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,10 +44,11 @@ public class AuthService {
     private final SettingsProperties.SignInProperties signInProperties;
     private final EventPublisher eventPublisher;
     private final IdentityProvider identityProvider;
+    private final UserIdProvider userIdProvider;
 
     public AuthService(SessionManager sessionManager, UserRepository userRepository, PasswordEncoder passwordEncoder,
                        AuthenticationManager authenticationManager, JwtFacade jwtFacade, SettingsProperties settingsProperties,
-                       EventPublisher eventPublisher, IdentityProvider identityProvider) {
+                       EventPublisher eventPublisher, IdentityProvider identityProvider, UserIdProvider userIdProvider) {
         this.sessionManager = sessionManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -55,9 +57,10 @@ public class AuthService {
         this.signInProperties = settingsProperties.signIn();
         this.eventPublisher = eventPublisher;
         this.identityProvider = identityProvider;
+        this.userIdProvider = userIdProvider;
     }
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    public RegisterResponse register(RegisterRequest request) {
         userRepository.findByUsername(request.identity()).ifPresent(user -> {
             throw new UserAlreadyExistsException();
         });
@@ -67,19 +70,23 @@ public class AuthService {
         var email = identityProvider.getIdentityType() == IdentityType.EMAIL ? request.identity() : null;
 
         var user = User.builder()
-                       .id(UUID.randomUUID())
+                       .id(userIdProvider.get())
                        .username(username)
                        .email(email)
                        .password(passwordEncoder.encode(request.password()))
                        .roles(request.roles())
                        .locked(false)
                        .verified(verified)
+                       .businessId(request.businessId())
                        .build();
 
         userRepository.save(user);
-        eventPublisher.publish(new RegisterEvent(user.id(), user.email(), LocalDateTime.now(), signInProperties.accountActivation()));
 
-        return sessionManager.prepareSession(user);
+        publishRegisterEvent(user);
+
+        var tokens = sessionManager.prepareSession(user);
+
+        return new RegisterResponse(user.id(), tokens.accessToken(), tokens.refreshToken());
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -105,6 +112,10 @@ public class AuthService {
         return sessionManager.prepareSession(user);
     }
 
+    public ValidationResponse validateToken(String userId, List<GrantedAuthority> authorities) {
+        return new ValidationResponse(userId, authorities);
+    }
+
     private RefreshTokenPayload getRefreshTokenPayload(String token) {
         var payload = (RefreshTokenPayload) jwtFacade.validateToken(token, TokenType.REFRESH);
         if (payload.exp().before(new Date())) {
@@ -113,10 +124,8 @@ public class AuthService {
         return payload;
     }
 
-
-    public ValidationResponse validateToken(UUID userId, List<GrantedAuthority> authorities) {
-        boolean isAuthorized = userId != null && authorities != null;
-        return new ValidationResponse(isAuthorized, userId, authorities);
+    private void publishRegisterEvent(User user) {
+        var event = new RegisterEvent(user.id(), user.businessId(), user.email(), signInProperties.accountActivation());
+        eventPublisher.publish(new EventWrapper(event, signInProperties.registerEventTopic()));
     }
-
 }

@@ -18,6 +18,7 @@ final class UserMongoAdapter implements DataSourceObjectAdapter<User, UserMongo>
                    .locked(userMongo.locked())
                    .roles(userMongo.roles())
                    .verified(userMongo.verified())
+                   .businessId(userMongo.businessId())
                    .build();
     }
 
@@ -31,6 +32,7 @@ final class UserMongoAdapter implements DataSourceObjectAdapter<User, UserMongo>
                         .locked(user.locked())
                         .roles(user.roles())
                         .verified(user.verified())
+                        .businessId(user.businessId())
                         .build();
     }
 

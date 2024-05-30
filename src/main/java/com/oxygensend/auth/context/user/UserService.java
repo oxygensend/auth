@@ -1,5 +1,7 @@
 package com.oxygensend.auth.context.user;
 
+import com.oxygensend.auth.config.IdentityType;
+import com.oxygensend.auth.context.IdentityProvider;
 import com.oxygensend.auth.context.auth.AuthenticationFacade;
 import com.oxygensend.auth.context.auth.request.PasswordChangeRequest;
 import com.oxygensend.auth.context.auth.request.PasswordResetRequest;
@@ -8,9 +10,11 @@ import com.oxygensend.auth.context.jwt.JwtFacade;
 import com.oxygensend.auth.context.jwt.payload.EmailVerificationTokenPayload;
 import com.oxygensend.auth.context.jwt.payload.PasswordResetTokenPayload;
 import com.oxygensend.auth.domain.TokenType;
+import com.oxygensend.auth.domain.User;
 import com.oxygensend.auth.domain.UserRepository;
 import com.oxygensend.auth.domain.exception.MissingUserException;
 import com.oxygensend.auth.domain.exception.PasswordMismatchException;
+import com.oxygensend.auth.domain.exception.UserAlreadyExistsException;
 import com.oxygensend.auth.domain.exception.UserNotFoundException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +28,7 @@ public class UserService {
     private final JwtFacade jwtFacade;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationFacade authenticationFacade;
+    private final IdentityProvider identityProvider;
 
     public void delete(UUID userId) {
         if (!repository.existsById(userId)) {
@@ -86,5 +91,23 @@ public class UserService {
                              .orElseThrow(() -> new MissingUserException("User with id %s not found".formatted(token.userId())));
 
         repository.save(user.withEmailVerified());
+    }
+
+    public void createUser(CreateUserRequest request) {
+        repository.findByUsername(request.identity()).ifPresent(user -> {
+            throw new UserAlreadyExistsException();
+        });
+
+        var email = identityProvider.getIdentityType() == IdentityType.EMAIL ? request.identity() : null;
+        var user = User.builder()
+                       .id(request.id())
+                       .businessId(request.businessId())
+                       .email(email)
+                       .password(passwordEncoder.encode(request.password()))
+                       .roles(request.roles())
+                       .verified(request.verified())
+                       .build();
+
+        repository.save(user);
     }
 }

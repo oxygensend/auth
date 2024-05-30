@@ -1,6 +1,7 @@
 package com.oxygensend.auth.domain;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Builder;
@@ -15,8 +16,14 @@ public record User(UUID id,
                    String password,
                    boolean locked,
                    Set<String> roles,
-                   boolean verified) implements UserDetails {
+                   boolean verified,
+                   String businessId) implements UserDetails {
 
+    public User {
+        if (roles == null) {
+            roles = new HashSet<>();
+        }
+    }
 
     public User withNewRole(String role) {
         roles.add(role);
@@ -29,23 +36,23 @@ public record User(UUID id,
     }
 
     public User blocked() {
-        return new User(id, email, username, password, true, roles, verified);
+        return new User(id, email, username, password, true, roles, verified, businessId);
     }
 
     public User unblocked() {
-        return new User(id, email, username, password, false, roles, verified);
+        return new User(id, email, username, password, false, roles, verified, businessId);
     }
 
     public User withNewPassword(String newPassword) {
-        return new User(id, email, username, newPassword, locked, roles, verified);
+        return new User(id, email, username, newPassword, locked, roles, verified, businessId);
     }
 
     public User withPasswordReset(String newPassword) {
-        return new User(id, email, username, newPassword, locked, roles, true);
+        return new User(id, email, username, newPassword, locked, roles, true, businessId);
     }
 
     public User withEmailVerified() {
-        return new User(id, email, username, password, locked, roles, true);
+        return new User(id, email, username, password, locked, roles, true, businessId);
     }
 
     @Override

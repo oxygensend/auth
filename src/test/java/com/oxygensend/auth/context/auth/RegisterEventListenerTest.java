@@ -4,7 +4,6 @@ import com.oxygensend.auth.context.jwt.JwtFacade;
 import com.oxygensend.auth.domain.AccountActivation;
 import com.oxygensend.auth.domain.UserRepository;
 import com.oxygensend.auth.domain.event.RegisterEvent;
-import java.time.LocalDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,10 +21,6 @@ class RegisterEventListenerTest {
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private NotificationRepository notificationRepository;
-
-
     @InjectMocks
     private RegisterEventListener listener;
 
@@ -33,11 +28,11 @@ class RegisterEventListenerTest {
     @Test
     void listen_withUnsupportedAccountActivation_shouldReturn() {
         // Arrange
-        var event = new RegisterEvent(UUID.randomUUID(), "test@test.com", LocalDateTime.now(), AccountActivation.NONE);
+        var event = new RegisterEvent(UUID.randomUUID(), "123", "test@test.com", AccountActivation.NONE);
 
         // Act & Assert
         listener.listen(event);
-        verifyNoInteractions(userRepository, jwtFacade, notificationRepository);
+        verifyNoInteractions(userRepository, jwtFacade);
     }
 
 

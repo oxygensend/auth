@@ -11,15 +11,13 @@ public class ValidationResponseMother {
     public static ValidationResponse authorized() {
         List<GrantedAuthority> grantedAuthorityList = new ArrayList<GrantedAuthority>();
         return new ValidationResponse(
-                true,
-                UUID.randomUUID(),
+                UUID.randomUUID().toString(),
                 grantedAuthorityList
         );
     }
 
     public static ValidationResponse unAuthorized() {
         return new ValidationResponse(
-                false,
                 null,
                 null
         );

@@ -103,7 +103,7 @@ public class JwtAuthenticationFilterTest {
         String jwtToken = "valid_token";
 
         var tokenPayload = new AccessTokenPayload("test@test.com",
-                                                  "id", Set.of("ROLE_ADMIN"), new Date(), new Date(), true);
+                                                  "id", Set.of("ROLE_ADMIN"), new Date(), new Date(), true, "1234");
 
         when(request.getHeader("Authorization")).thenReturn("Bearer " + jwtToken);
         when(jwtFacade.validateToken(jwtToken, TokenType.ACCESS)).thenReturn(tokenPayload);
@@ -123,7 +123,8 @@ public class JwtAuthenticationFilterTest {
         String jwtToken = "valid_token";
 
         var tokenPayload = new AccessTokenPayload("test@test.com",
-                                                  "id", Set.of("ROLE_ADMIN"), new Date(), new Date(System.currentTimeMillis() + 3600), true);
+                                                  "id", Set.of("ROLE_ADMIN"), new Date(), new Date(System.currentTimeMillis() + 3600),
+                                                  true, "1234");
 
         UserDetails userDetails = mock(UserDetails.class);
         Authentication authentication = mock(Authentication.class);
