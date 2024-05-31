@@ -6,12 +6,6 @@
     <springProperty name="maxHistory" scope="context" source="logging.logback.rollingpolicy.max-history" defaultValue="5" />
     <springProperty name="compressionType" scope="context" source="logging.logback.compression-type" defaultValue="zip" />
 
-    <include resource="file-appender.xml" />
-    <include resource="masking-sensitive-data-file-appender.xml" />
-    <root level="INFO">
-        <appender-ref ref="FILE_APPENDER" />
-    </root>
-
     <logger name="com.netflix.eureka.registry.AbstractInstanceRegistry" level="WARN" />
     <logger name="com.netflix.discovery.shared.resolver.aws.ConfigClusterResolver" level="WARN" />
 
@@ -46,6 +40,14 @@
             <pattern>%msg%n</pattern>
         </encoder>
     </appender>
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="ACCESS_LOG_FILE_APPENDER" />
+    </appender>
+
+    <logger name="reactor.netty.http.server.AccessLog" level="INFO" additivity="false">
+        <appender-ref ref="ASYNC" />
+    </logger>
+
 
     <root level="INFO">
         <appender-ref ref="FILE_APPENDER" />
