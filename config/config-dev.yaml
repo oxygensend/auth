@@ -3,6 +3,11 @@ spring:
     mongodb:
       uri: mongodb://localhost:27018/auth
 
+server:
+  tomcat:
+    accesslog:
+      enabled: false
+
 eureka:
   client:
     enabled: false

@@ -38,3 +38,5 @@ mongo
 .mvn
 mvnw
 mvnw.cmd
+
+log/*

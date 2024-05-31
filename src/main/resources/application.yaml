@@ -6,6 +6,11 @@ jwt:
 
 server:
   port: 9002
+  tomcat:
+    accesslog:
+      max-days: 5
+      directory: log/access
+      enabled: true
 spring:
   application:
     name: auth-service
@@ -74,3 +79,10 @@ management:
       base-path: /manage
       exposure:
         include: "health,info"
+
+
+logging:
+  logback:
+    rollingpolicy:
+      max-history: 5
+    compression-type: zip

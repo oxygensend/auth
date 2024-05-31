@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Common Logging configuration -->
+    <springProperty name="logDirectory" scope="context" source="logging.dir" defaultValue="log/" />
+    <springProperty name="maxHistory" scope="context" source="logging.logback.rollingpolicy.max-history" defaultValue="5" />
+    <springProperty name="compressionType" scope="context" source="logging.logback.compression-type" defaultValue="zip" />
+
+    <include resource="file-appender.xml" />
+    <include resource="masking-sensitive-data-file-appender.xml" />
+    <root level="INFO">
+        <appender-ref ref="FILE_APPENDER" />
+    </root>
+
+    <logger name="com.netflix.eureka.registry.AbstractInstanceRegistry" level="WARN" />
+    <logger name="com.netflix.discovery.shared.resolver.aws.ConfigClusterResolver" level="WARN" />
+
+
+    <!-- File log config-->
+    <appender name="FILE_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logDirectory}application.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logDirectory}application.%d{yyyy-MM-dd}.log.${compressionType}</fileNamePattern>
+            <maxHistory>${maxHistory}</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy.MM.dd HH:mm:ss.SSS} %X{Request-Id} [%thread] %-5level %logger{1} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Console log config-->
+    <appender name="CONSOLE_APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy.MM.dd HH:mm:ss.SSS} %X{Request-Id} [%thread] %-5level %logger{1} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Access log config -->
+    <appender name="ACCESS_LOG_FILE_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logDirectory}/access/access.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logDirectory}access.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>${maxHistory}</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="FILE_APPENDER" />
+        <appender-ref ref="CONSOLE_APPENDER" />
+    </root>
+
+</configuration>
