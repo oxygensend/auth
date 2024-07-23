@@ -2,7 +2,7 @@ package com.oxygensend.auth.config;
 
 import com.oxygensend.auth.config.properties.SettingsProperties;
 import com.oxygensend.auth.config.properties.TokenProperties;
-import com.oxygensend.auth.context.IdentityProvider;
+import com.oxygensend.auth.application.IdentityProvider;
 import com.oxygensend.auth.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

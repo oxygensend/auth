@@ -1,7 +1,7 @@
 package com.oxygensend.auth.infrastructure.security;
 
-import com.oxygensend.auth.context.jwt.JwtFacade;
-import com.oxygensend.auth.context.jwt.payload.AccessTokenPayload;
+import com.oxygensend.auth.application.jwt.JwtFacade;
+import com.oxygensend.auth.application.jwt.payload.AccessTokenPayload;
 import com.oxygensend.auth.domain.TokenType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

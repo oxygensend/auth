@@ -1,6 +1,6 @@
 package com.oxygensend.auth.infrastructure.validation;
 
-import com.oxygensend.auth.context.IdentityProvider;
+import com.oxygensend.auth.application.IdentityProvider;
 import jakarta.validation.ConstraintValidatorContext;
 import org.hibernate.validator.internal.constraintvalidators.AbstractEmailValidator;
 
