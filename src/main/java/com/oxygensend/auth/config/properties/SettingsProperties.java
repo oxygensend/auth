@@ -3,11 +3,11 @@ package com.oxygensend.auth.config.properties;
 import com.oxygensend.auth.config.EventBroker;
 import com.oxygensend.auth.config.IdentityType;
 import com.oxygensend.auth.domain.AccountActivation;
+import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.util.Set;
-import javax.annotation.PostConstruct;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 

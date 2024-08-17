@@ -30,9 +30,10 @@ public class AppConfiguration {
                                          .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
+    //FIXME add encryption level to config
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(5);
     }
 
     @Bean
