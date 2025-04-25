@@ -1,7 +1,9 @@
 package com.oxygensend.auth.infrastructure.mongo;
 
-import com.oxygensend.auth.domain.Session;
-import com.oxygensend.auth.domain.SessionRepository;
+import com.oxygensend.auth.domain.model.identity.UserId;
+import com.oxygensend.auth.domain.model.session.Session;
+import com.oxygensend.auth.domain.model.session.SessionId;
+import com.oxygensend.auth.domain.model.session.SessionRepository;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.context.annotation.Profile;
@@ -20,18 +22,25 @@ public class SessionMongoRepository implements SessionRepository {
     }
 
     @Override
+    public SessionId nextIdentity() {
+        return new SessionId(UUID.randomUUID());
+    }
+
+    @Override
     public Session save(Session session) {
         var dataSource = adapter.toDataSource(session);
         return adapter.toDomain(importedSessionRepository.save(dataSource));
     }
 
     @Override
-    public void deleteById(UUID id) {
-        importedSessionRepository.deleteById(id);
+    public void removeByUserId(UserId id) {
+        importedSessionRepository.deleteByUserId(id.value());
     }
 
     @Override
-    public Optional<Session> findById(UUID id) {
-        return importedSessionRepository.findById(id).map(adapter::toDomain);
+    public Optional<Session> sessionOfUserId(UserId userId) {
+        return importedSessionRepository.findByUserId(userId.value()).map(adapter::toDomain);
     }
+
+
 }

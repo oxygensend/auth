@@ -7,5 +7,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Profile("mongo")
 @Document("sessions")
-record SessionMongo(@Id UUID id) {
+record SessionMongo(@Id UUID id,
+                    UUID userId) {
 }

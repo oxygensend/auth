@@ -1,12 +1,13 @@
 package com.oxygensend.auth.application.auth;
 
-import com.oxygensend.auth.application.jwt.JwtFacade;
-import com.oxygensend.auth.application.auth.response.AuthenticationResponse;
-import com.oxygensend.auth.domain.Session;
-import com.oxygensend.auth.domain.SessionRepository;
-import com.oxygensend.auth.domain.TokenType;
-import com.oxygensend.auth.domain.User;
-import com.oxygensend.auth.domain.exception.SessionExpiredException;
+import com.oxygensend.auth.application.token.TokenApplicationService;
+import com.oxygensend.auth.ui.auth.response.AuthenticationResponse;
+import com.oxygensend.auth.domain.model.session.Session;
+import com.oxygensend.auth.domain.model.session.SessionManager;
+import com.oxygensend.auth.domain.model.session.SessionRepository;
+import com.oxygensend.auth.domain.model.token.TokenType;
+import com.oxygensend.auth.domain.model.identity.User;
+import com.oxygensend.auth.domain.model.session.exception.SessionExpiredException;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,7 @@ public class SessionManagerTest {
     private SessionRepository sessionRepository;
 
     @Mock
-    private JwtFacade jwtFacade;
+    private TokenApplicationService jwtFacade;
 
 
     @Test
@@ -45,7 +46,7 @@ public class SessionManagerTest {
         sessionManager.startSession(sessionId);
 
         // Assert
-        verify(sessionRepository, times(1)).deleteById(sessionId);
+        verify(sessionRepository, times(1)).removeByUserId(sessionId);
         verify(sessionRepository, times(1)).save(any(Session.class));
     }
 
@@ -55,14 +56,14 @@ public class SessionManagerTest {
         UUID sessionId = UUID.randomUUID();
         var session = new Session(sessionId);
 
-        when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
+        when(sessionRepository.sessionOfUserId(sessionId)).thenReturn(Optional.of(session));
 
         // Act
         var result = sessionManager.getSession(sessionId);
 
         // Assert
         assertEquals(session, result);
-        verify(sessionRepository, times(1)).findById(sessionId);
+        verify(sessionRepository, times(1)).sessionOfUserId(sessionId);
     }
 
     @Test
@@ -70,11 +71,11 @@ public class SessionManagerTest {
         // Arrange
         UUID sessionId = UUID.randomUUID();
 
-        when(sessionRepository.findById(sessionId)).thenThrow(SessionExpiredException.class);
+        when(sessionRepository.sessionOfUserId(sessionId)).thenThrow(SessionExpiredException.class);
 
         // Act && assert
         assertThrows(SessionExpiredException.class, () -> sessionManager.getSession(sessionId));
-        verify(sessionRepository, times(1)).findById(sessionId);
+        verify(sessionRepository, times(1)).sessionOfUserId(sessionId);
     }
 
 
@@ -92,8 +93,8 @@ public class SessionManagerTest {
         String expectedAccessToken = "valid_access_token";
 
 
-        when(jwtFacade.generateToken(eq(user), eq(TokenType.REFRESH))).thenReturn(expectedRefreshToken);
-        when(jwtFacade.generateToken(eq(user), eq(TokenType.ACCESS))).thenReturn(expectedAccessToken);
+        when(jwtFacade.createToken(eq(user), eq(TokenType.REFRESH))).thenReturn(expectedRefreshToken);
+        when(jwtFacade.createToken(eq(user), eq(TokenType.ACCESS))).thenReturn(expectedAccessToken);
 
         // Act
         AuthenticationResponse response = sessionManager.prepareSession(user);
@@ -101,9 +102,9 @@ public class SessionManagerTest {
         // Assert
         assertEquals(expectedAccessToken, response.accessToken());
         assertEquals(expectedRefreshToken, response.refreshToken());
-        verify(sessionRepository, times(1)).deleteById(any(UUID.class));
+        verify(sessionRepository, times(1)).removeByUserId(any(UUID.class));
         verify(sessionRepository, times(1)).save(any(Session.class));
-        verify(jwtFacade, times(1)).generateToken(eq(user), eq(TokenType.REFRESH));
-        verify(jwtFacade, times(1)).generateToken(eq(user), eq(TokenType.ACCESS));
+        verify(jwtFacade, times(1)).createToken(eq(user), eq(TokenType.REFRESH));
+        verify(jwtFacade, times(1)).createToken(eq(user), eq(TokenType.ACCESS));
     }
 }

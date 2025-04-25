@@ -1,9 +1,10 @@
 package com.oxygensend.auth.infrastructure.security;
 
-import com.oxygensend.auth.application.jwt.JwtFacade;
-import com.oxygensend.auth.application.jwt.payload.AccessTokenPayload;
-import com.oxygensend.auth.domain.TokenType;
-import com.oxygensend.auth.domain.User;
+import com.oxygensend.auth.application.token.TokenApplicationService;
+import com.oxygensend.auth.domain.model.token.payload.AccessTokenPayload;
+import com.oxygensend.auth.domain.model.token.TokenType;
+import com.oxygensend.auth.domain.model.identity.User;
+import com.oxygensend.auth.infrastructure.filters.JwtAuthenticationFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,7 +50,7 @@ public class JwtAuthenticationFilterTest {
     private UserDetailsService userDetailsService;
 
     @Mock
-    private JwtFacade jwtFacade;
+    private TokenApplicationService jwtFacade;
 
     @Mock
     private SecurityContext securityContext;
@@ -106,13 +107,13 @@ public class JwtAuthenticationFilterTest {
                                                   "id", Set.of("ROLE_ADMIN"), new Date(), new Date(), true, "1234");
 
         when(request.getHeader("Authorization")).thenReturn("Bearer " + jwtToken);
-        when(jwtFacade.validateToken(jwtToken, TokenType.ACCESS)).thenReturn(tokenPayload);
+        when(jwtFacade.parseToken(jwtToken, TokenType.ACCESS)).thenReturn(tokenPayload);
 
         // Act
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
         // Assert
-        verify(jwtFacade).validateToken(jwtToken, TokenType.ACCESS);
+        verify(jwtFacade).parseToken(jwtToken, TokenType.ACCESS);
         verify(filterChain).doFilter(request, response);
         verifyNoInteractions(userDetailsService);
     }
@@ -130,8 +131,8 @@ public class JwtAuthenticationFilterTest {
         Authentication authentication = mock(Authentication.class);
 
         when(request.getHeader("Authorization")).thenReturn("Bearer " + jwtToken);
-        when(jwtFacade.validateToken(jwtToken, TokenType.ACCESS)).thenReturn(tokenPayload);
-        when(userDetailsService.loadUserByUsername(tokenPayload.identity())).thenReturn(userDetails);
+        when(jwtFacade.parseToken(jwtToken, TokenType.ACCESS)).thenReturn(tokenPayload);
+        when(userDetailsService.loadUserByUsername(tokenPayload.userName())).thenReturn(userDetails);
         when(userDetails.getAuthorities()).thenReturn(null);
         when(securityContext.getAuthentication()).thenReturn(null);
         doNothing().when(securityContext).setAuthentication(any(Authentication.class));
@@ -140,8 +141,8 @@ public class JwtAuthenticationFilterTest {
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
         // Assert
-        verify(jwtFacade).validateToken(jwtToken, TokenType.ACCESS);
-        verify(userDetailsService).loadUserByUsername(tokenPayload.identity());
+        verify(jwtFacade).parseToken(jwtToken, TokenType.ACCESS);
+        verify(userDetailsService).loadUserByUsername(tokenPayload.userName());
         verify(userDetails, times(2)).getAuthorities();
         verify(securityContext).getAuthentication();
         verify(securityContext).setAuthentication(any(Authentication.class));

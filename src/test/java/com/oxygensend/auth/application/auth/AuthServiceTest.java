@@ -1,28 +1,25 @@
 package com.oxygensend.auth.application.auth;
 
-import com.oxygensend.auth.config.IdentityType;
 import com.oxygensend.auth.config.properties.SettingsProperties;
-import com.oxygensend.auth.application.IdentityProvider;
-import com.oxygensend.auth.application.auth.request.AuthenticationRequest;
-import com.oxygensend.auth.application.auth.request.RefreshTokenRequest;
-import com.oxygensend.auth.application.auth.request.RegisterRequest;
-import com.oxygensend.auth.application.auth.response.AuthenticationResponse;
-import com.oxygensend.auth.application.auth.response.RegisterResponse;
-import com.oxygensend.auth.application.auth.response.ValidationResponse;
-import com.oxygensend.auth.application.jwt.JwtFacade;
-import com.oxygensend.auth.application.jwt.payload.RefreshTokenPayload;
-import com.oxygensend.auth.application.user.UserIdProvider;
-import com.oxygensend.auth.domain.AccountActivation;
-import com.oxygensend.auth.domain.Session;
-import com.oxygensend.auth.domain.TokenType;
-import com.oxygensend.auth.domain.User;
-import com.oxygensend.auth.domain.UserRepository;
+import com.oxygensend.auth.ui.auth.request.AuthenticationRequest;
+import com.oxygensend.auth.ui.auth.request.RefreshTokenRequest;
+import com.oxygensend.auth.ui.auth.request.RegisterRequest;
+import com.oxygensend.auth.ui.auth.response.AuthenticationResponse;
+import com.oxygensend.auth.ui.auth.response.RegisterResponse;
+import com.oxygensend.auth.ui.auth.response.ValidationResponse;
+import com.oxygensend.auth.application.token.TokenApplicationService;
+import com.oxygensend.auth.domain.model.token.payload.RefreshTokenPayload;
+import com.oxygensend.auth.domain.model.AccountActivation;
+import com.oxygensend.auth.domain.model.session.Session;
+import com.oxygensend.auth.domain.model.token.TokenType;
+import com.oxygensend.auth.domain.model.identity.User;
+import com.oxygensend.auth.domain.model.identity.UserRepository;
 import com.oxygensend.auth.domain.event.EventPublisher;
 import com.oxygensend.auth.domain.event.EventWrapper;
-import com.oxygensend.auth.domain.exception.SessionExpiredException;
-import com.oxygensend.auth.domain.exception.TokenException;
-import com.oxygensend.auth.domain.exception.UnauthorizedException;
-import com.oxygensend.auth.domain.exception.UserAlreadyExistsException;
+import com.oxygensend.auth.domain.model.session.exception.SessionExpiredException;
+import com.oxygensend.auth.domain.model.token.TokenException;
+import com.oxygensend.auth.application.UnauthorizedException;
+import com.oxygensend.auth.domain.model.identity.exception.UserAlreadyExistsException;
 import com.oxygensend.auth.helper.ValidationResponseMother;
 import java.util.Date;
 import java.util.Optional;
@@ -63,15 +60,13 @@ public class AuthServiceTest {
     private AuthenticationManager authenticationManager;
 
     @Mock
-    private JwtFacade jwtFacade;
+    private TokenApplicationService jwtFacade;
 
-    @Mock
-    private SessionManager sessionManager;
 
     @Mock
     private EventPublisher eventPublisher;
     @Mock
-    private IdentityProvider identityProvider;
+    private LoginProvider identityProvider;
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private SettingsProperties settingsProperties;
@@ -134,8 +129,7 @@ public class AuthServiceTest {
         when(userRepository.findByUsername(email)).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(mock(User.class));
         when(sessionManager.prepareSession(any(User.class))).thenReturn(sessionReponse);
-        when(identityProvider.getIdentityType()).thenReturn(IdentityType.EMAIL);
-        when(userIdProvider.get()).thenReturn(id);
+        when(identityProvider.getIdentityType()).thenReturn(LoginType.EMAIL);
 
 
         // Act
@@ -182,7 +176,7 @@ public class AuthServiceTest {
         );
         Session session = new Session(id);
 
-        when(jwtFacade.validateToken(anyString(), any(TokenType.class))).thenReturn(refreshTokenPayload);
+        when(jwtFacade.parseToken(anyString(), any(TokenType.class))).thenReturn(refreshTokenPayload);
         when(sessionManager.getSession(id)).thenReturn(session);
         when(userRepository.findById(id)).thenReturn(Optional.of(mock(User.class)));
         when(sessionManager.prepareSession(any(User.class))).thenReturn(expectedResponse);
@@ -192,7 +186,7 @@ public class AuthServiceTest {
 
         // Assert
         assertEquals(response, expectedResponse);
-        verify(jwtFacade, times(1)).validateToken(anyString(), any(TokenType.class));
+        verify(jwtFacade, times(1)).parseToken(anyString(), any(TokenType.class));
         verify(userRepository, times(1)).findById(id);
         verify(sessionManager, times(1)).getSession(id);
         verify(sessionManager, times(1)).prepareSession(any(User.class));
@@ -213,7 +207,7 @@ public class AuthServiceTest {
         );
         Session session = new Session(id);
 
-        when(jwtFacade.validateToken(anyString(), any(TokenType.class))).thenReturn(refreshTokenPayload);
+        when(jwtFacade.parseToken(anyString(), any(TokenType.class))).thenReturn(refreshTokenPayload);
         when(sessionManager.getSession(id)).thenReturn(session);
         when(userRepository.findById(id)).thenReturn(Optional.empty());
 
@@ -235,7 +229,7 @@ public class AuthServiceTest {
                 new Date(System.currentTimeMillis() - 1000)
         );
 
-        when(jwtFacade.validateToken(anyString(), any(TokenType.class))).thenReturn(refreshTokenPayload);
+        when(jwtFacade.parseToken(anyString(), any(TokenType.class))).thenReturn(refreshTokenPayload);
 
         // Act
         assertThrows(TokenException.class, () -> authService.refreshToken(request));

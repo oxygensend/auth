@@ -1,9 +1,10 @@
 package com.oxygensend.auth.application.auth;
 
-import com.oxygensend.auth.application.jwt.JwtFacade;
-import com.oxygensend.auth.domain.AccountActivation;
-import com.oxygensend.auth.domain.UserRepository;
-import com.oxygensend.auth.domain.event.RegisterEvent;
+import com.oxygensend.auth.application.RegisterEventListener;
+import com.oxygensend.auth.application.token.TokenApplicationService;
+import com.oxygensend.auth.domain.model.AccountActivation;
+import com.oxygensend.auth.domain.model.identity.UserRepository;
+import com.oxygensend.auth.domain.model.identity.event.RegisterEvent;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +18,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 class RegisterEventListenerTest {
 
     @Mock
-    private JwtFacade jwtFacade;
+    private TokenApplicationService jwtFacade;
     @Mock
     private UserRepository userRepository;
 

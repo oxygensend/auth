@@ -1,13 +1,13 @@
 package com.oxygensend.auth.application.auth;
 
-import com.oxygensend.auth.application.IdentityProvider;
-import com.oxygensend.auth.application.auth.request.AuthenticationRequest;
-import com.oxygensend.auth.application.auth.request.RefreshTokenRequest;
-import com.oxygensend.auth.application.auth.request.RegisterRequest;
-import com.oxygensend.auth.application.auth.response.AuthenticationResponse;
-import com.oxygensend.auth.application.auth.response.RegisterResponse;
-import com.oxygensend.auth.application.auth.response.ValidationResponse;
-import com.oxygensend.auth.domain.exception.UnauthorizedException;
+import com.oxygensend.auth.ui.auth.AuthController;
+import com.oxygensend.auth.ui.auth.request.AuthenticationRequest;
+import com.oxygensend.auth.ui.auth.request.RefreshTokenRequest;
+import com.oxygensend.auth.ui.auth.request.RegisterRequest;
+import com.oxygensend.auth.ui.auth.response.AuthenticationResponse;
+import com.oxygensend.auth.ui.auth.response.RegisterResponse;
+import com.oxygensend.auth.ui.auth.response.ValidationResponse;
+import com.oxygensend.auth.application.UnauthorizedException;
 import com.oxygensend.auth.helper.ValidationResponseMother;
 import com.oxygensend.commons_jdk.exception.ApiExceptionHandler;
 import java.util.List;
@@ -18,7 +18,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -39,12 +38,10 @@ public class AuthControllerTest {
     private MockMvc mockMvc;
     @Mock
     private AuthService authService;
-    @MockBean
-    private IdentityProvider identityProvider;
 
     @BeforeEach
     public void setUp() {
-        identityProvider = mock(IdentityProvider.class);
+        identityProvider = mock(LoginProvider.class);
         mockMvc = MockMvcBuilders.standaloneSetup(authController)
                                  .setValidator(new LocalValidatorFactoryBean())
                                  .setControllerAdvice(new ApiExceptionHandler())

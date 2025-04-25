@@ -1,6 +1,6 @@
 package com.oxygensend.auth.helper;
 
-import com.oxygensend.auth.domain.User;
+import com.oxygensend.auth.domain.model.identity.User;
 import java.util.List;
 import java.util.UUID;
 import org.assertj.core.util.Sets;

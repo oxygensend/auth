@@ -1,9 +1,10 @@
 package com.oxygensend.auth.config;
 
+import com.oxygensend.auth.application.auth.LoginProvider;
+import com.oxygensend.auth.application.identity.UserService;
 import com.oxygensend.auth.config.properties.SettingsProperties;
 import com.oxygensend.auth.config.properties.TokenProperties;
-import com.oxygensend.auth.application.IdentityProvider;
-import com.oxygensend.auth.domain.UserRepository;
+import com.oxygensend.auth.infrastructure.security.DomainUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +14,6 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -22,36 +22,35 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableConfigurationProperties( {TokenProperties.class, SettingsProperties.class})
 public class AppConfiguration {
 
-    private final UserRepository userRepository;
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByUsername(username)
-                                         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    LoginProvider loginProvider(SettingsProperties settingsProperties) {
+        return new LoginProvider(settingsProperties.identity());
+    }
+    @Bean
+    UserDetailsService userDetailsService(UserService userService, LoginProvider loginProvider) {
+      return new DomainUserDetailsService(userService, loginProvider);
     }
 
     //FIXME add encryption level to config
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(5);
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
 
         return authProvider;
     }
 
-    @Bean
-    public IdentityProvider identityProvider(SettingsProperties settingsProperties) {
-        return new IdentityProvider(settingsProperties.identity());
-    }
+
 }

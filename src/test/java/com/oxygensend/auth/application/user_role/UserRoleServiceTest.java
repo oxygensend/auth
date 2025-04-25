@@ -1,10 +1,13 @@
 package com.oxygensend.auth.application.user_role;
 
 
-import com.oxygensend.auth.domain.UserRepository;
-import com.oxygensend.auth.domain.exception.RoleAlreadyExistsException;
-import com.oxygensend.auth.domain.exception.RoleNotAssignedException;
+import com.oxygensend.auth.application.identity.UserRoleService;
+import com.oxygensend.auth.domain.model.identity.UserRepository;
+import com.oxygensend.auth.domain.model.identity.exception.RoleAlreadyExistsException;
+import com.oxygensend.auth.domain.model.identity.exception.RoleNotAssignedException;
 import com.oxygensend.auth.helper.UserMother;
+import com.oxygensend.auth.ui.user_role.UserRoleRequest;
+
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

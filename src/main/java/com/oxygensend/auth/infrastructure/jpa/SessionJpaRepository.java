@@ -1,7 +1,7 @@
 //package com.oxygensend.auth.infrastructure.jpa;
 //
-//import com.oxygensend.auth.domain.Session;
-//import com.oxygensend.auth.domain.SessionRepository;
+//import com.oxygensend.auth.domain.auth.model.Session;
+//import com.oxygensend.auth.domain.auth.model.SessionRepository;
 //import java.util.Optional;
 //import java.util.UUID;
 //import org.springframework.stereotype.Repository;

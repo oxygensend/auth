@@ -1,7 +1,9 @@
 package com.oxygensend.auth.infrastructure.mongo;
 
 import com.oxygensend.auth.domain.DataSourceObjectAdapter;
-import com.oxygensend.auth.domain.Session;
+import com.oxygensend.auth.domain.model.session.Session;
+import com.oxygensend.auth.domain.model.identity.UserId;
+import com.oxygensend.auth.domain.model.session.SessionId;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -10,11 +12,11 @@ import org.springframework.stereotype.Component;
 final class SessionMongoAdapter implements DataSourceObjectAdapter<Session, SessionMongo> {
     @Override
     public Session toDomain(SessionMongo sessionMongo) {
-        return new Session(sessionMongo.id());
+        return new Session(new SessionId(sessionMongo.id()), new UserId(sessionMongo.userId()));
     }
 
     @Override
     public SessionMongo toDataSource(Session session) {
-        return new SessionMongo(session.id());
+        return new SessionMongo(session.id().value(), session.userId().value());
     }
 }

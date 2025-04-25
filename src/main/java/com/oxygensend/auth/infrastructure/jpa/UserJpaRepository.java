@@ -2,8 +2,8 @@
 //
 //import com.oxygensend.auth.config.properties.SettingsProperties;
 //import com.oxygensend.auth.config.IdentityType;
-//import com.oxygensend.auth.domain.User;
-//import com.oxygensend.auth.domain.UserRepository;
+//import com.oxygensend.auth.domain.model.user.User;
+//import com.oxygensend.auth.domain.model.user.UserRepository;
 //import java.util.Optional;
 //import java.util.UUID;
 //import org.springframework.stereotype.Repository;
@@ -14,12 +14,12 @@
 //    private final ImportedUserRepository importedUserRepository;
 //    private final UserJpaAdapter adapter;
 //
-//    private final IdentityType identity;
+//    private final IdentityType login;
 //
 //    UserJpaRepository(ImportedUserRepository importedUserRepository, UserJpaAdapter userMongoAdapter, SettingsProperties settingsProperties) {
 //        this.importedUserRepository = importedUserRepository;
 //        this.adapter = userMongoAdapter;
-//        this.identity = settingsProperties.identity();
+//        this.login = settingsProperties.login();
 //    }
 //
 //    @Override
@@ -50,7 +50,7 @@
 //
 //    @Override
 //    public Optional<User> findByUsername(String username) {
-//        return switch (identity) {
+//        return switch (login) {
 //            case USERNAME -> importedUserRepository.findByUsername(username).map(adapter::toDomain);
 //            case EMAIL -> importedUserRepository.findByEmail(username).map(adapter::toDomain);
 //        };

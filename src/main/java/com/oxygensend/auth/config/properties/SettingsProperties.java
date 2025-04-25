@@ -1,8 +1,8 @@
 package com.oxygensend.auth.config.properties;
 
 import com.oxygensend.auth.config.EventBroker;
-import com.oxygensend.auth.config.IdentityType;
-import com.oxygensend.auth.domain.AccountActivation;
+import com.oxygensend.auth.application.auth.LoginType;
+import com.oxygensend.auth.domain.model.AccountActivation;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -14,7 +14,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @ConfigurationProperties(prefix = "auth.settings")
 public record SettingsProperties(@Valid SettingsProperties.SignInProperties signIn,
-                                 @NotNull IdentityType identity,
+                                 @NotNull LoginType identity,
                                  @NotEmpty Set<String> roles,
                                  @Valid SettingsProperties.UserRoleProperties userRoleEndpoint,
                                  @NotNull EventBroker eventBroker) {

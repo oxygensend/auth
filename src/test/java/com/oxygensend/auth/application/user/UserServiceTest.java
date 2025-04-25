@@ -1,7 +1,8 @@
 package com.oxygensend.auth.application.user;
 
-import com.oxygensend.auth.domain.UserRepository;
-import com.oxygensend.auth.domain.exception.UserNotFoundException;
+import com.oxygensend.auth.application.identity.UserService;
+import com.oxygensend.auth.domain.model.identity.UserRepository;
+import com.oxygensend.auth.application.UserNotFoundException;
 import com.oxygensend.auth.helper.UserMother;
 import java.util.Optional;
 import java.util.UUID;
