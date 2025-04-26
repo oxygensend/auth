@@ -14,9 +14,10 @@ import org.springframework.stereotype.Repository;
 public class SessionMongoRepository implements SessionRepository {
 
     private final ImportedSessionRepository importedSessionRepository;
-    private final SessionMongoAdapter adapter;
+    private final DataSourceObjectAdapter<Session, SessionMongo> adapter;
 
-    SessionMongoRepository(ImportedSessionRepository importedSessionRepository, SessionMongoAdapter adapter) {
+    SessionMongoRepository(ImportedSessionRepository importedSessionRepository,
+                           DataSourceObjectAdapter<Session, SessionMongo> adapter) {
         this.importedSessionRepository = importedSessionRepository;
         this.adapter = adapter;
     }

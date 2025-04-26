@@ -1,6 +1,6 @@
 package com.oxygensend.auth.domain.model.identity;
 
-import com.oxygensend.auth.application.auth.LoginDto;
+import com.oxygensend.auth.application.settings.LoginDto;
 
 import java.util.Objects;
 

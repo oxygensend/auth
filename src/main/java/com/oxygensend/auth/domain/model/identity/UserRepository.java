@@ -14,7 +14,11 @@ public interface UserRepository {
 
     boolean existsById(UserId uuid);
 
+    boolean existsByEmail(EmailAddress email);
+
+    boolean existsByUsername(Username username);
+
     void deleteById(UserId uuid);
 
-    Optional<User> findByUsername(UserName username);
+    Optional<User> findByUsername(Username username);
 }

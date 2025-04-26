@@ -1,7 +1,7 @@
 package com.oxygensend.auth.infrastructure.event;
 
-import com.oxygensend.auth.domain.event.Event;
-import com.oxygensend.auth.domain.event.EventPublisher;
+import common.event.Event;
+import common.event.EventPublisher;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;

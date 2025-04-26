@@ -1,27 +1,25 @@
 package com.oxygensend.auth.application.token;
 
-import com.oxygensend.auth.config.properties.TokenProperties;
 import com.oxygensend.auth.domain.model.token.TokenService;
 import com.oxygensend.auth.domain.model.token.TokenSubject;
 import com.oxygensend.auth.domain.model.token.TokenType;
-import com.oxygensend.auth.domain.model.token.payload.TokenPayloadFactoryProvider;
 import com.oxygensend.auth.domain.model.token.payload.TokenPayload;
+import com.oxygensend.auth.domain.model.token.payload.TokenPayloadFactoryProvider;
 
 import java.time.Duration;
 import java.util.Date;
 import java.util.Map;
-import org.springframework.stereotype.Service;
 
-@Service
 public class TokenApplicationService {
     private final TokenService tokenService;
     private final TokenPayloadFactoryProvider tokenPayloadFactory;
     private final Map<TokenType, Duration> tokenExpirationMap;
 
-    public TokenApplicationService(TokenService tokenService, TokenProperties tokenProperties, TokenPayloadFactoryProvider tokenPayloadFactory) {
+    public TokenApplicationService(TokenService tokenService, Map<TokenType, Duration> tokenExpirationMap,
+                                   TokenPayloadFactoryProvider tokenPayloadFactory) {
         this.tokenService = tokenService;
         this.tokenPayloadFactory = tokenPayloadFactory;
-        this.tokenExpirationMap = tokenProperties.expiration();
+        this.tokenExpirationMap = tokenExpirationMap;
     }
 
     public String createToken(TokenSubject subject, TokenType tokenType) {

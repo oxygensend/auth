@@ -1,14 +1,14 @@
 package com.oxygensend.auth.domain.model.identity.event;
 
-import com.oxygensend.auth.domain.model.AccountActivation;
-import com.oxygensend.auth.domain.event.Event;
+import com.oxygensend.auth.domain.model.identity.AccountActivationType;
+import common.event.Event;
 
 import java.util.UUID;
 
 public record RegisterEvent(UUID userId,
                             String businessId,
                             String email,
-                            AccountActivation accountActivation) implements Event {
+                            AccountActivationType accountActivation) implements Event {
 
     @Override
     public String name() {

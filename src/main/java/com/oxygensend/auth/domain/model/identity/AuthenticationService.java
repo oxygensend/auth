@@ -3,21 +3,17 @@ package com.oxygensend.auth.domain.model.identity;
 import com.oxygensend.auth.domain.model.identity.exception.BadCredentialsException;
 import com.oxygensend.auth.domain.model.identity.exception.BlockedUserException;
 import com.oxygensend.auth.domain.model.identity.exception.ExpiredCredentialsException;
-import com.oxygensend.auth.domain.model.session.SessionManager;
 import org.springframework.stereotype.Service;
 
 
 @Service
 public class AuthenticationService {
 
-    private final SessionManager sessionManager;
     private final PasswordService passwordService;
     private final UserRepository userRepository;
 
-    public AuthenticationService(SessionManager sessionManager,
-                                 PasswordService passwordService,
-                                 UserRepository userRepository) {
-        this.sessionManager = sessionManager;
+    public AuthenticationService(PasswordService passwordService,
+        UserRepository userRepository) {
         this.passwordService = passwordService;
         this.userRepository = userRepository;
     }
@@ -29,7 +25,7 @@ public class AuthenticationService {
         return authenticate(user, password);
     }
 
-    public UserDescriptor authenticateWithUsername(UserName username, String password) {
+    public UserDescriptor authenticateWithUsername(Username username, String password) {
         var user = userRepository.findByUsername(username)
                                  .orElseThrow(BadCredentialsException::new);
 

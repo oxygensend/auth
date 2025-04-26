@@ -1,11 +1,9 @@
 package com.oxygensend.auth.infrastructure.mongo;
 
-import com.oxygensend.auth.config.properties.SettingsProperties;
-import com.oxygensend.auth.application.auth.LoginType;
 import com.oxygensend.auth.domain.model.identity.EmailAddress;
 import com.oxygensend.auth.domain.model.identity.User;
 import com.oxygensend.auth.domain.model.identity.UserId;
-import com.oxygensend.auth.domain.model.identity.UserName;
+import com.oxygensend.auth.domain.model.identity.Username;
 import com.oxygensend.auth.domain.model.identity.UserRepository;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,14 +15,13 @@ import org.springframework.stereotype.Repository;
 public class UserMongoRepository implements UserRepository {
 
     private final ImportedUserRepository importedUserRepository;
-    private final UserMongoAdapter adapter;
+    private final DataSourceObjectAdapter<User, UserMongo> adapter;
 
-    private final LoginType identity;
 
-    UserMongoRepository(ImportedUserRepository importedUserRepository, UserMongoAdapter userMongoAdapter, SettingsProperties settingsProperties) {
+    UserMongoRepository(ImportedUserRepository importedUserRepository,
+                        DataSourceObjectAdapter<User, UserMongo> userMongoAdapter) {
         this.importedUserRepository = importedUserRepository;
         this.adapter = userMongoAdapter;
-        this.identity = settingsProperties.identity();
     }
 
     @Override
@@ -54,15 +51,22 @@ public class UserMongoRepository implements UserRepository {
     }
 
     @Override
+    public boolean existsByEmail(EmailAddress email) {
+        return importedUserRepository.existsByEmail(email.address());
+    }
+
+    @Override
+    public boolean existsByUsername(Username username) {
+        return importedUserRepository.existsByUsername(username.value());
+    }
+
+    @Override
     public void deleteById(UserId id) {
         importedUserRepository.deleteById(id.value());
     }
 
     @Override
-    public Optional<User> findByUsername(UserName username) {
-        return switch (identity) {
-            case USERNAME -> importedUserRepository.findByUsername(username.value()).map(adapter::toDomain);
-            case EMAIL -> importedUserRepository.findByEmail(username.value()).map(adapter::toDomain);
-        };
+    public Optional<User> findByUsername(Username username) {
+        return importedUserRepository.findByUsername(username.value()).map(adapter::toDomain);
     }
 }

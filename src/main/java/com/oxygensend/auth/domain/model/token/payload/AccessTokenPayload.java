@@ -5,7 +5,7 @@ import com.oxygensend.auth.domain.model.token.TokenType;
 import com.oxygensend.auth.domain.model.identity.BusinessId;
 import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.UserId;
-import com.oxygensend.auth.domain.model.identity.UserName;
+import com.oxygensend.auth.domain.model.identity.Username;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import java.util.Date;
@@ -20,7 +20,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode
 @ToString
 public class AccessTokenPayload extends TokenPayload {
-    private final UserName userName;
+    private final Username username;
     private final UserId userId;
     private final Set<Role> roles;
     private final boolean verified;
@@ -28,7 +28,7 @@ public class AccessTokenPayload extends TokenPayload {
     private final EmailAddress email;
 
 
-    public AccessTokenPayload(UserName userName,
+    public AccessTokenPayload(Username username,
                               UserId userId,
                               Set<Role> roles,
                               Date iat,
@@ -37,7 +37,7 @@ public class AccessTokenPayload extends TokenPayload {
                               BusinessId businessId,
                               EmailAddress email) {
         super(TokenType.ACCESS, iat, exp);
-        this.userName = userName;
+        this.username = username;
         this.userId = userId;
         this.roles = roles;
         this.verified = verified;
@@ -52,11 +52,11 @@ public class AccessTokenPayload extends TokenPayload {
                    .issuedAt(iat)
                    .expiration(exp)
                    .add("type", type)
-                   .add("id", userId)
-                   .add("businessId", businessId)
-                   .add("roles", roles)
+                   .add("userId", userId.value())
+                   .add("businessId", businessId.value())
+                   .add("roles", roles.stream().map(Role::value).toList())
                    .add("verified", verified)
-                   .add("username", userName)
+                   .add("username", username.value())
                    .build();
     }
 }

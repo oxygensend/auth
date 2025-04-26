@@ -1,12 +1,12 @@
 package com.oxygensend.auth.application.token;
 
-import com.oxygensend.auth.config.properties.TokenProperties;
+import com.oxygensend.auth.infrastructure.spring.config.properties.TokenProperties;
 import com.oxygensend.auth.domain.model.token.TokenService;
 import com.oxygensend.auth.domain.model.token.payload.TokenPayloadFactoryProvider;
 import com.oxygensend.auth.domain.model.token.payload.RefreshTokenPayload;
 import com.oxygensend.auth.domain.model.token.payload.TokenPayload;
 import com.oxygensend.auth.domain.model.token.TokenType;
-import com.oxygensend.auth.domain.model.token.TokenException;
+import com.oxygensend.auth.domain.model.token.exception.TokenException;
 import com.oxygensend.auth.helper.TokenHelper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

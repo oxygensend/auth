@@ -26,7 +26,7 @@ public class TokenPayloadTest {
         // Assert
         assertInstanceOf(Claims.class, accessTokenPayload.toClaims());
         assertEquals(claims.getExpiration().toString(), accessTokenPayload.exp().toString());
-        assertEquals(claims.getSubject(), accessTokenPayload.userName());
+        assertEquals(claims.getSubject(), accessTokenPayload.username());
         assertEquals(claims.getIssuedAt().toString(), accessTokenPayload.iat().toString());
         assertEquals(claims.get("type"), accessTokenPayload.type());
         assertEquals(claims.get("id"), accessTokenPayload.userId());

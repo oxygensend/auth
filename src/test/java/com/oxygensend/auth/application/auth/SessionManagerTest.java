@@ -1,7 +1,7 @@
 package com.oxygensend.auth.application.auth;
 
 import com.oxygensend.auth.application.token.TokenApplicationService;
-import com.oxygensend.auth.ui.auth.response.AuthenticationResponse;
+import com.oxygensend.auth.ui.resources.auth.response.AuthenticationResponse;
 import com.oxygensend.auth.domain.model.session.Session;
 import com.oxygensend.auth.domain.model.session.SessionManager;
 import com.oxygensend.auth.domain.model.session.SessionRepository;

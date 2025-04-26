@@ -4,7 +4,7 @@ import com.oxygensend.auth.application.token.TokenApplicationService;
 import com.oxygensend.auth.domain.model.token.payload.AccessTokenPayload;
 import com.oxygensend.auth.domain.model.token.TokenType;
 import com.oxygensend.auth.domain.model.identity.User;
-import com.oxygensend.auth.infrastructure.filters.JwtAuthenticationFilter;
+import com.oxygensend.auth.infrastructure.spring.filters.JwtAuthenticationFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -132,7 +132,7 @@ public class JwtAuthenticationFilterTest {
 
         when(request.getHeader("Authorization")).thenReturn("Bearer " + jwtToken);
         when(jwtFacade.parseToken(jwtToken, TokenType.ACCESS)).thenReturn(tokenPayload);
-        when(userDetailsService.loadUserByUsername(tokenPayload.userName())).thenReturn(userDetails);
+        when(userDetailsService.loadUserByUsername(tokenPayload.username())).thenReturn(userDetails);
         when(userDetails.getAuthorities()).thenReturn(null);
         when(securityContext.getAuthentication()).thenReturn(null);
         doNothing().when(securityContext).setAuthentication(any(Authentication.class));
@@ -142,7 +142,7 @@ public class JwtAuthenticationFilterTest {
 
         // Assert
         verify(jwtFacade).parseToken(jwtToken, TokenType.ACCESS);
-        verify(userDetailsService).loadUserByUsername(tokenPayload.userName());
+        verify(userDetailsService).loadUserByUsername(tokenPayload.username());
         verify(userDetails, times(2)).getAuthorities();
         verify(securityContext).getAuthentication();
         verify(securityContext).setAuthentication(any(Authentication.class));

@@ -7,7 +7,7 @@ import com.oxygensend.auth.domain.model.token.TokenType;
 import com.oxygensend.auth.domain.model.identity.BusinessId;
 import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.UserId;
-import com.oxygensend.auth.domain.model.identity.UserName;
+import com.oxygensend.auth.domain.model.identity.Username;
 import io.jsonwebtoken.Claims;
 import java.util.Date;
 import java.util.HashSet;
@@ -26,7 +26,7 @@ final class AccessTokenPayloadFactory implements TokenPayloadFactory {
             throw new IllegalArgumentException("Invalid token subject type: " + subject.getClass());
         }
         return new AccessTokenPayload(
-            ((AccessTokenSubject) subject).userName(),
+            ((AccessTokenSubject) subject).username(),
                 subject.userId(),
                 ((AccessTokenSubject) subject).roles(),
                 iat,
@@ -40,7 +40,7 @@ final class AccessTokenPayloadFactory implements TokenPayloadFactory {
     @Override
     public TokenPayload createPayload(Claims claims) {
         return new AccessTokenPayload(
-            new UserName(claims.get("username", String.class)),
+            new Username(claims.get("username", String.class)),
             new UserId(claims.get("userId", String.class)),
             new HashSet<>(((List<Role>) claims.get("roles"))),
             claims.getIssuedAt(),

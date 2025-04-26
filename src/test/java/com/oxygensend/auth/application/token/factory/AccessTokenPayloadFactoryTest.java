@@ -55,7 +55,7 @@ public class AccessTokenPayloadFactoryTest {
         AccessTokenPayload accessTokenPayload = (AccessTokenPayload) tokenPayload;
         assertEquals(iatDate, accessTokenPayload.iat());
         assertEquals(expDate, accessTokenPayload.exp());
-        assertEquals(user.email(), accessTokenPayload.userName());
+        assertEquals(user.email(), accessTokenPayload.username());
         assertEquals(user.id().toString(), accessTokenPayload.userId());
         assertEquals(user.roles(), accessTokenPayload.roles());
     }
@@ -78,7 +78,7 @@ public class AccessTokenPayloadFactoryTest {
         AccessTokenPayload accessTokenPayload = (AccessTokenPayload) tokenPayload;
         assertEquals(iatDate, accessTokenPayload.iat());
         assertEquals(expDate, accessTokenPayload.exp());
-        assertEquals("john.doe@example.com", accessTokenPayload.userName());
+        assertEquals("john.doe@example.com", accessTokenPayload.username());
         assertEquals("1", accessTokenPayload.userId());
         assertTrue(accessTokenPayload.roles().contains("ROLE_ADMIN"));
     }

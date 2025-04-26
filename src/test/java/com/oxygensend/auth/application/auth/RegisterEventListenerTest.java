@@ -2,7 +2,7 @@ package com.oxygensend.auth.application.auth;
 
 import com.oxygensend.auth.application.RegisterEventListener;
 import com.oxygensend.auth.application.token.TokenApplicationService;
-import com.oxygensend.auth.domain.model.AccountActivation;
+import com.oxygensend.auth.domain.model.identity.AccountActivationType;
 import com.oxygensend.auth.domain.model.identity.UserRepository;
 import com.oxygensend.auth.domain.model.identity.event.RegisterEvent;
 import java.util.UUID;
@@ -29,7 +29,7 @@ class RegisterEventListenerTest {
     @Test
     void listen_withUnsupportedAccountActivation_shouldReturn() {
         // Arrange
-        var event = new RegisterEvent(UUID.randomUUID(), "123", "test@test.com", AccountActivation.NONE);
+        var event = new RegisterEvent(UUID.randomUUID(), "123", "test@test.com", AccountActivationType.NONE);
 
         // Act & Assert
         listener.listen(event);

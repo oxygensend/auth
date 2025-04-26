@@ -1,6 +1,6 @@
 //package com.oxygensend.auth.infrastructure.jpa;
 //
-//import com.oxygensend.auth.domain.DataSourceObjectAdapter;
+//import com.oxygensend.auth.infrastructure.mongo.DataSourceObjectAdapter;
 //import com.oxygensend.auth.domain.auth.model.Session;
 //import org.springframework.stereotype.Component;
 //

@@ -1,5 +1,7 @@
 package common;
 
+import java.util.Collection;
+
 public final class AssertionConcern {
 
     private AssertionConcern() {
@@ -33,6 +35,11 @@ public final class AssertionConcern {
 
     public static void assertArgumentNotEmpty(String aString, String aMessage) {
         if (aString == null || aString.isEmpty()) {
+            throw new IllegalArgumentException(aMessage);
+        }
+    }
+    public static void assertArgumentNotEmpty(Collection<?> aCollection, String aMessage) {
+        if (aCollection == null || aCollection.isEmpty()) {
             throw new IllegalArgumentException(aMessage);
         }
     }

@@ -1,5 +1,7 @@
 package com.oxygensend.auth.infrastructure.mongo;
 
+import com.oxygensend.auth.domain.model.identity.AccountActivationType;
+
 import java.util.Set;
 import java.util.UUID;
 import lombok.Builder;
@@ -20,6 +22,7 @@ record UserMongo(@Id UUID id,
                  Set<String> roles,
                  Boolean locked,
                  boolean verified,
-                 String businessId) {
+                 String businessId,
+                 AccountActivationType accountActivationType) {
 
 }

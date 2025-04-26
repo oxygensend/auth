@@ -4,7 +4,7 @@ import com.oxygensend.auth.domain.model.identity.BusinessId;
 import com.oxygensend.auth.domain.model.identity.EmailAddress;
 import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.UserId;
-import com.oxygensend.auth.domain.model.identity.UserName;
+import com.oxygensend.auth.domain.model.identity.Username;
 
 import java.util.Set;
 
@@ -12,16 +12,16 @@ public class AccessTokenSubject extends TokenSubject {
    private final BusinessId businessId;
     private final Set<Role> roles;
     private final boolean verified;
-    private final UserName userName;
+    private final Username username;
     private final EmailAddress email;
 
     public AccessTokenSubject(UserId userId, BusinessId businessId, Set<Role> roles, boolean verified,
-                              UserName userName, EmailAddress email) {
+                              Username username, EmailAddress email) {
         super(userId);
         this.businessId = businessId;
         this.roles = roles;
         this.verified = verified;
-        this.userName = userName;
+        this.username = username;
         this.email = email;
     }
 
@@ -35,8 +35,8 @@ public class AccessTokenSubject extends TokenSubject {
         return verified;
     }
 
-    public UserName userName() {
-        return userName;
+    public Username username() {
+        return username;
     }
 
     public EmailAddress email() {

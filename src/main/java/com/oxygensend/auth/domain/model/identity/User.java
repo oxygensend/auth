@@ -1,6 +1,5 @@
 package com.oxygensend.auth.domain.model.identity;
 
-import com.oxygensend.auth.domain.model.AccountActivation;
 import com.oxygensend.auth.domain.model.identity.exception.PasswordMismatchException;
 import com.oxygensend.auth.domain.model.identity.exception.RoleAlreadyExistsException;
 import com.oxygensend.auth.domain.model.identity.exception.RoleNotAssignedException;
@@ -20,44 +19,50 @@ public class User {
     private boolean blocked;
     private boolean verified;
     private BusinessId businessId;
+    private AccountActivationType accountActivationType;
 
     public User(UserId id,
                 Credentials credentials,
                 Set<Role> roles,
                 boolean locked,
                 boolean verified,
-                BusinessId businessId) {
+                BusinessId businessId,
+                AccountActivationType accountActivationType) {
 
         AssertionConcern.assertArgumentNotNull(id, "UserId cannot be null");
         AssertionConcern.assertArgumentNotNull(credentials, "Credentials cannot be null");
         AssertionConcern.assertArgumentNotNull(businessId, "BusinessId cannot be null");
+        AssertionConcern.assertArgumentNotEmpty(roles, "Roles cannot be empty");
+        AssertionConcern.assertArgumentNotNull(accountActivationType, "AccountActivationType cannot be null");
 
         this.id = id;
         this.credentials = credentials;
         this.blocked = locked;
         this.verified = verified;
         this.businessId = businessId;
-        this.roles = roles == null ? Set.of() : Set.copyOf(roles);
+        this.roles = roles;
+        this.accountActivationType = accountActivationType;
     }
 
-    public static User registerNewUser(UserId id,
-                                       Credentials credentials,
-                                       Set<Role> roles,
-                                       BusinessId businessId,
-                                       AccountActivation accountActivation) {
-        boolean isVerified = accountActivation == AccountActivation.NONE;
-        return new User(id, credentials, roles, false, isVerified, businessId);
+    static User registerNewUser(UserId id,
+                                Credentials credentials,
+                                Set<Role> roles,
+                                BusinessId businessId,
+                                AccountActivationType accountActivation) {
+        boolean isVerified = accountActivation == AccountActivationType.NONE;
+        return new User(id, credentials, roles, false, isVerified, businessId, accountActivation);
     }
 
     public UserId id() {
         return id;
     }
+
     public boolean isBlocked() {
         return blocked;
     }
 
-    public UserName userName() {
-        return credentials.userName();
+    public Username username() {
+        return credentials.username();
     }
 
     public EmailAddress email() {
@@ -67,9 +72,11 @@ public class User {
     public Password password() {
         return credentials.password();
     }
+
     public boolean isCredentialsExpired() {
         return !credentials.isNonExpired();
     }
+
     public Credentials credentials() {
         return credentials;
     }
@@ -84,6 +91,10 @@ public class User {
 
     public BusinessId businessId() {
         return businessId;
+    }
+
+    public AccountActivationType accountActivationType() {
+        return accountActivationType;
     }
 
     public void addRole(Role newRole) {

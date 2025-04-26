@@ -42,7 +42,7 @@ auth:
       require-admin-validation: false
       require-email-validation: true
       account-activation: none
-    user-role-endpoint:
+    user-role-feature:
       enabled: true
     identity: email
     roles:

@@ -1,6 +1,6 @@
 package com.oxygensend.auth.helper;
 
-import com.oxygensend.auth.ui.auth.response.ValidationResponse;
+import com.oxygensend.auth.ui.resources.auth.response.ValidationResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

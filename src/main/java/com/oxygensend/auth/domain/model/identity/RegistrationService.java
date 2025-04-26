@@ -1,44 +1,59 @@
 package com.oxygensend.auth.domain.model.identity;
 
+import com.oxygensend.auth.domain.model.identity.exception.UnexpectedRoleException;
 import com.oxygensend.auth.domain.model.identity.exception.UserAlreadyExistsException;
-import com.oxygensend.auth.domain.model.AccountActivation;
-import com.oxygensend.auth.domain.model.session.SessionManager;
-
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
 public class RegistrationService {
 
     private final UserRepository userRepository;
-    private final SessionManager sessionManager;
+    private final RoleRepository roleRepository;
 
-    public RegistrationService(UserRepository userRepository, SessionManager sessionManager) {
+    public RegistrationService(UserRepository userRepository,
+                               RoleRepository roleRepository) {
         this.userRepository = userRepository;
-        this.sessionManager = sessionManager;
+        this.roleRepository = roleRepository;
     }
 
-   public User registerUser(Credentials credentials,
-                      Set<Role> roles,
-                      BusinessId businessId,
-                      AccountActivation accountActivation) {
+    public User registerUser(Credentials credentials,
+                             Set<Role> roles,
+                             BusinessId businessId,
+                             AccountActivationType accountActivation) {
 
-        userRepository.findByEmail(credentials.email()).ifPresent(user -> {
-            throw new UserAlreadyExistsException();
-        });
+        checkIfUserExists(credentials);
+        checkIfRolesExist(roles);
 
         var user = User.registerNewUser(userRepository.nextIdentity(),
                                         credentials,
                                         roles,
                                         businessId,
                                         accountActivation);
-        // TODO: publish event
+        return userRepository.save(user);
+    }
 
-        user = userRepository.save(user);
-        sessionManager.startSession(user.id());
 
-        return user;
+    public void checkIfUserExists(Credentials credentials) {
+        if (userRepository.existsByEmail(credentials.email())) {
+            throw UserAlreadyExistsException.withEmail();
+        }
+
+        if (userRepository.existsByUsername(credentials.username())) {
+            throw UserAlreadyExistsException.withUsername();
+        }
+    }
+
+    private void checkIfRolesExist(Set<Role> roles) {
+        List<Role> notFoundRoles = roles.stream()
+                                        .filter(role -> !roleRepository.exists(role))
+                                        .toList();
+
+        if (!notFoundRoles.isEmpty()) {
+            throw new UnexpectedRoleException(notFoundRoles);
+        }
 
     }
 }

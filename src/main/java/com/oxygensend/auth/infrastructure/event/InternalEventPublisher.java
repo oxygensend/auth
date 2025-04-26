@@ -1,7 +1,7 @@
 package com.oxygensend.auth.infrastructure.event;
 
-import com.oxygensend.auth.domain.event.EventPublisher;
-import com.oxygensend.auth.domain.event.EventWrapper;
+import common.event.EventPublisher;
+import common.event.EventWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;

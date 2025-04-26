@@ -1,6 +1,5 @@
 package com.oxygensend.auth.infrastructure.mongo;
 
-import com.oxygensend.auth.domain.DataSourceObjectAdapter;
 import com.oxygensend.auth.domain.model.session.Session;
 import com.oxygensend.auth.domain.model.identity.UserId;
 import com.oxygensend.auth.domain.model.session.SessionId;

@@ -1,25 +1,29 @@
 package com.oxygensend.auth.application.auth;
 
+import com.oxygensend.auth.application.settings.CurrentAccountActivationType;
+import com.oxygensend.auth.application.settings.LoginDto;
+import com.oxygensend.auth.application.settings.LoginProvider;
 import com.oxygensend.auth.application.token.TokenApplicationService;
-import com.oxygensend.auth.config.properties.SettingsProperties;
-import com.oxygensend.auth.domain.event.EventPublisher;
-import com.oxygensend.auth.domain.event.EventWrapper;
+import common.event.EventPublisher;
+import common.event.EventWrapper;
 import com.oxygensend.auth.domain.model.identity.AuthenticationService;
+import com.oxygensend.auth.domain.model.identity.BusinessId;
 import com.oxygensend.auth.domain.model.identity.Credentials;
 import com.oxygensend.auth.domain.model.identity.EmailAddress;
 import com.oxygensend.auth.domain.model.identity.Password;
 import com.oxygensend.auth.domain.model.identity.PasswordService;
 import com.oxygensend.auth.domain.model.identity.RegistrationService;
+import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.User;
 import com.oxygensend.auth.domain.model.identity.UserDescriptor;
 import com.oxygensend.auth.domain.model.identity.UserId;
-import com.oxygensend.auth.domain.model.identity.UserName;
+import com.oxygensend.auth.domain.model.identity.Username;
 import com.oxygensend.auth.domain.model.identity.event.RegisterEvent;
 import com.oxygensend.auth.domain.model.session.Session;
 import com.oxygensend.auth.domain.model.session.SessionManager;
 import com.oxygensend.auth.domain.model.token.AccessTokenSubject;
 import com.oxygensend.auth.domain.model.token.RefreshTokenSubject;
-import com.oxygensend.auth.domain.model.token.TokenException;
+import com.oxygensend.auth.domain.model.token.exception.TokenException;
 import com.oxygensend.auth.domain.model.token.TokenType;
 import com.oxygensend.auth.domain.model.token.payload.RefreshTokenPayload;
 import org.springframework.stereotype.Service;
@@ -27,58 +31,56 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
 
 @Service
 public class AuthService {
 
     private final TokenApplicationService tokenApplicationService;
-    private final SettingsProperties.SignInProperties signInProperties;
     private final EventPublisher eventPublisher;
     private final AuthenticationService authenticationService;
     private final RegistrationService registrationService;
     private final PasswordService passwordService;
     private final LoginProvider loginProvider;
     private final SessionManager sessionManager;
+    private final CurrentAccountActivationType currentAccountActivationType;
 
-    public AuthService(TokenApplicationService tokenApplicationService, SettingsProperties signInProperties,
+    public AuthService(TokenApplicationService tokenApplicationService,
                        EventPublisher eventPublisher, AuthenticationService authenticationService,
                        RegistrationService registrationService, PasswordService passwordService,
-                       LoginProvider loginProvider, SessionManager sessionManager) {
+                       LoginProvider loginProvider, SessionManager sessionManager,
+                       CurrentAccountActivationType currentAccountActivationType) {
         this.tokenApplicationService = tokenApplicationService;
-        this.signInProperties = signInProperties.signIn();
         this.eventPublisher = eventPublisher;
         this.authenticationService = authenticationService;
         this.registrationService = registrationService;
         this.passwordService = passwordService;
         this.loginProvider = loginProvider;
         this.sessionManager = sessionManager;
+        this.currentAccountActivationType = currentAccountActivationType;
     }
 
 
     @Transactional
     public Map.Entry<UserId, AuthenticationTokensDto> register(RegisterCommand command) {
         var password = Password.fromPlaintext(command.rawPassword(), passwordService);
-        var credentials = new Credentials(command.email(), command.userName(), password);
+        var credentials = new Credentials(command.email(), command.username(), password);
 
         var user = registrationService.registerUser(credentials,
                                                     command.roles(),
                                                     command.businessId(),
-                                                    signInProperties.accountActivation());
-
-        String refreshToken =
-            tokenApplicationService.createToken(new RefreshTokenSubject(user.id()), TokenType.REFRESH);
-
+                                                    currentAccountActivationType.get());
+        sessionManager.startSession(user.id());
         publishRegisterEvent(user);
 
-        // Generate access token
-        var accessToken = tokenApplicationService.createToken(new AccessTokenSubject(user.id(),
-                                                                                     user.businessId(),
-                                                                                     user.roles(),
-                                                                                     user.isVerified(),
-                                                                                     user.userName(),
-                                                                                     user.email()), TokenType.ACCESS);
-        return Map.entry(user.id(), new AuthenticationTokensDto(accessToken, refreshToken));
+        var authenticationTokensDto = generateTokens(user.id(),
+                                                      user.businessId(),
+                                                      user.username(),
+                                                      user.email(),
+                                                      user.roles(),
+                                                      user.isVerified());
+        return Map.entry(user.id(), authenticationTokensDto);
     }
 
     @Transactional
@@ -86,7 +88,12 @@ public class AuthService {
         UserDescriptor userDescriptor = authenticateUser(loginProvider.get(login), password);
         sessionManager.startSession(userDescriptor.userId());
 
-        return generateTokens(userDescriptor);
+        return generateTokens(userDescriptor.userId(),
+                              userDescriptor.businessId(),
+                              userDescriptor.username(),
+                              userDescriptor.email(),
+                              userDescriptor.roles(),
+                              userDescriptor.verified());
     }
 
     @Transactional
@@ -94,28 +101,34 @@ public class AuthService {
         var payload = getRefreshTokenPayload(token);
         Session session = sessionManager.currentSession(payload.userId());
         UserDescriptor userDescriptor = authenticationService.revalidateUser(session.userId());
-        return generateTokens(userDescriptor);
+        return generateTokens(userDescriptor.userId(),
+                              userDescriptor.businessId(),
+                              userDescriptor.username(),
+                              userDescriptor.email(),
+                              userDescriptor.roles(),
+                              userDescriptor.verified());
     }
 
     private UserDescriptor authenticateUser(LoginDto login, String password) {
         return switch (login.type()) {
-            case USERNAME -> authenticationService.authenticateWithUsername(new UserName(login), password);
+            case USERNAME -> authenticationService.authenticateWithUsername(new Username(login), password);
             case EMAIL -> authenticationService.authenticateWithEmail(new EmailAddress(login), password);
         };
     }
 
-    private AuthenticationTokensDto generateTokens(UserDescriptor userDescriptor) {
+    private AuthenticationTokensDto generateTokens(UserId userId, BusinessId businessId,
+                                                   Username userName, EmailAddress email,
+                                                   Set<Role> roles, boolean verified) {
         // Generate refresh token
-        String refreshToken = tokenApplicationService.createToken(new RefreshTokenSubject(userDescriptor.userId()),
-                                                                  TokenType.REFRESH);
+        String refreshToken = tokenApplicationService.createToken(new RefreshTokenSubject(userId), TokenType.REFRESH);
 
         // Generate access token
-        var accessToken = tokenApplicationService.createToken(new AccessTokenSubject(userDescriptor.userId(),
-                                                                                     userDescriptor.businessId(),
-                                                                                     userDescriptor.roles(),
-                                                                                     userDescriptor.verified(),
-                                                                                     userDescriptor.userName(),
-                                                                                     userDescriptor.email()),
+        var accessToken = tokenApplicationService.createToken(new AccessTokenSubject(userId,
+                                                                                     businessId,
+                                                                                     roles,
+                                                                                     verified,
+                                                                                     userName,
+                                                                                     email),
                                                               TokenType.ACCESS);
         return new AuthenticationTokensDto(accessToken, refreshToken);
     }
@@ -123,7 +136,7 @@ public class AuthService {
     private RefreshTokenPayload getRefreshTokenPayload(String token) {
         var payload = (RefreshTokenPayload) tokenApplicationService.parseToken(token, TokenType.REFRESH);
         if (payload.exp().before(new Date())) {
-            throw new TokenException("Token expired");
+            throw new TokenException("Token is expired");
         }
         return payload;
     }
@@ -131,7 +144,7 @@ public class AuthService {
     private void publishRegisterEvent(User user) {
         var event =
             new RegisterEvent(user.id().value(), user.businessId().value(), user.credentials().email().address(),
-                              signInProperties.accountActivation());
-        eventPublisher.publish(new EventWrapper(event, signInProperties.registerEventTopic()));
+                              currentAccountActivationType.get());
+        eventPublisher.publish(new EventWrapper(event, RegisterEvent.class.descriptorString()));
     }
 }

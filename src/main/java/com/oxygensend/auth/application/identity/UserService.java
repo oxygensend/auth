@@ -1,49 +1,58 @@
 package com.oxygensend.auth.application.identity;
 
 import com.oxygensend.auth.application.auth.security.AuthenticationPrinciple;
-import com.oxygensend.auth.application.auth.LoginDto;
+import com.oxygensend.auth.application.settings.LoginDto;
 import com.oxygensend.auth.application.token.TokenApplicationService;
-import com.oxygensend.auth.domain.model.AccountActivation;
-import com.oxygensend.auth.domain.model.identity.EmailAddress;
-import com.oxygensend.auth.domain.model.identity.UserName;
-import com.oxygensend.auth.domain.model.token.EmailVerificationTokenSubject;
-import com.oxygensend.auth.domain.model.token.PasswordResetTokenSubject;
-import com.oxygensend.auth.domain.model.token.payload.EmailVerificationTokenPayload;
-import com.oxygensend.auth.domain.model.token.payload.PasswordResetTokenPayload;
-import com.oxygensend.auth.domain.model.token.TokenType;
-import com.oxygensend.auth.application.MissingUserException;
-import com.oxygensend.auth.domain.model.identity.exception.UserAlreadyExistsException;
-import com.oxygensend.auth.application.UserNotFoundException;
+import com.oxygensend.auth.domain.model.identity.AccountActivationType;
 import com.oxygensend.auth.domain.model.identity.Credentials;
+import com.oxygensend.auth.domain.model.identity.EmailAddress;
 import com.oxygensend.auth.domain.model.identity.Password;
 import com.oxygensend.auth.domain.model.identity.PasswordService;
+import com.oxygensend.auth.domain.model.identity.RegistrationService;
 import com.oxygensend.auth.domain.model.identity.User;
 import com.oxygensend.auth.domain.model.identity.UserId;
 import com.oxygensend.auth.domain.model.identity.UserRepository;
-import lombok.RequiredArgsConstructor;
+import com.oxygensend.auth.domain.model.identity.Username;
+import com.oxygensend.auth.domain.model.identity.exception.UserNotFoundException;
+import com.oxygensend.auth.domain.model.token.EmailVerificationTokenSubject;
+import com.oxygensend.auth.domain.model.token.PasswordResetTokenSubject;
+import com.oxygensend.auth.domain.model.token.TokenType;
+import com.oxygensend.auth.domain.model.token.payload.EmailVerificationTokenPayload;
+import com.oxygensend.auth.domain.model.token.payload.PasswordResetTokenPayload;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
     private final UserRepository repository;
     private final TokenApplicationService tokenApplicationService;
     private final AuthenticationPrinciple authenticationPrinciple;
     private final PasswordService passwordService;
+    private final RegistrationService registrationService;
+
+    public UserService(UserRepository repository, TokenApplicationService tokenApplicationService,
+                       AuthenticationPrinciple authenticationPrinciple, PasswordService passwordService,
+                       RegistrationService registrationService) {
+        this.repository = repository;
+        this.tokenApplicationService = tokenApplicationService;
+        this.authenticationPrinciple = authenticationPrinciple;
+        this.passwordService = passwordService;
+        this.registrationService = registrationService;
+    }
 
     public Optional<User> userByLogin(LoginDto login) {
         return switch (login.type()) {
-            case USERNAME -> repository.findByUsername(new UserName(login));
+            case USERNAME -> repository.findByUsername(new Username(login));
             case EMAIL -> repository.findByEmail(new EmailAddress(login));
         };
     }
+
     @Transactional
     public void delete(UserId userId) {
         if (!repository.existsById(userId)) {
-            throw new UserNotFoundException("User with %s not found".formatted(userId));
+            throw UserNotFoundException.withId(userId);
         }
         repository.deleteById(userId);
     }
@@ -51,7 +60,7 @@ public class UserService {
     @Transactional
     public void block(UserId userId) {
         var user = repository.findById(userId)
-                             .orElseThrow(() -> new UserNotFoundException("User with %s not found".formatted(userId)));
+                             .orElseThrow(() -> UserNotFoundException.withId(userId));
 
         user.block();
         repository.save(user);
@@ -60,7 +69,7 @@ public class UserService {
     @Transactional
     public void unblock(UserId userId) {
         var user = repository.findById(userId)
-                             .orElseThrow(() -> new UserNotFoundException("User with %s not found".formatted(userId)));
+                             .orElseThrow(() -> UserNotFoundException.withId(userId));
 
         user.unblock();
         repository.save(user);
@@ -75,10 +84,11 @@ public class UserService {
 
     @Transactional
     public void resetPassword(String token, String password) {
-        var resetToken = (PasswordResetTokenPayload) tokenApplicationService.parseToken(token, TokenType.PASSWORD_RESET);
+        var resetToken =
+            (PasswordResetTokenPayload) tokenApplicationService.parseToken(token, TokenType.PASSWORD_RESET);
+
         var user = repository.findById(resetToken.userId())
-                             .orElseThrow(() -> new MissingUserException(
-                                 "User with id %s not found".formatted(resetToken.userId())));
+                             .orElseThrow(() -> UserNotFoundException.withId(resetToken.userId()));
 
         user.resetPassword(password, passwordService);
         repository.save(user);
@@ -96,15 +106,16 @@ public class UserService {
         var user = repository.findById(userId)
                              .orElseThrow(() -> UserNotFoundException.withId(userId));
 
-        return tokenApplicationService.createToken(new EmailVerificationTokenSubject(user.id()), TokenType.EMAIL_VERIFICATION);
+        return tokenApplicationService.createToken(new EmailVerificationTokenSubject(user.id()),
+                                                   TokenType.EMAIL_VERIFICATION);
     }
 
     @Transactional
     public void verifyEmail(String token) {
-        var emailToken = (EmailVerificationTokenPayload) tokenApplicationService.parseToken(token, TokenType.EMAIL_VERIFICATION);
+        var emailToken =
+            (EmailVerificationTokenPayload) tokenApplicationService.parseToken(token, TokenType.EMAIL_VERIFICATION);
         var user = repository.findById(emailToken.userId())
-                             .orElseThrow(() -> new MissingUserException(
-                                 "User with id %s not found".formatted(emailToken.userId())));
+                             .orElseThrow(() -> UserNotFoundException.withId(emailToken.userId()));
 
         user.verifyEmail();
         repository.save(user);
@@ -112,21 +123,14 @@ public class UserService {
 
     @Transactional
     public void createUser(CreateUserCommand command) {
-        repository.findByUsername(command.userName()).ifPresent(user -> {
-            throw new UserAlreadyExistsException();
-        });
-
         var credentials = new Credentials(command.email(),
-                                          command.userName(),
+                                          command.username(),
                                           Password.fromHashed(passwordService.encode(command.rawPassword())),
                                           false);
 
-        var user = User.registerNewUser(command.userId(),
-                                        credentials,
-                                        command.roles(),
-                                        command.businessId(),
-                                        AccountActivation.NONE);
-
-        repository.save(user);
+        registrationService.registerUser(credentials,
+                                         command.roles(),
+                                         command.businessId(),
+                                         AccountActivationType.NONE);
     }
 }

@@ -10,4 +10,8 @@ interface ImportedUserRepository extends MongoRepository<UserMongo, UUID> {
     Optional<UserMongo> findByEmail(String email);
 
     Optional<UserMongo> findByUsername(String username);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByUsername(String username);
 }
