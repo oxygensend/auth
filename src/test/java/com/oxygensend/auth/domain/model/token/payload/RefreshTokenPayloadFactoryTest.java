@@ -1,19 +1,19 @@
-package com.oxygensend.auth.application.token.factory;
+package com.oxygensend.auth.domain.model.token.payload;
 
-import com.oxygensend.auth.domain.model.crypto.factory.RefreshTokenPayloadFactory;
-import com.oxygensend.auth.domain.model.token.payload.RefreshTokenPayload;
-import com.oxygensend.auth.domain.model.identity.User;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import com.oxygensend.auth.domain.model.token.RefreshTokenSubject;
+import com.oxygensend.auth.helper.UserMother;
 import io.jsonwebtoken.Claims;
-import java.util.Date;
-import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import java.util.Date;
+import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 public class RefreshTokenPayloadFactoryTest {
@@ -27,12 +27,12 @@ public class RefreshTokenPayloadFactoryTest {
         // Arrange
         Date exp = new Date();
         Date iat = new Date();
-        var user = mock(User.class);
-        when(user.id()).thenReturn(UUID.randomUUID());
+        var user = UserMother.getRandom();
 
 
         // Act
-        RefreshTokenPayload payload = (RefreshTokenPayload) factory.createToken(exp, iat, user);
+        RefreshTokenPayload payload =
+            (RefreshTokenPayload) factory.createPayload(exp, iat, new RefreshTokenSubject(user.id()));
 
         // Assert
         assertEquals(RefreshTokenPayload.class, payload.getClass());
@@ -53,7 +53,7 @@ public class RefreshTokenPayloadFactoryTest {
 
 
         // Act
-        RefreshTokenPayload payload = (RefreshTokenPayload) factory.createToken(claims);
+        RefreshTokenPayload payload = (RefreshTokenPayload) factory.createPayload(claims);
 
         // Assert
         assertEquals(RefreshTokenPayload.class, payload.getClass());

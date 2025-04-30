@@ -1,17 +1,22 @@
-package com.oxygensend.auth.infrastructure.security;
+package com.oxygensend.auth.infrastructure.spring.filters;
+
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import com.oxygensend.auth.application.token.TokenApplicationService;
-import com.oxygensend.auth.domain.model.token.payload.AccessTokenPayload;
-import com.oxygensend.auth.domain.model.token.TokenType;
 import com.oxygensend.auth.domain.model.identity.User;
-import com.oxygensend.auth.infrastructure.spring.filters.JwtAuthenticationFilter;
+import com.oxygensend.auth.domain.model.token.TokenType;
+import com.oxygensend.auth.domain.model.token.payload.AccessTokenPayload;
+import com.oxygensend.auth.helper.UserMother;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.Set;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,13 +29,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import java.util.Date;
 
 @ExtendWith(MockitoExtension.class)
 public class JwtAuthenticationFilterTest {
@@ -63,12 +62,7 @@ public class JwtAuthenticationFilterTest {
     public void setup() {
         SecurityContextHolder.setContext(securityContext);
 
-        user = User.builder()
-                   .id(UUID.randomUUID())
-                   .email("test@test.com")
-                   .password("test123")
-                   .roles(Set.of("ROLE_ADMIN"))
-                   .build();
+        user = UserMother.getRandom();
     }
 
     @Test
@@ -98,13 +92,19 @@ public class JwtAuthenticationFilterTest {
     }
 
     @Test
-    public void testDoFilterInternal_ValidAuthorizationHeader_ExpiredToken() throws ServletException, java.io.IOException {
+    public void testDoFilterInternal_ValidAuthorizationHeader_ExpiredToken()
+        throws ServletException, java.io.IOException {
 
         // Arrange
         String jwtToken = "valid_token";
 
-        var tokenPayload = new AccessTokenPayload("test@test.com",
-                                                  "id", Set.of("ROLE_ADMIN"), new Date(), new Date(), true, "1234");
+        var tokenPayload = new AccessTokenPayload(user.username(),
+                                                  user.id(),
+                                                  user.roles(),
+                                                  new Date(), new Date(),
+                                                  user.isVerified(),
+                                                  user.businessId(),
+                                                  user.email());
 
         when(request.getHeader("Authorization")).thenReturn("Bearer " + jwtToken);
         when(jwtFacade.parseToken(jwtToken, TokenType.ACCESS)).thenReturn(tokenPayload);
@@ -119,20 +119,25 @@ public class JwtAuthenticationFilterTest {
     }
 
     @Test
-    public void testDoFilterInternal_ValidAuthorizationHeader_ValidToken() throws ServletException, java.io.IOException {
+    public void testDoFilterInternal_ValidAuthorizationHeader_ValidToken()
+        throws ServletException, java.io.IOException {
         // Arrange
         String jwtToken = "valid_token";
 
-        var tokenPayload = new AccessTokenPayload("test@test.com",
-                                                  "id", Set.of("ROLE_ADMIN"), new Date(), new Date(System.currentTimeMillis() + 3600),
-                                                  true, "1234");
+        var tokenPayload = new AccessTokenPayload(user.username(),
+                                                  user.id(),
+                                                  user.roles(),
+                                                  new Date(),
+                                                  new Date(System.currentTimeMillis() + 3600),
+                                                  user.isVerified(),
+                                                  user.businessId(),
+                                                  user.email());
 
         UserDetails userDetails = mock(UserDetails.class);
-        Authentication authentication = mock(Authentication.class);
 
         when(request.getHeader("Authorization")).thenReturn("Bearer " + jwtToken);
         when(jwtFacade.parseToken(jwtToken, TokenType.ACCESS)).thenReturn(tokenPayload);
-        when(userDetailsService.loadUserByUsername(tokenPayload.username())).thenReturn(userDetails);
+        when(userDetailsService.loadUserByUsername(tokenPayload.email().address())).thenReturn(userDetails);
         when(userDetails.getAuthorities()).thenReturn(null);
         when(securityContext.getAuthentication()).thenReturn(null);
         doNothing().when(securityContext).setAuthentication(any(Authentication.class));
@@ -142,7 +147,7 @@ public class JwtAuthenticationFilterTest {
 
         // Assert
         verify(jwtFacade).parseToken(jwtToken, TokenType.ACCESS);
-        verify(userDetailsService).loadUserByUsername(tokenPayload.username());
+        verify(userDetailsService).loadUserByUsername(tokenPayload.email().address());
         verify(userDetails, times(2)).getAuthorities();
         verify(securityContext).getAuthentication();
         verify(securityContext).setAuthentication(any(Authentication.class));

@@ -42,7 +42,9 @@ final class AccessTokenPayloadFactory implements TokenPayloadFactory {
         return new AccessTokenPayload(
             new Username(claims.get("username", String.class)),
             new UserId(claims.get("userId", String.class)),
-            new HashSet<>(((List<Role>) claims.get("roles"))),
+            new HashSet<>(((claims.get("roles") instanceof List) ? ((List<?>) claims.get("roles")) : List.of()).stream()
+                .map(role -> new Role(role.toString()))
+                .toList()),
             claims.getIssuedAt(),
             claims.getExpiration(),
             claims.get("verified", Boolean.class),

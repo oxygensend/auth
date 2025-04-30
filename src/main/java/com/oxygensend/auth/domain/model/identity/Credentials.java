@@ -29,6 +29,6 @@ public record Credentials(EmailAddress email,
         return !expired;
     }
     public Username username() {
-        return username != null ? username : new Username(email);
+        return username;
     }
 }

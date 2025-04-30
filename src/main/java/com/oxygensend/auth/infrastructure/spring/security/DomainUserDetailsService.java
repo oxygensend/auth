@@ -22,7 +22,7 @@ public class DomainUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userService.userByLogin(loginProvider.get(username)).orElse(null);
+        User user = userService.userByLogin(loginProvider.get(username)).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         return new org.springframework.security.core.userdetails.User(
             loginProvider.get(user.credentials()).value(),

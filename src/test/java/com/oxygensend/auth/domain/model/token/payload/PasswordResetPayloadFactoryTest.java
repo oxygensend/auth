@@ -1,19 +1,19 @@
-package com.oxygensend.auth.application.token.factory;
+package com.oxygensend.auth.domain.model.token.payload;
 
-import com.oxygensend.auth.domain.model.crypto.factory.PasswordResetTokenPayloadFactory;
-import com.oxygensend.auth.domain.model.token.payload.PasswordResetTokenPayload;
-import com.oxygensend.auth.domain.model.identity.User;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import com.oxygensend.auth.domain.model.token.PasswordResetTokenSubject;
+import com.oxygensend.auth.helper.UserMother;
 import io.jsonwebtoken.Claims;
-import java.util.Date;
-import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import java.util.Date;
+import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 class PasswordResetPayloadFactoryTest {
@@ -27,18 +27,18 @@ class PasswordResetPayloadFactoryTest {
         // Arrange
         Date exp = new Date();
         Date iat = new Date();
-        var user = mock(User.class);
-        when(user.id()).thenReturn(UUID.randomUUID());
+        var user = UserMother.getRandom();
 
 
         // Act
-        PasswordResetTokenPayload payload = (PasswordResetTokenPayload) factory.createToken(exp, iat, user);
+        PasswordResetTokenPayload payload =
+            (PasswordResetTokenPayload) factory.createPayload(exp, iat, new PasswordResetTokenSubject(user.id()));
 
         // Assert
         assertEquals(PasswordResetTokenPayload.class, payload.getClass());
         assertEquals(iat, payload.iat());
         assertEquals(exp, payload.exp());
-        assertEquals(user.id().toString(), payload.userId());
+        assertEquals(user.id(), payload.userId());
     }
 
     @Test
@@ -53,12 +53,12 @@ class PasswordResetPayloadFactoryTest {
 
 
         // Act
-        PasswordResetTokenPayload payload = (PasswordResetTokenPayload) factory.createToken(claims);
+        PasswordResetTokenPayload payload = (PasswordResetTokenPayload) factory.createPayload(claims);
 
         // Assert
         assertEquals(PasswordResetTokenPayload.class, payload.getClass());
         assertEquals(issuedAt, payload.iat());
         assertEquals(expiration, payload.exp());
-        assertEquals(claims.getSubject(), payload.userId());
+        assertEquals(claims.getSubject(), payload.userId().toString());
     }
 }

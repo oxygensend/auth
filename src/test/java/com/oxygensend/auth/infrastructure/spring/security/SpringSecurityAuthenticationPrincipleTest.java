@@ -1,7 +1,12 @@
-package com.oxygensend.auth.infrastructure.security;
+package com.oxygensend.auth.infrastructure.spring.security;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.oxygensend.auth.domain.model.identity.User;
-import com.oxygensend.auth.infrastructure.spring.security.SpringSecurityAuthenticationPrinciple;
+import com.oxygensend.auth.domain.model.identity.Username;
+import com.oxygensend.auth.helper.UserMother;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -9,12 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
-public class AuthenticationPrincipleImplTest {
+public class SpringSecurityAuthenticationPrincipleTest {
 
 
     @Test
@@ -26,8 +27,7 @@ public class AuthenticationPrincipleImplTest {
         SecurityContextHolder.setContext(securityContext);
         when(securityContext.getAuthentication()).thenReturn(authentication);
 
-        User mockUser = mock(User.class);
-        when(mockUser.getUsername()).thenReturn("testuser");
+        User mockUser = UserMother.getRandom();
         when(authentication.getPrincipal()).thenReturn(mockUser);
 
         SpringSecurityAuthenticationPrinciple authenticationFacade = new SpringSecurityAuthenticationPrinciple();
@@ -36,7 +36,7 @@ public class AuthenticationPrincipleImplTest {
         User result = authenticationFacade.get();
 
         // Assert
-        assertEquals("testuser", result.getUsername());
+        Assertions.assertEquals(new Username("username"), result.username());
     }
 }
 

@@ -1,20 +1,4 @@
-package com.oxygensend.auth.application.token.factory;
-
-import com.oxygensend.auth.domain.model.token.TokenType;
-import com.oxygensend.auth.domain.model.crypto.factory.AccessTokenPayloadFactory;
-import com.oxygensend.auth.domain.model.crypto.factory.RefreshTokenPayloadFactory;
-import com.oxygensend.auth.domain.model.crypto.factory.TokenPayloadFactory;
-import com.oxygensend.auth.domain.model.token.payload.TokenPayloadFactoryProvider;
-import com.oxygensend.auth.domain.model.identity.User;
-import io.jsonwebtoken.Claims;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+package com.oxygensend.auth.domain.model.token.payload;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -22,6 +6,19 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.oxygensend.auth.domain.model.token.AccessTokenSubject;
+import com.oxygensend.auth.domain.model.token.TokenType;
+import io.jsonwebtoken.Claims;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -47,14 +44,14 @@ public class TokenPayloadFactoryProviderTest {
     void createToken_callsFactoryMethod() {
         Date exp = new Date();
         Date iat = new Date();
-        User user = mock(User.class);
+        AccessTokenSubject subject = mock(AccessTokenSubject.class);
         TokenType type = TokenType.ACCESS;
 
 
-        provider.createPayload(type, exp, iat, user);
+        provider.createPayload(type, exp, iat, subject);
 
-        verify(accessTokenPayloadFactory, times(1)).createToken(exp, iat, user);
-        verify(refreshTokenPayloadFactory, never()).createToken(exp, iat, user);
+        verify(accessTokenPayloadFactory, times(1)).createPayload(exp, iat, subject);
+        verify(refreshTokenPayloadFactory, never()).createPayload(exp, iat, subject);
     }
 
     @Test
@@ -65,14 +62,15 @@ public class TokenPayloadFactoryProviderTest {
 
         provider.createPayload(type, claims);
 
-        verify(refreshTokenPayloadFactory, times(1)).createToken(claims);
-        verify(accessTokenPayloadFactory, never()).createToken(claims);
+        verify(refreshTokenPayloadFactory, times(1)).createPayload(claims);
+        verify(accessTokenPayloadFactory, never()).createPayload(claims);
     }
 
 
     @Test
     void constructor_withDuplicateFactories_throwsException() {
-        List<TokenPayloadFactory> duplicateFactories = Arrays.asList(accessTokenPayloadFactory, accessTokenPayloadFactory);
+        List<TokenPayloadFactory> duplicateFactories =
+            Arrays.asList(accessTokenPayloadFactory, accessTokenPayloadFactory);
 
         assertThrows(RuntimeException.class, () -> new TokenPayloadFactoryProvider(duplicateFactories));
     }
