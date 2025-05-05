@@ -25,6 +25,7 @@ import com.oxygensend.auth.domain.model.identity.UserMother;
 import com.oxygensend.auth.domain.model.identity.UserRepository;
 import com.oxygensend.auth.domain.model.identity.Username;
 import com.oxygensend.auth.domain.model.identity.exception.UserNotFoundException;
+import com.oxygensend.auth.domain.model.session.SessionRepository;
 import com.oxygensend.auth.domain.model.token.EmailVerificationTokenSubject;
 import com.oxygensend.auth.domain.model.token.PasswordResetTokenSubject;
 import com.oxygensend.auth.domain.model.token.TokenType;
@@ -33,6 +34,7 @@ import com.oxygensend.auth.domain.model.token.payload.PasswordResetTokenPayload;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -58,13 +60,11 @@ public class UserServiceTest {
     @Mock
     private RegistrationService registrationService;
 
-    private UserService service;
+    @Mock
+    private SessionRepository sessionRepository;
 
-    @BeforeEach
-    void setUp() {
-        service = new UserService(repository, tokenApplicationService, authenticationPrinciple, passwordService,
-                                  registrationService);
-    }
+    @InjectMocks
+    private UserService service;
 
     @Test
     void shouldFindUserByUsername_whenUsernameLoginProvided() {
@@ -109,6 +109,7 @@ public class UserServiceTest {
 
         // Then
         verify(repository).deleteById(userId);
+        verify(sessionRepository).removeByUserId(userId);
     }
 
     @Test

@@ -14,6 +14,7 @@ import com.oxygensend.auth.domain.model.identity.UserId;
 import com.oxygensend.auth.domain.model.identity.UserRepository;
 import com.oxygensend.auth.domain.model.identity.Username;
 import com.oxygensend.auth.domain.model.identity.exception.UserNotFoundException;
+import com.oxygensend.auth.domain.model.session.SessionRepository;
 import com.oxygensend.auth.domain.model.token.EmailVerificationTokenSubject;
 import com.oxygensend.auth.domain.model.token.PasswordResetTokenSubject;
 import com.oxygensend.auth.domain.model.token.TokenType;
@@ -31,15 +32,20 @@ public class UserService {
     private final AuthenticationPrinciple authenticationPrinciple;
     private final PasswordService passwordService;
     private final RegistrationService registrationService;
+    private final SessionRepository sessionRepository;
+
+    
+
 
     public UserService(UserRepository repository, TokenApplicationService tokenApplicationService,
                        AuthenticationPrinciple authenticationPrinciple, PasswordService passwordService,
-                       RegistrationService registrationService) {
+                       RegistrationService registrationService, SessionRepository sessionRepository) {
         this.repository = repository;
         this.tokenApplicationService = tokenApplicationService;
         this.authenticationPrinciple = authenticationPrinciple;
         this.passwordService = passwordService;
         this.registrationService = registrationService;
+        this.sessionRepository = sessionRepository;
     }
 
     public Optional<User> userByLogin(LoginDto login) {
@@ -55,6 +61,7 @@ public class UserService {
             throw UserNotFoundException.withId(userId);
         }
         repository.deleteById(userId);
+        sessionRepository.removeByUserId(userId);
     }
 
     @Transactional
