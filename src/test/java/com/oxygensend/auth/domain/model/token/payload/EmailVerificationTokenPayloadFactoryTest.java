@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 import com.oxygensend.auth.domain.model.token.EmailVerificationTokenSubject;
 import com.oxygensend.auth.domain.model.token.TokenSubject;
 import com.oxygensend.auth.domain.model.token.TokenType;
-import com.oxygensend.auth.helper.UserMother;
+import com.oxygensend.auth.domain.model.identity.UserMother;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

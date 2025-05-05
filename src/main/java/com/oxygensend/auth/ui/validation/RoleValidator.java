@@ -1,6 +1,6 @@
 package com.oxygensend.auth.ui.validation;
 
-import com.oxygensend.auth.infrastructure.spring.config.properties.SettingsProperties;
+import com.oxygensend.auth.infrastructure.app_config.properties.SettingsProperties;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.Set;

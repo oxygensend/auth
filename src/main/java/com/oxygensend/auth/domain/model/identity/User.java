@@ -1,25 +1,32 @@
 package com.oxygensend.auth.domain.model.identity;
 
+import com.oxygensend.auth.domain.model.identity.event.AddedRoleEvent;
+import com.oxygensend.auth.domain.model.identity.event.BlockedEvent;
+import com.oxygensend.auth.domain.model.identity.event.PasswordChangedEvent;
+import com.oxygensend.auth.domain.model.identity.event.PasswordResetedEvent;
+import com.oxygensend.auth.domain.model.identity.event.RegisteredEvent;
+import com.oxygensend.auth.domain.model.identity.event.RemovedRoleEvent;
+import com.oxygensend.auth.domain.model.identity.event.UnblockedEvent;
+import com.oxygensend.auth.domain.model.identity.event.VerifiedEvent;
 import com.oxygensend.auth.domain.model.identity.exception.PasswordMismatchException;
 import com.oxygensend.auth.domain.model.identity.exception.RoleAlreadyExistsException;
 import com.oxygensend.auth.domain.model.identity.exception.RoleNotAssignedException;
-import lombok.Builder;
 
 import java.util.Objects;
 import java.util.Set;
 
 import common.AssertionConcern;
+import common.domain.model.DomainAggregate;
 
-@Builder(toBuilder = true)
-public class User {
+public class User extends DomainAggregate {
 
     private final UserId id;
+    private final Set<Role> roles;
+    private final BusinessId businessId;
+    private final AccountActivationType accountActivationType;
     private Credentials credentials;
-    private Set<Role> roles;
     private boolean blocked;
     private boolean verified;
-    private BusinessId businessId;
-    private AccountActivationType accountActivationType;
 
     public User(UserId id,
                 Credentials credentials,
@@ -50,7 +57,9 @@ public class User {
                                 BusinessId businessId,
                                 AccountActivationType accountActivation) {
         boolean isVerified = accountActivation == AccountActivationType.NONE;
-        return new User(id, credentials, roles, false, isVerified, businessId, accountActivation);
+        var newUser = new User(id, credentials, roles, false, isVerified, businessId, accountActivation);
+        newUser.addEvent(new RegisteredEvent(newUser));
+        return newUser;
     }
 
     public UserId id() {
@@ -107,6 +116,7 @@ public class User {
                  },
                  () -> {
                      roles.add(newRole);
+                     events.add(new AddedRoleEvent(id, newRole));
                  }
              );
     }
@@ -118,6 +128,7 @@ public class User {
              .ifPresentOrElse(
                  role -> {
                      roles.remove(roleToRemove);
+                     events.add(new RemovedRoleEvent(id, roleToRemove));
                  },
                  () -> {
                      throw new RoleNotAssignedException();
@@ -128,11 +139,14 @@ public class User {
     public void block() {
         AssertionConcern.assertStateFalse(isBlocked(), "Account is already blocked");
         blocked = true;
+
+        events.add(new BlockedEvent(id));
     }
 
     public void unblock() {
         AssertionConcern.assertStateTrue(isBlocked(), "Account is already unblocked");
         blocked = false;
+        events.add(new UnblockedEvent(id));
     }
 
     public boolean authenticateWithPassword(String password, PasswordService passwordService) {
@@ -146,16 +160,24 @@ public class User {
             throw new PasswordMismatchException("Old password does not match");
         }
         setNewEncryptedPassword(newPassword, passwordService);
+
+        events.add(new PasswordChangedEvent(id, email()));
     }
 
     public void resetPassword(String newPassword, PasswordService passwordService) {
         AssertionConcern.assertArgumentNotEmpty(newPassword, "New password cannot be null or empty");
         setNewEncryptedPassword(newPassword, passwordService);
-        this.verified = true;
+        events.add(new PasswordResetedEvent(id));
+
+        if (!verified && accountActivationType == AccountActivationType.CHANGE_PASSWORD) {
+            this.verified = true;
+            events.add(new VerifiedEvent(id));
+        }
     }
 
     public void verifyEmail() {
         this.verified = true;
+        events.add(new VerifiedEvent(id));
     }
 
     private void setNewEncryptedPassword(String password, PasswordService passwordService) {

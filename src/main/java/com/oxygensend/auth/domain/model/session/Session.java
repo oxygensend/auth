@@ -1,8 +1,8 @@
 package com.oxygensend.auth.domain.model.session;
 
 import com.oxygensend.auth.domain.model.identity.UserId;
+
 import common.AssertionConcern;
-import java.time.Instant;
 
 public record Session(SessionId id,
                       UserId userId) {

@@ -4,8 +4,6 @@ import com.oxygensend.auth.application.settings.CurrentAccountActivationType;
 import com.oxygensend.auth.application.settings.LoginDto;
 import com.oxygensend.auth.application.settings.LoginProvider;
 import com.oxygensend.auth.application.token.TokenApplicationService;
-import common.event.EventPublisher;
-import common.event.EventWrapper;
 import com.oxygensend.auth.domain.model.identity.AuthenticationService;
 import com.oxygensend.auth.domain.model.identity.BusinessId;
 import com.oxygensend.auth.domain.model.identity.Credentials;
@@ -14,23 +12,21 @@ import com.oxygensend.auth.domain.model.identity.Password;
 import com.oxygensend.auth.domain.model.identity.PasswordService;
 import com.oxygensend.auth.domain.model.identity.RegistrationService;
 import com.oxygensend.auth.domain.model.identity.Role;
-import com.oxygensend.auth.domain.model.identity.User;
 import com.oxygensend.auth.domain.model.identity.UserDescriptor;
 import com.oxygensend.auth.domain.model.identity.UserId;
 import com.oxygensend.auth.domain.model.identity.Username;
-import com.oxygensend.auth.domain.model.identity.event.RegisterEvent;
 import com.oxygensend.auth.domain.model.session.Session;
 import com.oxygensend.auth.domain.model.session.SessionManager;
 import com.oxygensend.auth.domain.model.token.AccessTokenSubject;
 import com.oxygensend.auth.domain.model.token.RefreshTokenSubject;
-import com.oxygensend.auth.domain.model.token.exception.TokenException;
 import com.oxygensend.auth.domain.model.token.TokenType;
+import com.oxygensend.auth.domain.model.token.exception.TokenException;
 import com.oxygensend.auth.domain.model.token.payload.RefreshTokenPayload;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.Map;
 import java.util.Set;
 
 
@@ -38,7 +34,6 @@ import java.util.Set;
 public class AuthService {
 
     private final TokenApplicationService tokenApplicationService;
-    private final EventPublisher eventPublisher;
     private final AuthenticationService authenticationService;
     private final RegistrationService registrationService;
     private final PasswordService passwordService;
@@ -46,13 +41,11 @@ public class AuthService {
     private final SessionManager sessionManager;
     private final CurrentAccountActivationType currentAccountActivationType;
 
-    public AuthService(TokenApplicationService tokenApplicationService,
-                       EventPublisher eventPublisher, AuthenticationService authenticationService,
+    public AuthService(TokenApplicationService tokenApplicationService, AuthenticationService authenticationService,
                        RegistrationService registrationService, PasswordService passwordService,
                        LoginProvider loginProvider, SessionManager sessionManager,
                        CurrentAccountActivationType currentAccountActivationType) {
         this.tokenApplicationService = tokenApplicationService;
-        this.eventPublisher = eventPublisher;
         this.authenticationService = authenticationService;
         this.registrationService = registrationService;
         this.passwordService = passwordService;
@@ -63,7 +56,7 @@ public class AuthService {
 
 
     @Transactional
-    public Map.Entry<UserId, AuthenticationTokensDto> register(RegisterCommand command) {
+    public Pair<UserId, AuthenticationTokensDto> register(RegisterCommand command) {
         var password = Password.fromPlaintext(command.rawPassword(), passwordService);
         var credentials = new Credentials(command.email(), command.username(), password);
 
@@ -72,15 +65,14 @@ public class AuthService {
                                                     command.businessId(),
                                                     currentAccountActivationType.get());
         sessionManager.startSession(user.id());
-        publishRegisterEvent(user);
 
         var authenticationTokensDto = generateTokens(user.id(),
-                                                      user.businessId(),
-                                                      user.username(),
-                                                      user.email(),
-                                                      user.roles(),
-                                                      user.isVerified());
-        return Map.entry(user.id(), authenticationTokensDto);
+                                                     user.businessId(),
+                                                     user.username(),
+                                                     user.email(),
+                                                     user.roles(),
+                                                     user.isVerified());
+        return Pair.of(user.id(), authenticationTokensDto);
     }
 
     @Transactional
@@ -141,10 +133,4 @@ public class AuthService {
         return payload;
     }
 
-    private void publishRegisterEvent(User user) {
-        var event =
-            new RegisterEvent(user.id().value(), user.businessId().value(), user.credentials().email().address(),
-                              currentAccountActivationType.get());
-        eventPublisher.publish(new EventWrapper(event, RegisterEvent.class.descriptorString()));
-    }
 }

@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.oxygensend.auth.domain.model.identity.UserMother;
 import com.oxygensend.auth.domain.model.token.PasswordResetTokenSubject;
-import com.oxygensend.auth.helper.UserMother;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

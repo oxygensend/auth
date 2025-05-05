@@ -1,6 +1,5 @@
 package com.oxygensend.auth.domain.model.token.payload;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -11,7 +10,7 @@ import static org.mockito.Mockito.when;
 import com.oxygensend.auth.domain.model.identity.EmailAddress;
 import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.UserId;
-import com.oxygensend.auth.helper.UserMother;
+import com.oxygensend.auth.domain.model.identity.UserMother;
 import com.oxygensend.auth.domain.model.identity.Username;
 import com.oxygensend.auth.domain.model.token.AccessTokenSubject;
 import io.jsonwebtoken.Claims;
@@ -21,9 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)

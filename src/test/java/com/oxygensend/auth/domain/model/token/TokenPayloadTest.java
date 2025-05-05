@@ -9,7 +9,7 @@ import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.Username;
 import com.oxygensend.auth.domain.model.token.payload.AccessTokenPayload;
 import com.oxygensend.auth.domain.model.token.payload.RefreshTokenPayload;
-import com.oxygensend.auth.helper.UserMother;
+import com.oxygensend.auth.domain.model.identity.UserMother;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +23,7 @@ public class TokenPayloadTest {
     public void test_AccessTokenPayloadToClaims() {
         // Arrange
         var accessTokenPayload = new AccessTokenPayload(new Username("UserName"),
-                                                        UserMother.getRandomUserId(),
+                                                        UserMother.userId(),
                                                         Set.of(new Role("ROLE_ADMIN")),
                                                         new Date(),
                                                         new Date(),
@@ -50,7 +50,7 @@ public class TokenPayloadTest {
     @Test
     public void test_RefreshTokenPayloadToClaims() {
         // Arrange
-        var accessTokenPayload = new RefreshTokenPayload(UserMother.getRandomUserId(), new Date(), new Date());
+        var accessTokenPayload = new RefreshTokenPayload(UserMother.userId(), new Date(), new Date());
 
         // Act
         var claims = accessTokenPayload.toClaims();

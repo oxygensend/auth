@@ -2,9 +2,9 @@
 //
 //import com.oxygensend.auth.application.RegisterEventListener;
 //import com.oxygensend.auth.application.token.TokenApplicationService;
-//import com.oxygensend.auth.domain.model.identity.AccountActivationType;
-//import com.oxygensend.auth.domain.model.identity.UserRepository;
-//import com.oxygensend.auth.domain.model.identity.event.RegisterEvent;
+//import com.oxygensend.auth.domain.model.loginType.AccountActivationType;
+//import com.oxygensend.auth.domain.model.loginType.UserRepository;
+//import com.oxygensend.auth.domain.model.loginType.event.RegisterEvent;
 //import java.util.UUID;
 //import org.junit.jupiter.api.Test;
 //import org.junit.jupiter.api.extension.ExtendWith;

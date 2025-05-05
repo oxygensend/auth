@@ -2,12 +2,10 @@ package com.oxygensend.auth.domain.model.identity;
 
 import com.oxygensend.auth.domain.model.identity.exception.UnexpectedRoleException;
 import com.oxygensend.auth.domain.model.identity.exception.UserAlreadyExistsException;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
 
-@Service
 public class RegistrationService {
 
     private final UserRepository userRepository;

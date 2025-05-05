@@ -44,11 +44,11 @@ auth:
       account-activation: none
     user-role-feature:
       enabled: true
-    identity: email
     roles:
       - ROLE_USER
       - ROLE_ADMIN
     event-broker: internal
+    login-type: email
 
 kafka:
   securityProtocol: SASL_SSL

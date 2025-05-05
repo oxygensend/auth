@@ -1,5 +1,9 @@
 package com.oxygensend.auth.domain.model.identity;
 
+import static org.mockito.Mockito.mock;
+
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -72,4 +76,40 @@ public class UserMother {
     public static Credentials expiredCredentials(PasswordService passwordService) {
         return new Credentials(email(), username(), password(passwordService), true);
     }
+
+    public static User getBlockedUser() {
+        var credentials = new Credentials(
+            new EmailAddress("test@test.pl"),
+            new Username("username"),
+            Password.fromHashed("hashed-password"));
+        return new User(
+            new UserId(UUID.randomUUID()),
+            credentials,
+            new HashSet<>(List.of(new Role("ROLE_ADMIN"))),
+            false,
+            true,
+            new BusinessId(UUID.randomUUID().toString()),
+            AccountActivationType.NONE
+        );
+    }
+    public static User getMocked(){
+        return mock(User.class);
+    }
+    public static User getRandom() {
+        var credentials = new Credentials(
+            new EmailAddress("test@test.pl"),
+            new Username("username"),
+            Password.fromHashed("hashed-password"));
+        return new User(
+            new UserId(UUID.randomUUID()),
+            credentials,
+            new HashSet<>(List.of(new Role("ROLE_ADMIN"))),
+            false,
+            true,
+            new BusinessId(UUID.randomUUID().toString()),
+            AccountActivationType.NONE
+        );
+    }
+
+
 }
