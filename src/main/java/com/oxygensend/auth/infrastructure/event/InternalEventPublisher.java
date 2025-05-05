@@ -2,15 +2,17 @@ package com.oxygensend.auth.infrastructure.event;
 
 import common.event.EventPublisher;
 import common.event.EventWrapper;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
-@Slf4j
-@RequiredArgsConstructor()
 final class InternalEventPublisher implements EventPublisher {
-
+    private static final Logger log = LoggerFactory.getLogger(InternalEventPublisher.class);
     private final ApplicationEventPublisher applicationEventPublisher;
+
+    public InternalEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
 
     @Override
     public void publish(EventWrapper eventWrapper) {

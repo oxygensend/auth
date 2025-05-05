@@ -7,13 +7,11 @@ import com.oxygensend.auth.domain.model.token.TokenService;
 import com.oxygensend.auth.domain.model.token.payload.TokenPayloadFactoryProvider;
 import com.oxygensend.auth.infrastructure.app_config.properties.SettingsProperties;
 import com.oxygensend.auth.infrastructure.app_config.properties.TokenProperties;
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@RequiredArgsConstructor
 @EnableConfigurationProperties({TokenProperties.class, SettingsProperties.class})
 public class AppConfiguration {
 

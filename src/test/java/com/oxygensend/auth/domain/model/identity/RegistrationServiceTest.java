@@ -5,7 +5,7 @@ import com.oxygensend.auth.domain.model.identity.exception.UserAlreadyExistsExce
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
+
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -76,9 +76,7 @@ class RegistrationServiceTest {
         // Then
         assertThat(result).isEqualTo(user);
         
-        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-        verify(userRepository).save(userCaptor.capture());
-        User capturedUser = userCaptor.getValue();
+        verify(userRepository).save(any(User.class));
         
         verify(userRepository).nextIdentity();
     }

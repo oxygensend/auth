@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 import com.oxygensend.auth.domain.model.identity.User;
 import com.oxygensend.auth.domain.model.identity.Username;
 import com.oxygensend.auth.domain.model.identity.UserMother;
-import com.oxygensend.auth.infrastructure.security.SpringSecurityAuthenticationPrinciple;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

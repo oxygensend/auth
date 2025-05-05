@@ -10,15 +10,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import java.util.Date;
 import java.util.Set;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-import lombok.experimental.Accessors;
+import java.util.Objects;
 
-@Getter
-@Accessors(fluent = true, chain = true)
-@EqualsAndHashCode
-@ToString
 public class AccessTokenPayload extends TokenPayload {
     private final Username username;
     private final UserId userId;
@@ -45,7 +38,63 @@ public class AccessTokenPayload extends TokenPayload {
         this.email = email;
     }
 
+    public Username username() {
+        return username;
+    }
+
+    public UserId userId() {
+        return userId;
+    }
+
+    public Set<Role> roles() {
+        return roles;
+    }
+
+
+    public boolean verified() {
+        return verified;
+    }
+
+
+    public BusinessId businessId() {
+        return businessId;
+    }
+
+    public EmailAddress email() {
+        return email;
+    }
+
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AccessTokenPayload that = (AccessTokenPayload) o;
+        return verified == that.verified && 
+               Objects.equals(username, that.username) && 
+               Objects.equals(userId, that.userId) && 
+               Objects.equals(roles, that.roles) && 
+               Objects.equals(businessId, that.businessId) && 
+               Objects.equals(email, that.email);
+    }
+
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username, userId, roles, verified, businessId, email);
+    }
+
+    @Override
+    public String toString() {
+        return "AccessTokenPayload{" +
+               "username=" + username +
+               ", userId=" + userId +
+               ", roles=" + roles +
+               ", verified=" + verified +
+               ", businessId=" + businessId +
+               ", email=" + email +
+               '}';
+    }
+
     public Claims toClaims() {
         return Jwts.claims()
                    .subject(email.toString())

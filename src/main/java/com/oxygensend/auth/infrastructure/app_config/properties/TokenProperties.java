@@ -5,7 +5,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+
 import jakarta.validation.constraints.AssertTrue; // added for custom validation
 import javax.crypto.SecretKey;
 import org.springframework.boot.context.properties.ConfigurationProperties;

@@ -12,12 +12,12 @@ import io.jsonwebtoken.Claims;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 final class AccessTokenPayloadFactory implements TokenPayloadFactory {
+
+    // No fields requiring constructor injection
 
 
     @Override

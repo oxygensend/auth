@@ -8,7 +8,7 @@ import com.oxygensend.auth.domain.model.identity.Credentials;
 import com.oxygensend.auth.domain.model.identity.Password;
 import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.User;
-import com.oxygensend.auth.infrastructure.security.DomainUserDetailsService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

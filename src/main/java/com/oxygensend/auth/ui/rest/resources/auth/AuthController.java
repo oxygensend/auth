@@ -12,8 +12,6 @@ import com.oxygensend.auth.ui.rest.resources.SwaggerConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.validation.annotation.Validated;
@@ -30,10 +28,13 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RestController
 @RequestMapping("/v1/auth")
-@RequiredArgsConstructor
 class AuthController {
 
     private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @Operation(summary = SwaggerConstants.REGISTER_API_DESCRIPTION)
     @PostMapping("/register")

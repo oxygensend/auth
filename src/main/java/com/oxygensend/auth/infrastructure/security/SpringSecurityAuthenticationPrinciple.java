@@ -3,7 +3,7 @@ package com.oxygensend.auth.infrastructure.security;
 import com.oxygensend.auth.application.auth.security.AuthenticationPrinciple;
 import com.oxygensend.auth.domain.model.identity.User;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
+
 
 final class SpringSecurityAuthenticationPrinciple implements AuthenticationPrinciple {
     @Override
