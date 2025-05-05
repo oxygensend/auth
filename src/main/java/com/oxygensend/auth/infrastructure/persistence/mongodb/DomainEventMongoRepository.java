@@ -1,8 +1,9 @@
-package com.oxygensend.auth.infrastructure.persistence;
+package com.oxygensend.auth.infrastructure.persistence.mongodb;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.Collection;
@@ -10,6 +11,7 @@ import java.util.Collection;
 import common.domain.model.DomainEvent;
 import common.event.EventPublisher;
 
+@Profile("MONGODB")
 @Configuration
 public class DomainEventMongoRepository {
 

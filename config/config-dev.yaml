@@ -24,18 +24,15 @@ auth:
   settings:
     sign-in:
       account-activation: VERIFY_EMAIL
-      register-event-topic: outsource-me-api-user-registered
     roles:
       - ROLE_DEVELOPER
       - ROLE_PRINCIPLE
       - ROLE_ADMIN
       - ROLE_EDITOR
 
-    event-broker: kafka
-
-
 
 
 kafka:
   bootstrap-servers: localhost:29092
   security-protocol: PLAINTEXT
+  writeTopicName: outsource-me-api-user-registered

@@ -1,12 +1,14 @@
-package com.oxygensend.auth.infrastructure.event;
+package com.oxygensend.auth.infrastructure.event.internal;
 
-import common.domain.model.DomainEvent;
-import common.event.EventPublisher;
-import common.event.EventWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Profile;
 
+import common.domain.model.DomainEvent;
+import common.event.EventPublisher;
+
+@Profile("!KAFKA")
 final class InternalEventPublisher implements EventPublisher {
     private static final Logger log = LoggerFactory.getLogger(InternalEventPublisher.class);
     private final ApplicationEventPublisher applicationEventPublisher;

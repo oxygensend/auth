@@ -1,7 +1,8 @@
-package com.oxygensend.auth.infrastructure.event;
+package com.oxygensend.auth.infrastructure.event.kafka;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.support.MessageBuilder;
@@ -9,6 +10,7 @@ import org.springframework.messaging.support.MessageBuilder;
 import common.domain.model.DomainEvent;
 import common.event.EventPublisher;
 
+@Profile("KAFKA")
 final class KafkaEventPublisher implements EventPublisher {
     private static final Logger log = LoggerFactory.getLogger(KafkaEventPublisher.class);
     private final KafkaTemplate<String, DomainEvent> kafkaTemplate;

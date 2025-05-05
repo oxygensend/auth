@@ -1,6 +1,5 @@
-package com.oxygensend.auth.infrastructure.kafka;
+package com.oxygensend.auth.infrastructure.event.kafka;
 
-import com.oxygensend.auth.infrastructure.app_config.properties.KafkaProperties;
 import com.oxygensend.auth.infrastructure.app_config.properties.SettingsProperties;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.admin.Admin;
@@ -14,10 +13,10 @@ import org.apache.kafka.common.security.auth.SecurityProtocol;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonSerializer;
@@ -28,8 +27,9 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import common.domain.model.DomainEvent;
+import common.event.EventPublisher;
 
-@ConditionalOnProperty(name = "auth.settings.event-broker", havingValue = "kafka")
+@Profile("KAFKA")
 @EnableConfigurationProperties(KafkaProperties.class)
 @Configuration
 public class KafkaConfiguration {
@@ -44,12 +44,18 @@ public class KafkaConfiguration {
     }
 
     @Bean
-    public KafkaTemplate<String, DomainEvent> kafkaTemplate() {
+    KafkaTemplate<String, DomainEvent> kafkaTemplate() {
         var producerFactory = new DefaultKafkaProducerFactory<String, DomainEvent>(configProperties());
         var kafkaTemplate = new KafkaTemplate<>(producerFactory);
         kafkaTemplate.setProducerListener(new KafkaProducerListener<>());
-        kafkaTemplate.setDefaultTopic(settingsProperties.signIn().registerEventTopic());
+        kafkaTemplate.setDefaultTopic(kafkaProperties.writeTopicName());
         return kafkaTemplate;
+    }
+
+    @Bean
+    @Profile("KAFKA")
+    EventPublisher kafkaEventPublisher(KafkaTemplate<String, DomainEvent> kafkaTemplate) {
+        return new KafkaEventPublisher(kafkaTemplate);
     }
 
     private Map<String, Object> configProperties() {
@@ -109,7 +115,7 @@ public class KafkaConfiguration {
     }
 
     private Set<String> getAllTopics() {
-        return Set.of(settingsProperties.signIn().registerEventTopic());
+        return Set.of(kafkaProperties.writeTopicName());
     }
 
 }

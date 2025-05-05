@@ -1,12 +1,13 @@
-package com.oxygensend.auth.infrastructure.persistence;
+package com.oxygensend.auth.infrastructure.persistence.mongodb;
 
 import com.oxygensend.auth.domain.model.session.Session;
 import com.oxygensend.auth.domain.model.identity.UserId;
 import com.oxygensend.auth.domain.model.session.SessionId;
+import com.oxygensend.auth.infrastructure.persistence.DataSourceObjectAdapter;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-@Profile("mongo")
+@Profile("MONGODB")
 @Component
 final class SessionMongoAdapter implements DataSourceObjectAdapter<Session, SessionMongo> {
     @Override

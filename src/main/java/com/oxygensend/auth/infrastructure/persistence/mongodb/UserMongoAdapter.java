@@ -1,4 +1,4 @@
-package com.oxygensend.auth.infrastructure.persistence;
+package com.oxygensend.auth.infrastructure.persistence.mongodb;
 
 import com.oxygensend.auth.domain.model.identity.BusinessId;
 import com.oxygensend.auth.domain.model.identity.Credentials;
@@ -8,12 +8,13 @@ import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.User;
 import com.oxygensend.auth.domain.model.identity.UserId;
 import com.oxygensend.auth.domain.model.identity.Username;
+import com.oxygensend.auth.infrastructure.persistence.DataSourceObjectAdapter;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
-@Profile("mongo")
+@Profile("MONGODB")
 @Component
 final class UserMongoAdapter implements DataSourceObjectAdapter<User, UserMongo> {
     @Override

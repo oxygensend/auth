@@ -1,4 +1,4 @@
-package com.oxygensend.auth.infrastructure.persistence;
+package com.oxygensend.auth.infrastructure.persistence.mongodb;
 
 import com.oxygensend.auth.domain.model.identity.AccountActivationType;
 
@@ -9,7 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Profile("mongo")
+@Profile("MONGODB")
 @Document("users")
 @CompoundIndex(name = "email", def = "{'email': 1}")
 record UserMongo(

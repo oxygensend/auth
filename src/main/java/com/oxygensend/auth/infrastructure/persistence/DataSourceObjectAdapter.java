@@ -1,6 +1,6 @@
 package com.oxygensend.auth.infrastructure.persistence;
 
-interface DataSourceObjectAdapter<D, T> {
+public interface DataSourceObjectAdapter<D, T> {
 
     D toDomain(T t);
     T toDataSource(D d);

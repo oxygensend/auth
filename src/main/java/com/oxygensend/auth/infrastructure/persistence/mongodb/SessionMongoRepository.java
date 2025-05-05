@@ -1,15 +1,17 @@
-package com.oxygensend.auth.infrastructure.persistence;
+package com.oxygensend.auth.infrastructure.persistence.mongodb;
 
 import com.oxygensend.auth.domain.model.identity.UserId;
 import com.oxygensend.auth.domain.model.session.Session;
 import com.oxygensend.auth.domain.model.session.SessionId;
 import com.oxygensend.auth.domain.model.session.SessionRepository;
+import com.oxygensend.auth.infrastructure.persistence.DataSourceObjectAdapter;
+
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
-@Profile("mongo")
+@Profile("MONGODB")
 @Repository
 public class SessionMongoRepository implements SessionRepository {
 
