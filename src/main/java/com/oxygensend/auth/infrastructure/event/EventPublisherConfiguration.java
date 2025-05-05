@@ -1,6 +1,6 @@
 package com.oxygensend.auth.infrastructure.event;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,12 +13,13 @@ import common.event.EventPublisher;
 public class EventPublisherConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(EventPublisher.class)
+    @ConditionalOnProperty(name = "auth.settings.event-broker", havingValue = "internal")
     EventPublisher internalEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
         return new InternalEventPublisher(applicationEventPublisher);
     }
 
     @Bean
+    @ConditionalOnProperty(name = "auth.settings.event-broker", havingValue = "kafka")
     EventPublisher kafkaEventPublisher(KafkaTemplate<String, DomainEvent> kafkaTemplate) {
         return new KafkaEventPublisher(kafkaTemplate);
     }
