@@ -1,4 +1,4 @@
-package com.oxygensend.auth.domain.model.session.exception;
+package com.oxygensend.auth.domain.model.session;
 
 import common.domain.model.DomainException;
 

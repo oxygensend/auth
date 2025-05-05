@@ -1,7 +1,6 @@
 package com.oxygensend.auth.domain.model.session;
 
 import com.oxygensend.auth.domain.model.identity.UserId;
-import com.oxygensend.auth.domain.model.session.exception.SessionExpiredException;
 import org.springframework.stereotype.Component;
 
 @Component
