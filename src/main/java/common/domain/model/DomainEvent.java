@@ -6,11 +6,7 @@ import java.time.Instant;
 
 public interface DomainEvent {
 
-    default String name() {
-        return getClass().getSimpleName();
-    }
-
-    String key();
+    String id();
 
     default String aggregateType() {
         return User.class.getSimpleName();

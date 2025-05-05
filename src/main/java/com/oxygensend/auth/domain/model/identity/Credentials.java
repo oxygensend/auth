@@ -1,5 +1,7 @@
 package com.oxygensend.auth.domain.model.identity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import common.AssertionConcern;
 
 public record Credentials(EmailAddress email,
@@ -7,6 +9,7 @@ public record Credentials(EmailAddress email,
                           Password password,
                           boolean expired) {
 
+    @JsonCreator
     public Credentials(EmailAddress email, Username userName, Password password) {
         this(email, userName, password, false);
     }
@@ -17,7 +20,7 @@ public record Credentials(EmailAddress email,
         AssertionConcern.assertArgumentNotNull(username, "Expired cannot be null");
     }
 
-    public Credentials passwordChanged(Password password){
+    public Credentials passwordChanged(Password password) {
         return new Credentials(email, username, password, expired);
     }
 
@@ -25,9 +28,10 @@ public record Credentials(EmailAddress email,
         return password.matches(rawPassword, passwordService);
     }
 
-    public boolean isNonExpired(){
+    public boolean isNonExpired() {
         return !expired;
     }
+
     public Username username() {
         return username;
     }

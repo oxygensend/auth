@@ -6,7 +6,7 @@ import common.domain.model.DomainEvent;
 
 public record PasswordResetedEvent(UserId userId) implements DomainEvent {
     @Override
-    public String key() {
+    public String id() {
         return userId.toString();
     }
 }

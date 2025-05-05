@@ -2,6 +2,8 @@ package com.oxygensend.auth.infrastructure.kafka;
 
 import com.oxygensend.auth.infrastructure.app_config.properties.KafkaProperties;
 import com.oxygensend.auth.infrastructure.app_config.properties.SettingsProperties;
+
+import common.domain.model.DomainEvent;
 import common.event.Event;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,8 +44,8 @@ public class KafkaConfiguration {
     }
 
     @Bean
-    public KafkaTemplate<String, Event> kafkaTemplate() {
-        var producerFactory = new DefaultKafkaProducerFactory<String, Event>(configProperties());
+    public KafkaTemplate<String, DomainEvent> kafkaTemplate() {
+        var producerFactory = new DefaultKafkaProducerFactory<String, DomainEvent>(configProperties());
         var kafkaTemplate = new KafkaTemplate<>(producerFactory);
         kafkaTemplate.setProducerListener(new KafkaProducerListener<>());
         return kafkaTemplate;

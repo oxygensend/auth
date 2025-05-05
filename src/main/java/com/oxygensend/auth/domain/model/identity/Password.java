@@ -1,5 +1,8 @@
 package com.oxygensend.auth.domain.model.identity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.Objects;
 
 import common.AssertionConcern;
@@ -17,6 +20,7 @@ public final class Password {
         return new Password(passwordService.encode(plaintext));
     }
 
+    @JsonCreator
     public static Password fromHashed(String hashedValue) {
         return new Password(hashedValue);
     }
@@ -24,9 +28,12 @@ public final class Password {
     public boolean matches(String rawPassword, PasswordService passwordService) {
         return passwordService.matches(rawPassword, this.hashedValue);
     }
+
+    @JsonValue
     public String hashedValue() {
         return hashedValue;
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -47,6 +54,6 @@ public final class Password {
 
     @Override
     public String toString() {
-       return hashedValue;
+        return hashedValue;
     }
 }

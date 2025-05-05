@@ -1,8 +1,10 @@
 package com.oxygensend.auth.domain.model.identity;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import common.AssertionConcern;
 
-public record Role(String value) {
+public record Role(@JsonValue String value) {
 
     public Role {
         AssertionConcern.assertArgumentNotEmpty(value, "Role value cannot be empty");
@@ -10,6 +12,6 @@ public record Role(String value) {
 
     @Override
     public String toString() {
-       return value;
+        return value;
     }
 }

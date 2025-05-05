@@ -1,9 +1,12 @@
 package com.oxygensend.auth.domain.model.identity;
 
-import common.AssertionConcern;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.UUID;
 
-public record UserId(UUID value) {
+import common.AssertionConcern;
+
+public record UserId(@JsonValue UUID value) {
 
     public UserId {
         AssertionConcern.assertArgumentNotNull(value, "UserId value cannot be null");
@@ -15,6 +18,6 @@ public record UserId(UUID value) {
 
     @Override
     public String toString() {
-       return value.toString();
+        return value.toString();
     }
 }

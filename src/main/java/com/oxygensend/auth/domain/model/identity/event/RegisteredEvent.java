@@ -24,12 +24,7 @@ public record RegisteredEvent(UserId userId,
     }
 
     @Override
-    public String name() {
-        return RegisteredEvent.class.getSimpleName();
-    }
-
-    @Override
-    public String key() {
+    public String id() {
         return userId.value().toString();
     }
 }

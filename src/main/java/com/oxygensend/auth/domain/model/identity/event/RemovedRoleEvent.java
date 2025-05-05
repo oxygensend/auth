@@ -7,7 +7,7 @@ import common.domain.model.DomainEvent;
 
 public record RemovedRoleEvent(UserId userId, Role role) implements DomainEvent {
     @Override
-    public String key() {
+    public String id() {
         return userId.toString();
     }
 }

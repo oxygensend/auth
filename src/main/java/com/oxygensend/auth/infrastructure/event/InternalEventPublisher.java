@@ -1,5 +1,6 @@
 package com.oxygensend.auth.infrastructure.event;
 
+import common.domain.model.DomainEvent;
 import common.event.EventPublisher;
 import common.event.EventWrapper;
 import org.slf4j.Logger;
@@ -15,8 +16,8 @@ final class InternalEventPublisher implements EventPublisher {
     }
 
     @Override
-    public void publish(EventWrapper eventWrapper) {
-        log.info("Publishing event to internal event bus: {}", eventWrapper);
-        applicationEventPublisher.publishEvent(eventWrapper.event());
+    public void publish(DomainEvent event) {
+        log.info("Publishing event to internal event bus: {}", event);
+        applicationEventPublisher.publishEvent(event);
     }
 }

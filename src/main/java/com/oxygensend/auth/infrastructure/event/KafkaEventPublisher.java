@@ -1,24 +1,24 @@
 package com.oxygensend.auth.infrastructure.event;
 
-import common.event.Event;
-import common.event.EventPublisher;
-import common.event.EventWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 
+import common.domain.model.DomainEvent;
+import common.event.Event;
+import common.event.EventPublisher;
+
 final class KafkaEventPublisher implements EventPublisher {
     private static final Logger log = LoggerFactory.getLogger(KafkaEventPublisher.class);
-    private final KafkaTemplate<String, Event> kafkaTemplate;
+    private final KafkaTemplate<String, DomainEvent> kafkaTemplate;
 
-    public KafkaEventPublisher(KafkaTemplate<String, Event> kafkaTemplate) {
+    public KafkaEventPublisher(KafkaTemplate<String, DomainEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
     @Override
-    public void publish(EventWrapper eventWrapper) {
-        log.info("Publishing event to Kafka: {}", eventWrapper);
-        var event = eventWrapper.event();
-        kafkaTemplate.send(eventWrapper.destination(), event.key(), event);
+    public void publish(DomainEvent event) {
+        log.info("Publishing event to Kafka: {}", event);
+        kafkaTemplate.send("XXX", event);
     }
 }

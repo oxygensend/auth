@@ -7,7 +7,7 @@ import common.domain.model.DomainEvent;
 
 public record PasswordChangedEvent(UserId userId, EmailAddress email) implements DomainEvent {
     @Override
-    public String key() {
+    public String id() {
         return userId.toString();
     }
 }

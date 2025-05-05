@@ -1,11 +1,11 @@
 package com.oxygensend.auth.domain.model.identity;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.oxygensend.auth.application.settings.LoginDto;
-
 
 import common.AssertionConcern;
 
-public record Username(String value) {
+public record Username(@JsonValue String value) {
 
     public Username {
         AssertionConcern.assertArgumentNotEmpty(value, "Username cannot be empty");
@@ -22,6 +22,6 @@ public record Username(String value) {
 
     @Override
     public String toString() {
-       return value;
+        return value;
     }
 }

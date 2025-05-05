@@ -1,5 +1,7 @@
 package com.oxygensend.auth.domain.model.identity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.oxygensend.auth.application.settings.LoginDto;
 
 import java.util.Objects;
@@ -11,6 +13,7 @@ public final class EmailAddress {
         "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
     private final String address;
 
+    @JsonCreator
     public EmailAddress(String address) {
         AssertionConcern.assertArgumentNotEmpty(address, "Email address cannot be empty");
         AssertionConcern.assertArgumentMatches(address, EMAIL_PATTERN, "Invalid email address format: " + address);
@@ -22,6 +25,7 @@ public final class EmailAddress {
         this(login.value());
     }
 
+    @JsonValue
     public String address() {
         return address;
     }
@@ -45,6 +49,6 @@ public final class EmailAddress {
 
     @Override
     public String toString() {
-       return address;
+        return address;
     }
 }

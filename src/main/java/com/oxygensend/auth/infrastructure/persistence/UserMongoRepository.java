@@ -3,30 +3,34 @@ package com.oxygensend.auth.infrastructure.persistence;
 import com.oxygensend.auth.domain.model.identity.EmailAddress;
 import com.oxygensend.auth.domain.model.identity.User;
 import com.oxygensend.auth.domain.model.identity.UserId;
-import com.oxygensend.auth.domain.model.identity.Username;
 import com.oxygensend.auth.domain.model.identity.UserRepository;
-import java.util.Optional;
-import java.util.UUID;
+import com.oxygensend.auth.domain.model.identity.Username;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Profile("mongo")
 @Repository
 public class UserMongoRepository implements UserRepository {
 
     private final ImportedUserRepository importedUserRepository;
+    private final DomainEventMongoRepository domainEventMongoRepository;
     private final DataSourceObjectAdapter<User, UserMongo> adapter;
 
 
     UserMongoRepository(ImportedUserRepository importedUserRepository,
+                        DomainEventMongoRepository domainEventMongoRepository,
                         DataSourceObjectAdapter<User, UserMongo> userMongoAdapter) {
         this.importedUserRepository = importedUserRepository;
+        this.domainEventMongoRepository = domainEventMongoRepository;
         this.adapter = userMongoAdapter;
     }
 
     @Override
     public UserId nextIdentity() {
-       return new UserId(UUID.randomUUID());
+        return new UserId(UUID.randomUUID());
     }
 
     @Override
@@ -37,7 +41,9 @@ public class UserMongoRepository implements UserRepository {
     @Override
     public User save(User user) {
         var dataSource = adapter.toDataSource(user);
-        return adapter.toDomain(importedUserRepository.save(dataSource));
+        var savedUser = adapter.toDomain(importedUserRepository.save(dataSource));
+        domainEventMongoRepository.saveAndPublish(user.events());
+        return savedUser;
     }
 
     @Override

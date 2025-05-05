@@ -1,5 +1,9 @@
 package com.oxygensend.auth.infrastructure.app_config;
 
+import com.mongodb.ReadConcern;
+import com.mongodb.ReadPreference;
+import com.mongodb.TransactionOptions;
+import com.mongodb.WriteConcern;
 import com.oxygensend.auth.application.settings.CurrentAccountActivationType;
 import com.oxygensend.auth.application.settings.LoginProvider;
 import com.oxygensend.auth.application.token.TokenApplicationService;
@@ -10,6 +14,8 @@ import com.oxygensend.auth.infrastructure.app_config.properties.TokenProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
+import org.springframework.data.mongodb.MongoTransactionManager;
 
 @Configuration
 @EnableConfigurationProperties({TokenProperties.class, SettingsProperties.class})
