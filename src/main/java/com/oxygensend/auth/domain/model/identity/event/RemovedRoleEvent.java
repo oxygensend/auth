@@ -6,8 +6,5 @@ import com.oxygensend.auth.domain.model.identity.UserId;
 import common.domain.model.DomainEvent;
 
 public record RemovedRoleEvent(UserId userId, Role role) implements DomainEvent {
-    @Override
-    public String id() {
-        return userId.toString();
-    }
+
 }

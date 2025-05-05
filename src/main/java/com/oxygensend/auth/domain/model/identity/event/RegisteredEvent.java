@@ -23,8 +23,5 @@ public record RegisteredEvent(UserId userId,
              user.accountActivationType());
     }
 
-    @Override
-    public String id() {
-        return userId.value().toString();
-    }
+
 }

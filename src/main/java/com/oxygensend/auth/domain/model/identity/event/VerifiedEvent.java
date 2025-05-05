@@ -5,8 +5,4 @@ import com.oxygensend.auth.domain.model.identity.UserId;
 import common.domain.model.DomainEvent;
 
 public record VerifiedEvent(UserId userId) implements DomainEvent {
-    @Override
-    public String id() {
-        return userId.toString();
-    }
 }

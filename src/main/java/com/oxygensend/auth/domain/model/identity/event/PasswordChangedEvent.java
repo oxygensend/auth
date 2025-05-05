@@ -6,8 +6,5 @@ import com.oxygensend.auth.domain.model.identity.UserId;
 import common.domain.model.DomainEvent;
 
 public record PasswordChangedEvent(UserId userId, EmailAddress email) implements DomainEvent {
-    @Override
-    public String id() {
-        return userId.toString();
-    }
+
 }

@@ -2,13 +2,6 @@ package com.oxygensend.auth.infrastructure.kafka;
 
 import com.oxygensend.auth.infrastructure.app_config.properties.KafkaProperties;
 import com.oxygensend.auth.infrastructure.app_config.properties.SettingsProperties;
-
-import common.domain.model.DomainEvent;
-import common.event.Event;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -29,6 +22,13 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+
+import common.domain.model.DomainEvent;
+
 @ConditionalOnProperty(name = "auth.settings.event-broker", havingValue = "kafka")
 @EnableConfigurationProperties(KafkaProperties.class)
 @Configuration
@@ -48,6 +48,7 @@ public class KafkaConfiguration {
         var producerFactory = new DefaultKafkaProducerFactory<String, DomainEvent>(configProperties());
         var kafkaTemplate = new KafkaTemplate<>(producerFactory);
         kafkaTemplate.setProducerListener(new KafkaProducerListener<>());
+        kafkaTemplate.setDefaultTopic(settingsProperties.signIn().registerEventTopic());
         return kafkaTemplate;
     }
 
@@ -68,7 +69,8 @@ public class KafkaConfiguration {
     private Map<String, Object> secureConfigProperties() {
         Map<String, Object> secureProps = new HashMap<>();
 
-        if (kafkaProperties.securityProtocol() == SecurityProtocol.SSL || kafkaProperties.securityProtocol() == SecurityProtocol.SASL_SSL) {
+        if (kafkaProperties.securityProtocol() == SecurityProtocol.SSL
+            || kafkaProperties.securityProtocol() == SecurityProtocol.SASL_SSL) {
             secureProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, kafkaProperties.securityProtocol().name);
 
             var sslProps = kafkaProperties.ssl();

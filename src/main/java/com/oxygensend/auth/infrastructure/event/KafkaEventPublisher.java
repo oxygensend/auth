@@ -3,9 +3,10 @@ package com.oxygensend.auth.infrastructure.event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.support.MessageBuilder;
 
 import common.domain.model.DomainEvent;
-import common.event.Event;
 import common.event.EventPublisher;
 
 final class KafkaEventPublisher implements EventPublisher {
@@ -19,6 +20,13 @@ final class KafkaEventPublisher implements EventPublisher {
     @Override
     public void publish(DomainEvent event) {
         log.info("Publishing event to Kafka: {}", event);
-        kafkaTemplate.send("XXX", event);
+
+        var messageBuilder = MessageBuilder
+            .withPayload(event)
+            .setHeader(KafkaHeaders.KEY, event.id())
+            .setHeader("aggregateType", event.aggregateType())
+            .setHeader("eventType", event.getClass().getSimpleName());
+
+        kafkaTemplate.send(messageBuilder.build());
     }
 }

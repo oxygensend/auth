@@ -13,13 +13,15 @@ import common.event.EventPublisher;
 @Configuration
 public class DomainEventMongoRepository {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
     private final MongoTemplate mongoTemplate;
     private final EventPublisher eventPublisher;
+    private final ObjectMapper objectMapper;
 
-    public DomainEventMongoRepository(MongoTemplate mongoTemplate, EventPublisher eventPublisher) {
+    public DomainEventMongoRepository(MongoTemplate mongoTemplate, EventPublisher eventPublisher,
+                                      ObjectMapper objectMapper) {
         this.mongoTemplate = mongoTemplate;
         this.eventPublisher = eventPublisher;
+        this.objectMapper = objectMapper;
     }
 
     void saveAndPublish(Collection<DomainEvent> events) {

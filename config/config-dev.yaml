@@ -31,7 +31,7 @@ auth:
       - ROLE_ADMIN
       - ROLE_EDITOR
 
-    event-broker: internal
+    event-broker: kafka
 
 
 
