@@ -4,13 +4,14 @@ import com.mongodb.ReadConcern;
 import com.mongodb.ReadPreference;
 import com.mongodb.TransactionOptions;
 import com.mongodb.WriteConcern;
+import com.oxygensend.auth.port.Ports;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.MongoTransactionManager;
 
-@Profile("MONGODB")
+@Profile(Ports.MONGODB)
 @Configuration
 public class MongoConfiguration {
     @Bean

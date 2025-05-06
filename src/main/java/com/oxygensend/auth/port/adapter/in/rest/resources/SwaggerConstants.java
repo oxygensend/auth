@@ -1,5 +1,9 @@
 package com.oxygensend.auth.port.adapter.in.rest.resources;
 
+import com.oxygensend.auth.port.Ports;
+import org.springframework.context.annotation.Profile;
+
+@Profile(Ports.REST)
 public class SwaggerConstants {
     public static final String AUTH_NAME = "Auth";
     public static final String AUTH_DESCRIPTION = "Auth Service API";
@@ -20,7 +24,8 @@ public class SwaggerConstants {
     public static final String USER_BLOCK_API_DESCRIPTION = "Block a user";
     public static final String USER_UNBLOCK_API_DESCRIPTION = "Unblock a user";
     public static final String USER_VERIFY_EMAIL_API_DESCRIPTION = "Verify user login";
-    public static final String USER_GENERATE_EMAIL_VERIFICATION_TOKEN_API_DESCRIPTION = "Generate login verification token";
+    public static final String USER_GENERATE_EMAIL_VERIFICATION_TOKEN_API_DESCRIPTION =
+        "Generate login verification token";
     public static final String USER_GENERATE_PASSWORD_RESET_TOKEN_API_DESCRIPTION = "Generate password reset token";
     public static final String USER_RESET_PASSWORD_API_DESCRIPTION = "Reset user password";
     public static final String USER_CHANGE_PASSWORD_API_DESCRIPTION = "Change user password";

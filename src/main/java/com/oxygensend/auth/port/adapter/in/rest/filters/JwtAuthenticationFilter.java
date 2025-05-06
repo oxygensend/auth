@@ -3,10 +3,12 @@ package com.oxygensend.auth.port.adapter.in.rest.filters;
 import com.oxygensend.auth.application.token.TokenApplicationService;
 import com.oxygensend.auth.domain.model.token.TokenType;
 import com.oxygensend.auth.domain.model.token.payload.AccessTokenPayload;
+import com.oxygensend.auth.port.Ports;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.context.annotation.Profile;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -19,7 +21,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Date;
+import javax.sound.sampled.Port;
 
+@Profile(Ports.REST)
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String AUTHORITIES_ATTRIBUTE = "X-AUTHORITIES";

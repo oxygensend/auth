@@ -1,5 +1,6 @@
 package com.oxygensend.auth.port.adapter.out.messaging.kafka;
 
+import com.oxygensend.auth.port.Ports;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
@@ -7,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.support.ProducerListener;
 
-@Profile("KAFKA")
+@Profile(Ports.KAFKA)
 class KafkaProducerListener<K, V> implements ProducerListener<K, V> {
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaProducerListener.class);
 

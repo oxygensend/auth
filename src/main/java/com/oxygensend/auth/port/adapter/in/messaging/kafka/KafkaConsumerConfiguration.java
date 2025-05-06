@@ -1,5 +1,6 @@
 package com.oxygensend.auth.port.adapter.in.messaging.kafka;
 
+import com.oxygensend.auth.port.Ports;
 import com.oxygensend.auth.port.adapter.in.messaging.RegistrationFailedEvent;
 import jakarta.ws.rs.ServiceUnavailableException;
 import org.apache.kafka.clients.CommonClientConfigs;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -30,6 +32,7 @@ import java.util.Map;
 
 import common.domain.model.DomainException;
 
+@Profile(Ports.KAFKA)
 @EnableConfigurationProperties(KafkaConsumerProperties.class)
 @Configuration
 public class KafkaConsumerConfiguration {

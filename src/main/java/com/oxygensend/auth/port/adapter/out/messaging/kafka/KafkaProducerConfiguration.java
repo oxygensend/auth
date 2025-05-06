@@ -1,5 +1,6 @@
 package com.oxygensend.auth.port.adapter.out.messaging.kafka;
 
+import com.oxygensend.auth.port.Ports;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -28,7 +29,7 @@ import java.util.concurrent.ExecutionException;
 import common.domain.model.DomainEvent;
 import common.event.EventPublisher;
 
-@Profile("KAFKA")
+@Profile(Ports.KAFKA)
 @EnableConfigurationProperties(KafkaProducerProperties.class)
 @Configuration
 public class KafkaProducerConfiguration {

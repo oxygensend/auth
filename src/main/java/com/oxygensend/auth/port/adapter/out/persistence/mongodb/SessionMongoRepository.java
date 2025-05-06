@@ -4,6 +4,7 @@ import com.oxygensend.auth.domain.model.identity.UserId;
 import com.oxygensend.auth.domain.model.session.Session;
 import com.oxygensend.auth.domain.model.session.SessionId;
 import com.oxygensend.auth.domain.model.session.SessionRepository;
+import com.oxygensend.auth.port.Ports;
 import com.oxygensend.auth.port.adapter.out.persistence.DataSourceObjectAdapter;
 
 import java.util.Optional;
@@ -11,7 +12,7 @@ import java.util.UUID;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
-@Profile("MONGODB")
+@Profile(Ports.MONGODB)
 @Repository
 public class SessionMongoRepository implements SessionRepository {
 

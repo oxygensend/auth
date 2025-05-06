@@ -8,13 +8,14 @@ import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.User;
 import com.oxygensend.auth.domain.model.identity.UserId;
 import com.oxygensend.auth.domain.model.identity.Username;
+import com.oxygensend.auth.port.Ports;
 import com.oxygensend.auth.port.adapter.out.persistence.DataSourceObjectAdapter;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
-@Profile("MONGODB")
+@Profile(Ports.MONGODB)
 @Component
 final class UserMongoAdapter implements DataSourceObjectAdapter<User, UserMongo> {
     @Override

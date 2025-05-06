@@ -4,6 +4,7 @@ package com.oxygensend.auth.port.adapter.in.rest.resources.user;
 import com.oxygensend.auth.application.auth.security.Admin;
 import com.oxygensend.auth.application.identity.UserService;
 import com.oxygensend.auth.domain.model.identity.UserId;
+import com.oxygensend.auth.port.Ports;
 import com.oxygensend.auth.port.adapter.in.rest.resources.auth.request.PasswordChangeRequest;
 import com.oxygensend.auth.port.adapter.in.rest.resources.auth.request.UserIdRequest;
 import com.oxygensend.auth.port.adapter.in.rest.resources.auth.request.PasswordResetRequest;
@@ -12,6 +13,7 @@ import com.oxygensend.auth.port.adapter.in.rest.resources.SwaggerConstants;
 import com.oxygensend.commons_jdk.DefaultView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+@Profile(Ports.REST)
 @Tag(name = SwaggerConstants.USER_NAME, description = SwaggerConstants.USER_DESCRIPTION)
 @CrossOrigin
 @RestController
