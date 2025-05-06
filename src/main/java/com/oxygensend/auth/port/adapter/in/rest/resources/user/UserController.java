@@ -5,12 +5,11 @@ import com.oxygensend.auth.application.auth.security.Admin;
 import com.oxygensend.auth.application.identity.UserService;
 import com.oxygensend.auth.domain.model.identity.UserId;
 import com.oxygensend.auth.port.Ports;
-import com.oxygensend.auth.port.adapter.in.rest.resources.auth.request.PasswordChangeRequest;
-import com.oxygensend.auth.port.adapter.in.rest.resources.auth.request.UserIdRequest;
-import com.oxygensend.auth.port.adapter.in.rest.resources.auth.request.PasswordResetRequest;
-import com.oxygensend.auth.port.adapter.in.rest.resources.auth.request.VerifyEmailRequest;
 import com.oxygensend.auth.port.adapter.in.rest.resources.SwaggerConstants;
-import com.oxygensend.commons_jdk.DefaultView;
+import com.oxygensend.auth.port.adapter.in.rest.resources.auth.request.PasswordChangeRequest;
+import com.oxygensend.auth.port.adapter.in.rest.resources.auth.request.PasswordResetRequest;
+import com.oxygensend.auth.port.adapter.in.rest.resources.auth.request.UserIdRequest;
+import com.oxygensend.auth.port.adapter.in.rest.resources.auth.request.VerifyEmailRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.context.annotation.Profile;
@@ -66,11 +65,10 @@ class UserController {
     }
 
     @Operation(summary = SwaggerConstants.USER_VERIFY_EMAIL_API_DESCRIPTION)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/verify_email")
-    DefaultView verifyEmail(@Validated @RequestBody VerifyEmailRequest request) {
+    void verifyEmail(@Validated @RequestBody VerifyEmailRequest request) {
         service.verifyEmail(request.token());
-        return DefaultView.of("User login successfully verified");
     }
 
     @Operation(summary = SwaggerConstants.USER_GENERATE_EMAIL_VERIFICATION_TOKEN_API_DESCRIPTION)
@@ -90,19 +88,17 @@ class UserController {
     }
 
     @Operation(summary = SwaggerConstants.USER_RESET_PASSWORD_API_DESCRIPTION)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/reset_password")
-    DefaultView resetPassword(@Validated @RequestBody PasswordResetRequest request) {
+    void resetPassword(@Validated @RequestBody PasswordResetRequest request) {
         service.resetPassword(request.token(), request.newPassword());
-        return DefaultView.of("Password successfully reset");
     }
 
     @Operation(summary = SwaggerConstants.USER_CHANGE_PASSWORD_API_DESCRIPTION)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/change_password")
-    DefaultView changePassword(@Validated @RequestBody PasswordChangeRequest request) {
+    void changePassword(@Validated @RequestBody PasswordChangeRequest request) {
         service.changePassword(request.oldPassword(), request.newPassword());
-        return DefaultView.of("Password successfully changed");
     }
 
 
