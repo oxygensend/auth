@@ -1,11 +1,9 @@
-package com.oxygensend.auth.domain.model.identity.exception;
+package com.oxygensend.auth.application.identity.exception;
 
 import com.oxygensend.auth.domain.model.identity.UserId;
 
-import common.domain.model.DomainException;
 
-
-public class UserNotFoundException extends DomainException {
+public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException(String message) {
         super(message);
     }

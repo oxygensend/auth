@@ -1,6 +1,8 @@
 package com.oxygensend.auth.application.identity;
 
 import com.oxygensend.auth.application.auth.security.AuthenticationPrinciple;
+import com.oxygensend.auth.application.identity.exception.UnexpectedRoleException;
+import com.oxygensend.auth.application.identity.exception.UserNotFoundException;
 import com.oxygensend.auth.application.settings.LoginDto;
 import com.oxygensend.auth.application.token.TokenApplicationService;
 import com.oxygensend.auth.domain.model.identity.UserUniquenessChecker;
@@ -14,8 +16,6 @@ import com.oxygensend.auth.domain.model.identity.User;
 import com.oxygensend.auth.domain.model.identity.UserId;
 import com.oxygensend.auth.domain.model.identity.UserRepository;
 import com.oxygensend.auth.domain.model.identity.Username;
-import com.oxygensend.auth.domain.model.identity.exception.UnexpectedRoleException;
-import com.oxygensend.auth.domain.model.identity.exception.UserNotFoundException;
 import com.oxygensend.auth.domain.model.session.SessionRepository;
 import com.oxygensend.auth.domain.model.token.EmailVerificationTokenSubject;
 import com.oxygensend.auth.domain.model.token.PasswordResetTokenSubject;

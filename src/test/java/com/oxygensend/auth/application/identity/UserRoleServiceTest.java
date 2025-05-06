@@ -6,14 +6,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.oxygensend.auth.application.identity.exception.UnexpectedRoleException;
+import com.oxygensend.auth.application.identity.exception.UserNotFoundException;
 import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.RoleRepository;
 import com.oxygensend.auth.domain.model.identity.UserMother;
 import com.oxygensend.auth.domain.model.identity.UserRepository;
 import com.oxygensend.auth.domain.model.identity.exception.RoleAlreadyExistsException;
 import com.oxygensend.auth.domain.model.identity.exception.RoleNotAssignedException;
-import com.oxygensend.auth.domain.model.identity.exception.UnexpectedRoleException;
-import com.oxygensend.auth.domain.model.identity.exception.UserNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

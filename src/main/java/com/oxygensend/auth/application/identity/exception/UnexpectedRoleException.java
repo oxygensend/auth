@@ -1,12 +1,10 @@
-package com.oxygensend.auth.domain.model.identity.exception;
+package com.oxygensend.auth.application.identity.exception;
 
 import com.oxygensend.auth.domain.model.identity.Role;
 
 import java.util.List;
 
-import common.domain.model.DomainException;
-
-public class UnexpectedRoleException extends DomainException {
+public class UnexpectedRoleException extends RuntimeException {
     public UnexpectedRoleException(Role role) {
         super("Provided unexpected role %s".formatted(role));
     }

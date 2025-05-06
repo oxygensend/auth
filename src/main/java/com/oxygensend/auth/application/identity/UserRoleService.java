@@ -1,12 +1,12 @@
 package com.oxygensend.auth.application.identity;
 
+import com.oxygensend.auth.application.identity.exception.UnexpectedRoleException;
+import com.oxygensend.auth.application.identity.exception.UserNotFoundException;
 import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.RoleRepository;
 import com.oxygensend.auth.domain.model.identity.User;
 import com.oxygensend.auth.domain.model.identity.UserId;
 import com.oxygensend.auth.domain.model.identity.UserRepository;
-import com.oxygensend.auth.domain.model.identity.exception.UnexpectedRoleException;
-import com.oxygensend.auth.domain.model.identity.exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

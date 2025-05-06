@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 
 import com.oxygensend.auth.domain.model.identity.UserId;
 import com.oxygensend.auth.domain.model.token.TokenType;
-import com.oxygensend.auth.domain.model.token.exception.TokenException;
+import com.oxygensend.auth.domain.model.token.exception.InvalidTokenTypeException;
 import com.oxygensend.auth.domain.model.token.payload.RefreshTokenPayload;
 import com.oxygensend.auth.domain.model.token.payload.TokenPayload;
 import com.oxygensend.auth.domain.model.token.payload.TokenPayloadFactoryProvider;
@@ -129,7 +129,7 @@ public class JwtTokenServiceTest {
 
 
         // Act
-        assertThrows(TokenException.class, () -> tokenService.parseToken(token, TokenType.ACCESS));
+        assertThrows(InvalidTokenTypeException.class, () -> tokenService.parseToken(token, TokenType.ACCESS));
 
     }
 

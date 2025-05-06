@@ -2,7 +2,7 @@ package com.oxygensend.auth.infrastructure.domain;
 
 import com.oxygensend.auth.domain.model.token.TokenService;
 import com.oxygensend.auth.domain.model.token.TokenType;
-import com.oxygensend.auth.domain.model.token.exception.TokenException;
+import com.oxygensend.auth.domain.model.token.exception.InvalidTokenTypeException;
 import com.oxygensend.auth.domain.model.token.payload.TokenPayload;
 import com.oxygensend.auth.domain.model.token.payload.TokenPayloadFactoryProvider;
 import com.oxygensend.auth.infrastructure.app_config.properties.TokenProperties;
@@ -32,7 +32,7 @@ final class JwtTokenService implements TokenService {
         TokenPayload payload = tokenPayloadFactory.createPayload(type, claims);
 
         if (payload.type() != type) {
-            throw new TokenException("Invalid token type");
+            throw new InvalidTokenTypeException();
         }
 
         return payload;

@@ -31,7 +31,7 @@ import com.oxygensend.auth.domain.model.session.SessionManager;
 import com.oxygensend.auth.domain.model.token.AccessTokenSubject;
 import com.oxygensend.auth.domain.model.token.RefreshTokenSubject;
 import com.oxygensend.auth.domain.model.token.TokenType;
-import com.oxygensend.auth.domain.model.token.exception.TokenException;
+import com.oxygensend.auth.domain.model.token.exception.InvalidTokenTypeException;
 import com.oxygensend.auth.domain.model.token.payload.RefreshTokenPayload;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
@@ -149,8 +149,8 @@ class AuthServiceTest {
 
         // when + then
         assertThatThrownBy(() -> authService.refreshToken(token))
-            .isInstanceOf(TokenException.class)
-            .hasMessageContaining("Token is expired");
+            .isInstanceOf(RuntimeException.class)
+            .hasMessageContaining("Provided token is expired");
         verifyNoMoreInteractions(sessionManager, authenticationService);
     }
 

@@ -5,7 +5,6 @@ import com.oxygensend.auth.domain.model.token.TokenSubject;
 import com.oxygensend.auth.domain.model.token.TokenType;
 import com.oxygensend.auth.domain.model.token.payload.TokenPayload;
 import com.oxygensend.auth.domain.model.token.payload.TokenPayloadFactoryProvider;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
