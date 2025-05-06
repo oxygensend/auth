@@ -1,8 +1,9 @@
 package com.oxygensend.auth.domain.model.identity.exception;
 
 import common.domain.model.DomainException;
+import common.domain.model.DomainModelConflictException;
 
-public class UserAlreadyExistsException extends DomainException {
+public class UserAlreadyExistsException extends DomainModelConflictException {
     private UserAlreadyExistsException(String message) {
         super(message);
     }

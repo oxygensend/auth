@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Primary;
 
 @Configuration
 @EnableConfigurationProperties({TokenProperties.class, SettingsProperties.class})
-public class AppConfiguration {
+class AppConfiguration {
     @Bean
     @Primary
     public ObjectMapper objectMapper() {

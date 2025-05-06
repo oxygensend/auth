@@ -1,10 +1,10 @@
 package com.oxygensend.auth.domain.model.identity.exception;
 
-import common.domain.model.DomainException;
+import common.domain.model.DomainModelValidationException;
 
-public class BadCredentialsException extends DomainException {
+public class BadCredentialsException extends DomainModelValidationException {
 
-    public BadCredentialsException(){
+    public BadCredentialsException() {
         super("Bad credentials");
     }
 }

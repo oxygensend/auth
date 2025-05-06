@@ -12,7 +12,7 @@ import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.RoleRepository;
 import com.oxygensend.auth.domain.model.identity.UserMother;
 import com.oxygensend.auth.domain.model.identity.UserRepository;
-import com.oxygensend.auth.domain.model.identity.exception.RoleAlreadyExistsException;
+import com.oxygensend.auth.domain.model.identity.exception.RoleAlreadyAssignedException;
 import com.oxygensend.auth.domain.model.identity.exception.RoleNotAssignedException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -85,7 +85,7 @@ public class UserRoleServiceTest {
         when(roleRepository.exists(role)).thenReturn(true);
 
         // Act & Assert
-        assertThrows(RoleAlreadyExistsException.class, () -> userRoleService.addRoleToUser(user.id(), role));
+        assertThrows(RoleAlreadyAssignedException.class, () -> userRoleService.addRoleToUser(user.id(), role));
     }
 
     @Test

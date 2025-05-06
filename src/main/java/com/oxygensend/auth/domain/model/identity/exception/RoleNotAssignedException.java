@@ -1,10 +1,9 @@
 package com.oxygensend.auth.domain.model.identity.exception;
 
 
+import common.domain.model.DomainModelValidationException;
 
-import common.domain.model.DomainException;
-
-public class RoleNotAssignedException extends DomainException {
+public class RoleNotAssignedException extends DomainModelValidationException {
     public RoleNotAssignedException() {
         super("Role not assigned to user.");
     }

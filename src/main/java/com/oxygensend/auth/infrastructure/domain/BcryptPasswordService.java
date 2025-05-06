@@ -3,7 +3,7 @@ package com.oxygensend.auth.infrastructure.domain;
 import com.oxygensend.auth.domain.model.identity.PasswordService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-class BcryptPasswordService implements PasswordService {
+final class BcryptPasswordService implements PasswordService {
 
     private final PasswordEncoder passwordEncoder;
 

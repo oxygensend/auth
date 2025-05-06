@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-public class DomainServiceConfiguration {
+class DomainServiceConfiguration {
 
     @Bean
     AuthenticationService authenticationService(PasswordService passwordService,

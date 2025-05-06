@@ -15,7 +15,7 @@ import com.oxygensend.auth.domain.model.identity.event.RemovedRoleEvent;
 import com.oxygensend.auth.domain.model.identity.event.UnblockedEvent;
 import com.oxygensend.auth.domain.model.identity.event.VerifiedEvent;
 import com.oxygensend.auth.domain.model.identity.exception.PasswordMismatchException;
-import com.oxygensend.auth.domain.model.identity.exception.RoleAlreadyExistsException;
+import com.oxygensend.auth.domain.model.identity.exception.RoleAlreadyAssignedException;
 import com.oxygensend.auth.domain.model.identity.exception.RoleNotAssignedException;
 import com.oxygensend.auth.domain.model.identity.exception.UserAlreadyExistsException;
 import org.junit.jupiter.api.BeforeEach;
@@ -134,7 +134,7 @@ class UserTest {
 
         // When/Then
         assertThatThrownBy(() -> user.addRole(existingRole))
-            .isInstanceOf(RoleAlreadyExistsException.class);
+            .isInstanceOf(RoleAlreadyAssignedException.class);
 
         assertThat(user.events()).isEmpty();
     }
