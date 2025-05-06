@@ -11,6 +11,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Profile;
 import org.springframework.validation.annotation.Validated;
 
+import common.ExcludeFromJacocoGeneratedReport;
+
+@ExcludeFromJacocoGeneratedReport
 @Profile(Ports.KAFKA)
 @Validated
 @ConfigurationProperties(prefix = "kafka.consumer")

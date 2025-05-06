@@ -1,5 +1,9 @@
 package com.oxygensend.auth.port;
 
+
+import common.ExcludeFromJacocoGeneratedReport;
+
+@ExcludeFromJacocoGeneratedReport
 public class Ports {
     public static final String REST = "REST";
     public static final String KAFKA = "KAFKA";

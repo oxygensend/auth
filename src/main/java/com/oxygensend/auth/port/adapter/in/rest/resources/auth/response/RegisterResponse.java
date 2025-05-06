@@ -6,5 +6,5 @@ import org.springframework.context.annotation.Profile;
 import java.util.UUID;
 
 @Profile(Ports.REST)
-public record RegisterResponse(UUID id, String accessToken, String refreshToken) {
+public record RegisterResponse(UUID userId, String accessToken, String refreshToken) {
 }

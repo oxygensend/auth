@@ -44,7 +44,7 @@ public class TokenApplicationService {
     private long getExpiration(TokenType tokenType) {
         var exp = tokenExpirationMap.get(tokenType);
         if (exp == null) {
-            throw new IllegalArgumentException("Token type not supported");
+            throw new InvalidTokenException();
         }
 
         return exp.toMillis();

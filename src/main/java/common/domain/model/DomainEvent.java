@@ -5,6 +5,9 @@ import com.oxygensend.auth.domain.model.identity.User;
 
 import java.time.Instant;
 
+import common.ExcludeFromJacocoGeneratedReport;
+
+@ExcludeFromJacocoGeneratedReport
 public interface DomainEvent {
 
     default String id() {

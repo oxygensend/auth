@@ -9,7 +9,7 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.support.MessageBuilder;
 
 import common.domain.model.DomainEvent;
-import common.event.EventPublisher;
+import common.domain.model.EventPublisher;
 
 @Profile(Ports.KAFKA)
 final class KafkaEventPublisher implements EventPublisher {

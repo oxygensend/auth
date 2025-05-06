@@ -65,7 +65,7 @@ public class UserService {
     }
 
     @Transactional
-    public void delete(UserId userId) {
+    public void delete(UserId userId) throws UserNotFoundException{
         LOGGER.info("Deleting user with ID: {}", userId);
         if (!repository.existsById(userId)) {
             throw UserNotFoundException.withId(userId);

@@ -6,8 +6,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import common.event.EventPublisher;
+import common.ExcludeFromJacocoGeneratedReport;
+import common.domain.model.EventPublisher;
 
+@ExcludeFromJacocoGeneratedReport
 @Profile(Ports.INTERNAL)
 @Configuration
 public class EventPublisherConfiguration {

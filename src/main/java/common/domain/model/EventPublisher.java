@@ -1,6 +1,4 @@
-package common.event;
-
-import common.domain.model.DomainEvent;
+package common.domain.model;
 
 public interface EventPublisher {
 

@@ -26,9 +26,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import common.ExcludeFromJacocoGeneratedReport;
 import common.domain.model.DomainEvent;
-import common.event.EventPublisher;
+import common.domain.model.EventPublisher;
 
+@ExcludeFromJacocoGeneratedReport
 @Profile(Ports.KAFKA)
 @EnableConfigurationProperties(KafkaProducerProperties.class)
 @Configuration

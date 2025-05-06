@@ -6,6 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.context.annotation.Profile;
 
 @Profile(Ports.REST)
-public record AuthenticationRequest(@NotNull String login,
-                                    @NotBlank String password) {
+public record AuthenticationRequest(@NotNull @NotBlank String login,
+                                    @NotNull @NotBlank String password) {
 }

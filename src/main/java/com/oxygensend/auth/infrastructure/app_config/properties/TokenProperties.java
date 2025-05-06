@@ -14,6 +14,9 @@ import org.springframework.validation.annotation.Validated;
 import java.time.Duration;
 import java.util.Map;
 
+import common.ExcludeFromJacocoGeneratedReport;
+
+@ExcludeFromJacocoGeneratedReport
 @Validated
 @ConfigurationProperties(prefix = "security.token")
 public record TokenProperties(@NotNull @NotBlank String secretKey,

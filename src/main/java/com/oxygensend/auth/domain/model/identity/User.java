@@ -162,6 +162,7 @@ public class User extends DomainAggregate {
 
     public void changePassword(String oldPassword, String newPassword, PasswordService passwordService) {
         AssertionConcern.assertArgumentNotEmpty(newPassword, "New password cannot be null or empty");
+
         if (!credentials.passwordMatches(oldPassword, passwordService)) {
             throw new PasswordMismatchException("Old password does not match");
         }

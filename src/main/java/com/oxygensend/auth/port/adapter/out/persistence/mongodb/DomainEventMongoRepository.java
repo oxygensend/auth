@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import java.util.Collection;
 
 import common.domain.model.DomainEvent;
-import common.event.EventPublisher;
+import common.domain.model.EventPublisher;
 
 @Profile(Ports.MONGODB)
 @Configuration

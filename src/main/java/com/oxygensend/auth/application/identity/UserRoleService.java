@@ -10,7 +10,6 @@ import com.oxygensend.auth.domain.model.identity.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@UserRoleFeatureEnabled
 @Service
 public class UserRoleService {
 

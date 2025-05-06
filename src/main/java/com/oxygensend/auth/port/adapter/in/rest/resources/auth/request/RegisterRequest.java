@@ -6,7 +6,6 @@ import com.oxygensend.auth.domain.model.identity.EmailAddress;
 import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.Username;
 import com.oxygensend.auth.port.Ports;
-import com.oxygensend.auth.port.adapter.in.rest.validation.ValidRole;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -17,11 +16,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Profile(Ports.REST)
-public record RegisterRequest(@NotNull String email,
-                              @NotNull String username,
+public record RegisterRequest(@NotNull @NotBlank String email,
+                              @NotNull @NotBlank String username,
                               @Size(min = 4, max = 64) @NotBlank String password,
-                              @NotEmpty Set<@ValidRole String> roles,
+                               Set<String> roles,
                               String businessId) {
+
+    public RegisterRequest(String email, String username, String password, Set<String> roles) {
+        this(email, username, password, roles, null);
+    }
 
     public RegisterRequest(String identity, String password) {
         this(identity, password, null, Set.of("ROLE_USER"), null);
@@ -39,7 +42,7 @@ public record RegisterRequest(@NotNull String email,
             new Username(username()),
             password(),
             roles().stream().map(Role::new).collect(Collectors.toSet()),
-            new BusinessId(businessId())
+           businessId != null ? new BusinessId(businessId()) : null
         );
     }
 

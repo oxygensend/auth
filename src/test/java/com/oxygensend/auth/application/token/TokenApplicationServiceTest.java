@@ -157,8 +157,8 @@ class TokenApplicationServiceTest {
 
         // When & Then
         assertThatThrownBy(() -> tokenApplicationService.createToken(tokenSubject, tokenType))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("Token type not supported");
+            .isInstanceOf(InvalidTokenException.class)
+            .hasMessageContaining("Invalid token");
 
         verify(tokenService, never()).createToken(any());
     }

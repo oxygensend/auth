@@ -2,6 +2,8 @@ package com.oxygensend.auth.port.adapter.in.rest.exception;
 
 import com.oxygensend.auth.application.identity.exception.UnexpectedRoleException;
 import com.oxygensend.auth.application.identity.exception.UserNotFoundException;
+import com.oxygensend.auth.application.token.InvalidTokenException;
+import com.oxygensend.auth.domain.model.identity.exception.BadCredentialsException;
 import com.oxygensend.auth.domain.model.identity.exception.BlockedUserException;
 import com.oxygensend.auth.domain.model.identity.exception.ExpiredCredentialsException;
 import org.slf4j.Logger;
@@ -22,7 +24,7 @@ import common.domain.model.DomainModelConflictException;
 import common.domain.model.DomainModelValidationException;
 
 @ControllerAdvice
-class ApiExceptionHandler extends ResponseEntityExceptionHandler {
+public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
@@ -52,9 +54,15 @@ class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({UserNotFoundException.class})
-    public ResponseEntity<Object> handleUserNotFoundException(DomainException ex) {
+    public ResponseEntity<Object> handleUserNotFoundException(RuntimeException ex) {
         logger.info("Throwing an exception: {}", ex);
         return buildResponseEntity(new ExceptionResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
+    }
+
+    @ExceptionHandler({BadCredentialsException.class, InvalidTokenException.class})
+    public ResponseEntity<Object> handleUnauthenticated(RuntimeException ex) {
+        logger.info("Throwing an exception: {}", ex);
+        return buildResponseEntity(new ExceptionResponse(HttpStatus.UNAUTHORIZED, ex.getMessage()));
     }
 
     @Override

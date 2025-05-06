@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 
 import common.domain.model.DomainEvent;
-import common.event.EventPublisher;
+import common.domain.model.EventPublisher;
 
 @Profile(Ports.INTERNAL)
 final class InternalEventPublisher implements EventPublisher {

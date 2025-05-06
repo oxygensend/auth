@@ -30,8 +30,10 @@ import org.springframework.util.backoff.FixedBackOff;
 import java.util.HashMap;
 import java.util.Map;
 
+import common.ExcludeFromJacocoGeneratedReport;
 import common.domain.model.DomainException;
 
+@ExcludeFromJacocoGeneratedReport
 @Profile(Ports.KAFKA)
 @EnableConfigurationProperties(KafkaConsumerProperties.class)
 @Configuration

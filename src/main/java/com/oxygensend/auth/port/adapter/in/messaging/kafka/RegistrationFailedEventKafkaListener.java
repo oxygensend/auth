@@ -11,19 +11,19 @@ import org.springframework.stereotype.Component;
 
 @Profile(Ports.KAFKA)
 @Component
-public class RegistrationFailedEventListener {
+public class RegistrationFailedEventKafkaListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationFailedEventListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationFailedEventKafkaListener.class);
     private final UserService userService;
 
-    public RegistrationFailedEventListener(UserService userService) {
+    public RegistrationFailedEventKafkaListener(UserService userService) {
         this.userService = userService;
     }
 
     @KafkaListener(id = "registrationFailed", topics = "${kafka.consumer.topic.registration-failed-topic}",
         containerFactory = "registrationFailedEventConcurrentKafkaListenerContainerFactory")
     public void handleEvent(RegistrationFailedEvent event) {
-        LOGGER.warn("Registration failed for user {}: {}", event.userId(), event.reason());
+        LOGGER.warn("Registration failed for user {}: {} at {}", event.userId(), event.reason(), event.occurredAt());
 
         userService.delete(event.userId());
     }

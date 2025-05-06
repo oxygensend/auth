@@ -11,6 +11,9 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.Set;
 
+import common.ExcludeFromJacocoGeneratedReport;
+
+@ExcludeFromJacocoGeneratedReport
 @Validated
 @ConfigurationProperties(prefix = "auth.settings")
 public record SettingsProperties(@Valid SettingsProperties.SignInProperties signIn,
