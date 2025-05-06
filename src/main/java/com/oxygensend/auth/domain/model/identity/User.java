@@ -62,7 +62,7 @@ public class User extends DomainAggregate {
         boolean isVerified = accountActivation == AccountActivationType.NONE;
         var newUser = new User(id, credentials, roles, false, isVerified, businessId, accountActivation);
         if (!userUniquenessChecker.isUnique(newUser)) {
-            throw UserAlreadyExistsException.withUsername();
+            throw new UserAlreadyExistsException();
         }
         newUser.addEvent(new RegisteredEvent(newUser));
         return newUser;
