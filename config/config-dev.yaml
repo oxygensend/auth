@@ -33,6 +33,13 @@ auth:
 
 
 kafka:
-  bootstrap-servers: localhost:29092
-  security-protocol: PLAINTEXT
-  writeTopicName: outsource-me-api-user-registered
+  producer:
+    bootstrap-servers: localhost:29092
+    security-protocol: PLAINTEXT
+    writeTopicName: outsource-me-api-user-registered
+  consumer:
+    application-id: auth-service
+    bootstrap-servers: localhost:29092
+    security-protocol: PLAINTEXT
+    topic:
+      registration-failed-topic: outsource-me-api-registration-failed

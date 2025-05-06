@@ -23,6 +23,8 @@ import com.oxygensend.auth.domain.model.token.TokenType;
 import com.oxygensend.auth.domain.model.token.exception.TokenException;
 import com.oxygensend.auth.domain.model.token.payload.RefreshTokenPayload;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,7 @@ import java.util.Set;
 
 @Service
 public class AuthService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthService.class);
 
     private final TokenApplicationService tokenApplicationService;
     private final AuthenticationService authenticationService;
@@ -57,6 +60,7 @@ public class AuthService {
 
     @Transactional
     public Pair<UserId, AuthenticationTokensDto> register(RegisterCommand command) {
+        LOGGER.info("Registering user with email: {}", command.email());
         var password = Password.fromPlaintext(command.rawPassword(), passwordService);
         var credentials = new Credentials(command.email(), command.username(), password);
 
@@ -72,6 +76,7 @@ public class AuthService {
                                                      user.email(),
                                                      user.roles(),
                                                      user.isVerified());
+        LOGGER.info("User registered with email: {}", command.email());
         return Pair.of(user.id(), authenticationTokensDto);
     }
 
