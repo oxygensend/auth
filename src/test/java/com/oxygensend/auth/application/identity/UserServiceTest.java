@@ -12,18 +12,19 @@ import com.oxygensend.auth.application.auth.security.AuthenticationPrinciple;
 import com.oxygensend.auth.application.settings.LoginDto;
 import com.oxygensend.auth.application.settings.LoginType;
 import com.oxygensend.auth.application.token.TokenApplicationService;
+import com.oxygensend.auth.domain.model.identity.UserUniquenessChecker;
 import com.oxygensend.auth.domain.model.identity.AccountActivationType;
 import com.oxygensend.auth.domain.model.identity.BusinessId;
-import com.oxygensend.auth.domain.model.identity.Credentials;
 import com.oxygensend.auth.domain.model.identity.EmailAddress;
 import com.oxygensend.auth.domain.model.identity.PasswordService;
-import com.oxygensend.auth.domain.model.identity.RegistrationService;
 import com.oxygensend.auth.domain.model.identity.Role;
+import com.oxygensend.auth.domain.model.identity.RoleRepository;
 import com.oxygensend.auth.domain.model.identity.User;
 import com.oxygensend.auth.domain.model.identity.UserId;
 import com.oxygensend.auth.domain.model.identity.UserMother;
 import com.oxygensend.auth.domain.model.identity.UserRepository;
 import com.oxygensend.auth.domain.model.identity.Username;
+import com.oxygensend.auth.domain.model.identity.exception.UnexpectedRoleException;
 import com.oxygensend.auth.domain.model.identity.exception.UserNotFoundException;
 import com.oxygensend.auth.domain.model.session.SessionRepository;
 import com.oxygensend.auth.domain.model.token.EmailVerificationTokenSubject;
@@ -31,7 +32,6 @@ import com.oxygensend.auth.domain.model.token.PasswordResetTokenSubject;
 import com.oxygensend.auth.domain.model.token.TokenType;
 import com.oxygensend.auth.domain.model.token.payload.EmailVerificationTokenPayload;
 import com.oxygensend.auth.domain.model.token.payload.PasswordResetTokenPayload;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -57,11 +57,13 @@ public class UserServiceTest {
     @Mock
     private PasswordService passwordService;
 
-    @Mock
-    private RegistrationService registrationService;
 
     @Mock
     private SessionRepository sessionRepository;
+    @Mock
+    private UserUniquenessChecker userUniquenessChecker;
+    @Mock
+    private RoleRepository roleRepository;
 
     @InjectMocks
     private UserService service;
@@ -277,30 +279,53 @@ public class UserServiceTest {
     }
 
     @Test
-    void shouldCreateUser_whenValidCommandProvided() {
+    void shouldRegisterUser_whenValidCommandProvided() {
         // Given
-        CreateUserCommand command = new CreateUserCommand(
+        RegisterUserCommand command = new RegisterUserCommand(
             new EmailAddress("test@example.com"),
             new Username("testuser"),
             "password123",
             Set.of(new Role("USER")),
-            true,
-            new BusinessId("business-id")
+            new BusinessId("business-id"),
+            AccountActivationType.NONE
         );
 
         String encodedPassword = "encoded-password";
+        UserId userId = new UserId(UUID.randomUUID());
+        User expectedUser = UserMother.getRandom();
+
+        when(repository.nextIdentity()).thenReturn(userId);
         when(passwordService.encode(command.rawPassword())).thenReturn(encodedPassword);
+        when(roleRepository.exists(any(Role.class))).thenReturn(true);
+        when(repository.save(any(User.class))).thenReturn(expectedUser);
+        when(userUniquenessChecker.isUnique(any(User.class))).thenReturn(true);
 
         // When
-        service.createUser(command);
+        User result = service.registerUser(command);
 
         // Then
+        assertThat(result).isEqualTo(expectedUser);
         verify(passwordService).encode(command.rawPassword());
-        verify(registrationService).registerUser(
-            any(Credentials.class),
-            eq(command.roles()),
-            eq(command.businessId()),
-            eq(AccountActivationType.NONE)
+        verify(repository).nextIdentity();
+        verify(repository).save(any(User.class));
+    }
+
+    @Test
+    void shouldThrowUnexpectedRoleException_whenRoleDoesNotExist() {
+        // Given
+        RegisterUserCommand command = new RegisterUserCommand(
+            new EmailAddress("test@example.com"),
+            new Username("testuser"),
+            "password123",
+            Set.of(new Role("INVALID_ROLE")),
+            new BusinessId("business-id"),
+            AccountActivationType.NONE
         );
+
+        when(roleRepository.exists(any(Role.class))).thenReturn(false);
+
+        // When & Then
+        assertThatThrownBy(() -> service.registerUser(command))
+            .isInstanceOf(UnexpectedRoleException.class);
     }
 }

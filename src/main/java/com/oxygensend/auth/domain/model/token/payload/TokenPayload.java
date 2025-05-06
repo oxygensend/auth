@@ -29,6 +29,9 @@ abstract public class TokenPayload implements ClaimsPayload {
         return exp;
     }
 
+    public boolean isExpired() {
+        return exp != null && exp.before(new Date());
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

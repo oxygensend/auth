@@ -8,6 +8,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import com.oxygensend.auth.application.identity.RegisterUserCommand;
+import com.oxygensend.auth.application.identity.UserService;
 import com.oxygensend.auth.application.settings.CurrentAccountActivationType;
 import com.oxygensend.auth.application.settings.LoginDto;
 import com.oxygensend.auth.application.settings.LoginProvider;
@@ -17,8 +19,6 @@ import com.oxygensend.auth.domain.model.identity.AccountActivationType;
 import com.oxygensend.auth.domain.model.identity.AuthenticationService;
 import com.oxygensend.auth.domain.model.identity.BusinessId;
 import com.oxygensend.auth.domain.model.identity.EmailAddress;
-import com.oxygensend.auth.domain.model.identity.PasswordService;
-import com.oxygensend.auth.domain.model.identity.RegistrationService;
 import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.User;
 import com.oxygensend.auth.domain.model.identity.UserDescriptor;
@@ -52,9 +52,7 @@ class AuthServiceTest {
     @Mock
     private AuthenticationService authenticationService;
     @Mock
-    private RegistrationService registrationService;
-    @Mock
-    private PasswordService passwordService;
+    private UserService userService;
     @Mock
     private LoginProvider loginProvider;
     @Mock
@@ -70,13 +68,12 @@ class AuthServiceTest {
     void shouldRegisterUser_withValidCommand() {
         // given
         RegisterCommand command = registerCommand();
+        RegisterUserCommand registerUserCommand = registerUserCommand();
         AccountActivationType activationType = AccountActivationType.VERIFY_EMAIL;
         when(currentAccountActivationType.get()).thenReturn(activationType);
 
         User user = mockUser();
-        when(passwordService.encode(command.rawPassword())).thenReturn("encoded_password");
-        when(registrationService.registerUser(any(), eq(command.roles()), eq(command.businessId()), eq(activationType)))
-            .thenReturn(user);
+        when(userService.registerUser(eq(registerUserCommand))).thenReturn(user);
         givenSessionAndTokens(user.id());
 
         // when
@@ -158,6 +155,17 @@ class AuthServiceTest {
     }
 
     // ===== Helpers =====
+
+    private RegisterUserCommand registerUserCommand() {
+        return new RegisterUserCommand(
+            new EmailAddress("user@example.com"),
+            new Username("testuser"),
+            "password123",
+            Set.of(new Role("USER")),
+            new BusinessId("business123"),
+            AccountActivationType.VERIFY_EMAIL
+        );
+    }
 
     private RegisterCommand registerCommand() {
         return new RegisterCommand(

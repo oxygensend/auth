@@ -1,9 +1,8 @@
 package com.oxygensend.auth.infrastructure.domain;
 
+import com.oxygensend.auth.domain.model.identity.UserUniquenessChecker;
 import com.oxygensend.auth.domain.model.identity.AuthenticationService;
 import com.oxygensend.auth.domain.model.identity.PasswordService;
-import com.oxygensend.auth.domain.model.identity.RegistrationService;
-import com.oxygensend.auth.domain.model.identity.RoleRepository;
 import com.oxygensend.auth.domain.model.identity.UserRepository;
 import com.oxygensend.auth.domain.model.token.TokenService;
 import com.oxygensend.auth.domain.model.token.payload.TokenPayloadFactoryProvider;
@@ -22,9 +21,8 @@ public class DomainServiceConfiguration {
     }
 
     @Bean
-    RegistrationService registrationService(UserRepository userRepository,
-                                            RoleRepository roleRepository) {
-        return new RegistrationService(userRepository, roleRepository);
+    UserUniquenessChecker userUniquenessChecker(UserRepository userRepository) {
+        return new UserUniquenessChecker(userRepository);
     }
 
     @Bean

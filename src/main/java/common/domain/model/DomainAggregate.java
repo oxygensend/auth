@@ -10,7 +10,7 @@ public abstract class DomainAggregate {
         return events;
     }
 
-    public void addEvent(DomainEvent event) {
+    protected void addEvent(DomainEvent event) {
         events.add(event);
     }
 }

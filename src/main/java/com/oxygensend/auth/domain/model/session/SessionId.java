@@ -10,7 +10,7 @@ public record SessionId(UUID value) {
 
     @JsonCreator
     public SessionId {
-        AssertionConcern.assertArgumentNotNull(value, "Session ID cannot be null");
+        AssertionConcern.assertArgumentNotNull(value, "SessionId value cannot be null");
     }
 
     @JsonValue

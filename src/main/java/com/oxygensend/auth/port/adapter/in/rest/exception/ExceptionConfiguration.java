@@ -7,7 +7,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @Configuration
-public class ExceptionConfiguration {
+class ExceptionConfiguration {
 
 
     @Bean

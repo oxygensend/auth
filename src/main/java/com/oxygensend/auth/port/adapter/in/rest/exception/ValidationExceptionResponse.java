@@ -2,11 +2,11 @@ package com.oxygensend.auth.port.adapter.in.rest.exception;
 
 import java.util.Objects;
 
-public class ValidationExceptionResponse implements SubExceptionResponse {
-    private String field;
-    private Object rejectedValue;
+final class ValidationExceptionResponse implements SubExceptionResponse {
     private final String object;
     private final String message;
+    private String field;
+    private Object rejectedValue;
 
     ValidationExceptionResponse(String object, String message) {
         this.object = object;
@@ -39,11 +39,11 @@ public class ValidationExceptionResponse implements SubExceptionResponse {
     @Override
     public String toString() {
         return "ValidationExceptionResponse{" +
-                "field='" + field + '\'' +
-                ", rejectedValue=" + rejectedValue +
-                ", object='" + object + '\'' +
-                ", message='" + message + '\'' +
-                '}';
+            "field='" + field + '\'' +
+            ", rejectedValue=" + rejectedValue +
+            ", object='" + object + '\'' +
+            ", message='" + message + '\'' +
+            '}';
     }
 
     @Override
@@ -55,7 +55,8 @@ public class ValidationExceptionResponse implements SubExceptionResponse {
             return false;
         }
         ValidationExceptionResponse that = (ValidationExceptionResponse) o;
-        return Objects.equals(field, that.field) && Objects.equals(rejectedValue, that.rejectedValue) && Objects.equals(object, that.object) && Objects.equals(message, that.message);
+        return Objects.equals(field, that.field) && Objects.equals(rejectedValue, that.rejectedValue) && Objects.equals(
+            object, that.object) && Objects.equals(message, that.message);
     }
 
     @Override

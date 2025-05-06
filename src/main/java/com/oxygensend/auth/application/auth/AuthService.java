@@ -1,16 +1,13 @@
 package com.oxygensend.auth.application.auth;
 
+import com.oxygensend.auth.application.identity.UserService;
 import com.oxygensend.auth.application.settings.CurrentAccountActivationType;
 import com.oxygensend.auth.application.settings.LoginDto;
 import com.oxygensend.auth.application.settings.LoginProvider;
 import com.oxygensend.auth.application.token.TokenApplicationService;
 import com.oxygensend.auth.domain.model.identity.AuthenticationService;
 import com.oxygensend.auth.domain.model.identity.BusinessId;
-import com.oxygensend.auth.domain.model.identity.Credentials;
 import com.oxygensend.auth.domain.model.identity.EmailAddress;
-import com.oxygensend.auth.domain.model.identity.Password;
-import com.oxygensend.auth.domain.model.identity.PasswordService;
-import com.oxygensend.auth.domain.model.identity.RegistrationService;
 import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.UserDescriptor;
 import com.oxygensend.auth.domain.model.identity.UserId;
@@ -28,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.Set;
 
 
@@ -38,36 +34,27 @@ public class AuthService {
 
     private final TokenApplicationService tokenApplicationService;
     private final AuthenticationService authenticationService;
-    private final RegistrationService registrationService;
-    private final PasswordService passwordService;
     private final LoginProvider loginProvider;
     private final SessionManager sessionManager;
     private final CurrentAccountActivationType currentAccountActivationType;
+    private final UserService userService;
 
     public AuthService(TokenApplicationService tokenApplicationService, AuthenticationService authenticationService,
-                       RegistrationService registrationService, PasswordService passwordService,
                        LoginProvider loginProvider, SessionManager sessionManager,
-                       CurrentAccountActivationType currentAccountActivationType) {
+                       CurrentAccountActivationType currentAccountActivationType, UserService userService) {
         this.tokenApplicationService = tokenApplicationService;
         this.authenticationService = authenticationService;
-        this.registrationService = registrationService;
-        this.passwordService = passwordService;
         this.loginProvider = loginProvider;
         this.sessionManager = sessionManager;
         this.currentAccountActivationType = currentAccountActivationType;
+        this.userService = userService;
     }
 
 
     @Transactional
     public Pair<UserId, AuthenticationTokensDto> register(RegisterCommand command) {
         LOGGER.info("Registering user with email: {}", command.email());
-        var password = Password.fromPlaintext(command.rawPassword(), passwordService);
-        var credentials = new Credentials(command.email(), command.username(), password);
-
-        var user = registrationService.registerUser(credentials,
-                                                    command.roles(),
-                                                    command.businessId(),
-                                                    currentAccountActivationType.get());
+        var user = userService.registerUser(command.toRegisterUserCommand(currentAccountActivationType.get()));
         sessionManager.startSession(user.id());
 
         var authenticationTokensDto = generateTokens(user.id(),
@@ -132,7 +119,7 @@ public class AuthService {
 
     private RefreshTokenPayload getRefreshTokenPayload(String token) {
         var payload = (RefreshTokenPayload) tokenApplicationService.parseToken(token, TokenType.REFRESH);
-        if (payload.exp().before(new Date())) {
+        if (payload.isExpired()) {
             throw new TokenException("Token is expired");
         }
         return payload;

@@ -9,7 +9,7 @@ public class UserAlreadyExistsException extends DomainException {
 
 
     public static UserAlreadyExistsException withUsername() {
-        return new UserAlreadyExistsException("User with this username already exists.");
+        return new UserAlreadyExistsException("User with this username or email already exists.");
     }
 
     public static UserAlreadyExistsException withEmail() {

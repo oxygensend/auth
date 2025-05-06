@@ -9,29 +9,29 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
-public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
+class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
     @Override
-    public ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+    public ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers,
+                                                               HttpStatusCode status, WebRequest request) {
         String error = "Malformed JSON request";
-        return buildResponseEntity(new ExceptionResponse(HttpStatus.BAD_REQUEST,  error, ex));
+        return buildResponseEntity(new ExceptionResponse(HttpStatus.BAD_REQUEST, error, ex));
     }
 
-    @ExceptionHandler(ApiException.class)
-    public ResponseEntity<Object> handleCustomException(ApiException ex) {
-        logger.info("Throwing an exception: " + ex);
-        return buildResponseEntity(new ExceptionResponse(ex.getStatusCode(), ex.getMessage()));
-    }
+//    public ResponseEntity<Object> handleCustomException(ApiException ex) {
+//        logger.info("Throwing an exception: " + ex);
+//        return buildResponseEntity(new ExceptionResponse(ex.getStatusCode(), ex.getMessage()));
+//    }
 
     @Override
-    public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+    public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers,
+                                                               HttpStatusCode status, WebRequest request) {
         ExceptionResponse apiException = new ExceptionResponse(HttpStatus.BAD_REQUEST, "Validation error", ex);
         apiException.addValidationErrors(ex.getBindingResult().getFieldErrors());
         apiException.addValidationException(ex.getBindingResult().getGlobalErrors());

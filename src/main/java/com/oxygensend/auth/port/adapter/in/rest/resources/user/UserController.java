@@ -106,6 +106,6 @@ class UserController {
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void createUser(@Validated @RequestBody CreateUserRequest request) {
-        service.createUser(request.toCommand());
+        service.registerUser(request.toCommand());
     }
 }

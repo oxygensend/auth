@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Profile(Ports.REST)
 public record RegisterRequest(@NotNull String email,
-                              String username,
+                              @NotNull String username,
                               @Size(min = 4, max = 64) @NotBlank String password,
                               @NotEmpty Set<@ValidRole String> roles,
                               String businessId) {
@@ -37,8 +37,8 @@ public record RegisterRequest(@NotNull String email,
         return new RegisterCommand(
             new EmailAddress(email()),
             new Username(username()),
-           password(),
-           roles().stream().map(Role::new).collect(Collectors.toSet()),
+            password(),
+            roles().stream().map(Role::new).collect(Collectors.toSet()),
             new BusinessId(businessId())
         );
     }

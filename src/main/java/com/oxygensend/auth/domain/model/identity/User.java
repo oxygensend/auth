@@ -11,6 +11,7 @@ import com.oxygensend.auth.domain.model.identity.event.VerifiedEvent;
 import com.oxygensend.auth.domain.model.identity.exception.PasswordMismatchException;
 import com.oxygensend.auth.domain.model.identity.exception.RoleAlreadyExistsException;
 import com.oxygensend.auth.domain.model.identity.exception.RoleNotAssignedException;
+import com.oxygensend.auth.domain.model.identity.exception.UserAlreadyExistsException;
 
 import java.util.Objects;
 import java.util.Set;
@@ -28,6 +29,7 @@ public class User extends DomainAggregate {
     private boolean blocked;
     private boolean verified;
 
+    // Used only for adapter needs, users should be created using the factory method
     public User(UserId id,
                 Credentials credentials,
                 Set<Role> roles,
@@ -51,13 +53,17 @@ public class User extends DomainAggregate {
         this.accountActivationType = accountActivationType;
     }
 
-    static User registerNewUser(UserId id,
-                                Credentials credentials,
-                                Set<Role> roles,
-                                BusinessId businessId,
-                                AccountActivationType accountActivation) {
+    public static User registerUser(UserId id,
+                                    Credentials credentials,
+                                    Set<Role> roles,
+                                    BusinessId businessId,
+                                    AccountActivationType accountActivation,
+                                    UserUniquenessChecker userUniquenessChecker) {
         boolean isVerified = accountActivation == AccountActivationType.NONE;
         var newUser = new User(id, credentials, roles, false, isVerified, businessId, accountActivation);
+        if (!userUniquenessChecker.isUnique(newUser)) {
+            throw UserAlreadyExistsException.withUsername();
+        }
         newUser.addEvent(new RegisteredEvent(newUser));
         return newUser;
     }

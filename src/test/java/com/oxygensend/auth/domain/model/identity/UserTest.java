@@ -17,6 +17,7 @@ import com.oxygensend.auth.domain.model.identity.event.VerifiedEvent;
 import com.oxygensend.auth.domain.model.identity.exception.PasswordMismatchException;
 import com.oxygensend.auth.domain.model.identity.exception.RoleAlreadyExistsException;
 import com.oxygensend.auth.domain.model.identity.exception.RoleNotAssignedException;
+import com.oxygensend.auth.domain.model.identity.exception.UserAlreadyExistsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +34,9 @@ class UserTest {
 
     @Mock
     private PasswordService passwordService;
+
+    @Mock
+    private UserUniquenessChecker userUniquenessChecker;
 
     private UserId userId;
     private Credentials credentials;
@@ -57,9 +61,10 @@ class UserTest {
     void givenValidParameters_whenRegisterNewUser_thenUserIsCreatedWithRegisteredEvent() {
         // Given
         AccountActivationType activationType = AccountActivationType.VERIFY_EMAIL;
+        when(userUniquenessChecker.isUnique(any())).thenReturn(true);
 
         // When
-        User user = User.registerNewUser(userId, credentials, roles, businessId, activationType);
+        User user = User.registerUser(userId, credentials, roles, businessId, activationType, userUniquenessChecker);
 
         // Then
         assertThat(user.id()).isEqualTo(userId);
@@ -78,12 +83,28 @@ class UserTest {
     void givenNoActivationType_whenRegisterNewUser_thenUserIsVerified() {
         // Given
         AccountActivationType activationType = AccountActivationType.NONE;
+        when(userUniquenessChecker.isUnique(any())).thenReturn(true);
 
         // When
-        User user = User.registerNewUser(userId, credentials, roles, businessId, activationType);
+        User user = User.registerUser(userId, credentials, roles, businessId, activationType, userUniquenessChecker);
 
         // Then
         assertThat(user.isVerified()).isTrue();
+    }
+
+    @Test
+    void givenNotUniqueUser_whenRegisterNewUser_thenUserAlreadyExistsExceptionIsThrown() {
+        // Given
+        AccountActivationType activationType = AccountActivationType.NONE;
+        when(userUniquenessChecker.isUnique(any())).thenReturn(false);
+
+        // When && Then
+        assertThatThrownBy(
+            () -> User.registerUser(userId, credentials, roles, businessId, activationType, userUniquenessChecker))
+            .isInstanceOf(UserAlreadyExistsException.class)
+            .hasMessageContaining("User with this username or email already exists");
+
+
     }
 
     @Test

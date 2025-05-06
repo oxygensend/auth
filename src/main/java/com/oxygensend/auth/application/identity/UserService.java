@@ -3,16 +3,18 @@ package com.oxygensend.auth.application.identity;
 import com.oxygensend.auth.application.auth.security.AuthenticationPrinciple;
 import com.oxygensend.auth.application.settings.LoginDto;
 import com.oxygensend.auth.application.token.TokenApplicationService;
-import com.oxygensend.auth.domain.model.identity.AccountActivationType;
+import com.oxygensend.auth.domain.model.identity.UserUniquenessChecker;
 import com.oxygensend.auth.domain.model.identity.Credentials;
 import com.oxygensend.auth.domain.model.identity.EmailAddress;
 import com.oxygensend.auth.domain.model.identity.Password;
 import com.oxygensend.auth.domain.model.identity.PasswordService;
-import com.oxygensend.auth.domain.model.identity.RegistrationService;
+import com.oxygensend.auth.domain.model.identity.Role;
+import com.oxygensend.auth.domain.model.identity.RoleRepository;
 import com.oxygensend.auth.domain.model.identity.User;
 import com.oxygensend.auth.domain.model.identity.UserId;
 import com.oxygensend.auth.domain.model.identity.UserRepository;
 import com.oxygensend.auth.domain.model.identity.Username;
+import com.oxygensend.auth.domain.model.identity.exception.UnexpectedRoleException;
 import com.oxygensend.auth.domain.model.identity.exception.UserNotFoundException;
 import com.oxygensend.auth.domain.model.session.SessionRepository;
 import com.oxygensend.auth.domain.model.token.EmailVerificationTokenSubject;
@@ -25,7 +27,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -34,19 +38,22 @@ public class UserService {
     private final TokenApplicationService tokenApplicationService;
     private final AuthenticationPrinciple authenticationPrinciple;
     private final PasswordService passwordService;
-    private final RegistrationService registrationService;
     private final SessionRepository sessionRepository;
+    private final RoleRepository roleRepository;
+    private final UserUniquenessChecker userUniquenessChecker;
 
 
     public UserService(UserRepository repository, TokenApplicationService tokenApplicationService,
                        AuthenticationPrinciple authenticationPrinciple, PasswordService passwordService,
-                       RegistrationService registrationService, SessionRepository sessionRepository) {
+                       SessionRepository sessionRepository,
+                       RoleRepository roleRepository, UserUniquenessChecker userUniquenessChecker) {
         this.repository = repository;
         this.tokenApplicationService = tokenApplicationService;
         this.authenticationPrinciple = authenticationPrinciple;
         this.passwordService = passwordService;
-        this.registrationService = registrationService;
         this.sessionRepository = sessionRepository;
+        this.roleRepository = roleRepository;
+        this.userUniquenessChecker = userUniquenessChecker;
     }
 
     public Optional<User> userByLogin(LoginDto login) {
@@ -145,17 +152,35 @@ public class UserService {
     }
 
     @Transactional
-    public void createUser(CreateUserCommand command) {
+    public User registerUser(RegisterUserCommand command) {
         LOGGER.info("Creating user with email: {}", command.email());
+
+        checkIfRolesExist(command.roles());
+
         var credentials = new Credentials(command.email(),
                                           command.username(),
-                                          Password.fromHashed(passwordService.encode(command.rawPassword())),
-                                          false);
+                                          Password.fromHashed(passwordService.encode(command.rawPassword())));
 
-        registrationService.registerUser(credentials,
-                                         command.roles(),
-                                         command.businessId(),
-                                         AccountActivationType.NONE);
+        var user = User.registerUser(repository.nextIdentity(),
+                                     credentials,
+                                     command.roles(),
+                                     command.businessId(),
+                                     command.accountActivationType(),
+                                     userUniquenessChecker);
+
+        user = repository.save(user);
         LOGGER.info("User with email {} created successfully", command.email());
+        return user;
+    }
+
+    private void checkIfRolesExist(Set<Role> roles) {
+        List<Role> notFoundRoles = roles.stream()
+                                        .filter(role -> !roleRepository.exists(role))
+                                        .toList();
+
+        if (!notFoundRoles.isEmpty()) {
+            throw new UnexpectedRoleException(notFoundRoles);
+        }
+
     }
 }
