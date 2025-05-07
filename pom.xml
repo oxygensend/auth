@@ -135,6 +135,9 @@
     <profiles>
         <profile>
             <id>KAFKA</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
                 <spring.profiles.active>KAFKA</spring.profiles.active>
             </properties>
@@ -162,6 +165,9 @@
         </profile>
         <profile>
             <id>MYSQL</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
                 <spring.profiles.active>MYSQL</spring.profiles.active>
             </properties>
