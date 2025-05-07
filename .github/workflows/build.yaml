@@ -89,8 +89,6 @@ jobs:
       - name: Run unit tests
         run: |
           mvn test
-      - name: List JaCoCo output
-        run: ls -R jacocoResults
       - name: Upload jacoco exec results
         uses: actions/upload-artifact@v4
         with:
@@ -126,7 +124,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven
       - name: Run integration tests
-        run: mvn jacoco:prepare-agent failsafe:integration-test failsafe:verify -Djacoco.destFile=jacocoResults/integration-tests-jacoco.exec
+        run: mvn verify -DskipUnitTests
       - name: Upload jacoco exec results
         uses: actions/upload-artifact@v4
         with:
