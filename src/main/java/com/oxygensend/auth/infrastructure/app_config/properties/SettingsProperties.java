@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
 import java.util.Set;
 
 import common.ExcludeFromJacocoGeneratedReport;
@@ -18,7 +19,7 @@ import common.ExcludeFromJacocoGeneratedReport;
 @ConfigurationProperties(prefix = "auth.settings")
 public record SettingsProperties(@Valid SettingsProperties.SignInProperties signIn,
                                  @NotNull LoginType loginType,
-                                 @NotEmpty Set<String> roles,
+                                 @NotEmpty List<String> roles,
                                  @Valid SettingsProperties.UserRoleProperties userRoleFeature) {
     @PostConstruct
     public void validate() {
