@@ -231,7 +231,7 @@
                         <id>clean-test</id>
                         <phase>verify</phase>
                         <configuration>
-                            <executable>./mvnw</executable>
+                            <executable>mvn</executable>
                             <arguments>
                                 <argument>clean</argument>
                                 <argument>test</argument>
