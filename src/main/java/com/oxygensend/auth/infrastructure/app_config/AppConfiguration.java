@@ -1,6 +1,7 @@
 package com.oxygensend.auth.infrastructure.app_config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.oxygensend.auth.application.settings.CurrentAccountActivationType;
 import com.oxygensend.auth.application.settings.LoginProvider;
@@ -25,6 +26,7 @@ class AppConfiguration {
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         return objectMapper;
     }
 
