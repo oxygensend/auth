@@ -44,8 +44,7 @@ public record SettingsProperties(@Valid SettingsProperties.SignInProperties sign
                      .toList();
     }
 
-    public record SignInProperties(AccountActivationType accountActivation,
-                                   String registerEventTopic) {
+    public record SignInProperties(AccountActivationType accountActivation) {
     }
 
 
