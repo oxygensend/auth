@@ -119,7 +119,7 @@ public class AuthService {
     private RefreshTokenPayload getRefreshTokenPayload(String token) {
         var payload = (RefreshTokenPayload) tokenApplicationService.parseToken(token, TokenType.REFRESH);
         if (payload.isExpired()) {
-            throw new RuntimeException("Provided token is expired");
+            throw new ExpiredRefreshTokenException();
         }
         return payload;
     }

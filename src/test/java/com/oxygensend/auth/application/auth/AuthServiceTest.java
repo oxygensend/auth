@@ -149,8 +149,8 @@ class AuthServiceTest {
 
         // when + then
         assertThatThrownBy(() -> authService.refreshToken(token))
-            .isInstanceOf(RuntimeException.class)
-            .hasMessageContaining("Provided token is expired");
+            .isInstanceOf(ExpiredRefreshTokenException.class)
+            .hasMessageContaining("Refresh token is expired");
         verifyNoMoreInteractions(sessionManager, authenticationService);
     }
 
