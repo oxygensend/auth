@@ -1,270 +1,232 @@
 package com.oxygensend.auth.application.auth;
 
-import com.oxygensend.auth.config.IdentityType;
-import com.oxygensend.auth.config.properties.SettingsProperties;
-import com.oxygensend.auth.application.IdentityProvider;
-import com.oxygensend.auth.application.auth.request.AuthenticationRequest;
-import com.oxygensend.auth.application.auth.request.RefreshTokenRequest;
-import com.oxygensend.auth.application.auth.request.RegisterRequest;
-import com.oxygensend.auth.application.auth.response.AuthenticationResponse;
-import com.oxygensend.auth.application.auth.response.RegisterResponse;
-import com.oxygensend.auth.application.auth.response.ValidationResponse;
-import com.oxygensend.auth.application.jwt.JwtFacade;
-import com.oxygensend.auth.application.jwt.payload.RefreshTokenPayload;
-import com.oxygensend.auth.application.user.UserIdProvider;
-import com.oxygensend.auth.domain.AccountActivation;
-import com.oxygensend.auth.domain.Session;
-import com.oxygensend.auth.domain.TokenType;
-import com.oxygensend.auth.domain.User;
-import com.oxygensend.auth.domain.UserRepository;
-import com.oxygensend.auth.domain.event.EventPublisher;
-import com.oxygensend.auth.domain.event.EventWrapper;
-import com.oxygensend.auth.domain.exception.SessionExpiredException;
-import com.oxygensend.auth.domain.exception.TokenException;
-import com.oxygensend.auth.domain.exception.UnauthorizedException;
-import com.oxygensend.auth.domain.exception.UserAlreadyExistsException;
-import com.oxygensend.auth.helper.ValidationResponseMother;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import com.oxygensend.auth.application.identity.RegisterUserCommand;
+import com.oxygensend.auth.application.identity.UserService;
+import com.oxygensend.auth.application.settings.CurrentAccountActivationType;
+import com.oxygensend.auth.application.settings.LoginDto;
+import com.oxygensend.auth.application.settings.LoginProvider;
+import com.oxygensend.auth.application.settings.LoginType;
+import com.oxygensend.auth.application.token.TokenApplicationService;
+import com.oxygensend.auth.domain.model.identity.AccountActivationType;
+import com.oxygensend.auth.domain.model.identity.AuthenticationService;
+import com.oxygensend.auth.domain.model.identity.BusinessId;
+import com.oxygensend.auth.domain.model.identity.EmailAddress;
+import com.oxygensend.auth.domain.model.identity.Role;
+import com.oxygensend.auth.domain.model.identity.User;
+import com.oxygensend.auth.domain.model.identity.UserDescriptor;
+import com.oxygensend.auth.domain.model.identity.UserId;
+import com.oxygensend.auth.domain.model.identity.UserMother;
+import com.oxygensend.auth.domain.model.identity.Username;
+import com.oxygensend.auth.domain.model.session.Session;
+import com.oxygensend.auth.domain.model.session.SessionId;
+import com.oxygensend.auth.domain.model.session.SessionManager;
+import com.oxygensend.auth.domain.model.token.AccessTokenSubject;
+import com.oxygensend.auth.domain.model.token.RefreshTokenSubject;
+import com.oxygensend.auth.domain.model.token.TokenType;
+import com.oxygensend.auth.domain.model.token.exception.InvalidTokenTypeException;
+import com.oxygensend.auth.domain.model.token.payload.RefreshTokenPayload;
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Date;
+import java.util.Set;
+import java.util.UUID;
+
 @ExtendWith(MockitoExtension.class)
-public class AuthServiceTest {
+class AuthServiceTest {
+
+    @Mock
+    private TokenApplicationService tokenApplicationService;
+    @Mock
+    private AuthenticationService authenticationService;
+    @Mock
+    private UserService userService;
+    @Mock
+    private LoginProvider loginProvider;
+    @Mock
+    private SessionManager sessionManager;
+    @Mock
+    private CurrentAccountActivationType currentAccountActivationType;
 
     @InjectMocks
     private AuthService authService;
-    @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private AuthenticationManager authenticationManager;
-
-    @Mock
-    private JwtFacade jwtFacade;
-
-    @Mock
-    private SessionManager sessionManager;
-
-    @Mock
-    private EventPublisher eventPublisher;
-    @Mock
-    private IdentityProvider identityProvider;
-
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private SettingsProperties settingsProperties;
-
-    @Mock
-    private UserIdProvider userIdProvider;
 
 
     @Test
-    public void testAuthenticate_ValidCredentials() {
-        // Arrange
-        String email = "test@example.com";
-        String password = "password";
-        AuthenticationRequest request = new AuthenticationRequest(email, password);
+    void shouldRegisterUser_withValidCommand() {
+        // given
+        RegisterCommand command = registerCommand();
+        RegisterUserCommand registerUserCommand = registerUserCommand();
+        AccountActivationType activationType = AccountActivationType.VERIFY_EMAIL;
+        when(currentAccountActivationType.get()).thenReturn(activationType);
 
-        var user = User.builder()
-                       .id(UUID.randomUUID())
-                       .email(email)
-                       .password(passwordEncoder.encode(password))
-                       .build();
+        User user = mockUser();
+        when(userService.registerUser(eq(registerUserCommand))).thenReturn(user);
+        givenSessionAndTokens(user.id());
 
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(new UsernamePasswordAuthenticationToken(user, null, null));
-        when(sessionManager.prepareSession(user)).thenReturn(new AuthenticationResponse("access_token", "refresh_token"));
+        // when
+        Pair<UserId, AuthenticationTokensDto> result = authService.register(command);
 
-        // Act
-        AuthenticationResponse response = authService.authenticate(request);
-
-        // Assert
-        verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verify(sessionManager, times(1)).prepareSession(user);
+        // then
+        assertThat(result.getLeft()).isEqualTo(user.id());
+        assertTokens(result.getRight());
     }
 
     @Test
-    public void testAuthenticate_InvalidCredentials() {
-        // Arrange
-        String email = "test@example.com";
-        String password = "password";
-        AuthenticationRequest request = new AuthenticationRequest(email, password);
+    void shouldAuthenticate_withEmail() {
+        // given
+        String login = "user@example.com";
+        LoginDto loginDto = new LoginDto(login, LoginType.EMAIL);
+        when(loginProvider.get(login)).thenReturn(loginDto);
+        UserDescriptor descriptor = userDescriptor(login, "testuser");
+        when(authenticationService.authenticateWithEmail(new EmailAddress(login), "password123"))
+            .thenReturn(descriptor);
+        givenSessionAndTokens(descriptor.userId());
 
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenThrow(BadCredentialsException.class);
+        // when
+        AuthenticationTokensDto result = authService.authenticate(login, "password123");
 
-        // Act & Assert
-        assertThrows(UnauthorizedException.class, () -> authService.authenticate(request));
-        verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verifyNoMoreInteractions(sessionManager);
+        // then
+        assertTokens(result);
     }
 
     @Test
-    public void testRegister_NewUser() {
-        // Arrange
-        String email = "test@example.com";
-        String password = "password";
-        RegisterRequest request = new RegisterRequest(email, password);
-        UUID id = UUID.randomUUID();
-        RegisterResponse expectedResponse = new RegisterResponse(id, "access_token", "refresh_token");
-        AuthenticationResponse sessionReponse = new AuthenticationResponse("access_token", "refresh_token");
+    void shouldAuthenticate_withUsername() {
+        // given
+        String login = "testuser";
+        LoginDto loginDto = new LoginDto(login, LoginType.USERNAME);
+        when(loginProvider.get(login)).thenReturn(loginDto);
+        UserDescriptor descriptor = userDescriptor("user@example.com", login);
+        when(authenticationService.authenticateWithUsername(new Username(login), "password123"))
+            .thenReturn(descriptor);
+        givenSessionAndTokens(descriptor.userId());
 
-        when(settingsProperties.signIn().accountActivation()).thenReturn(AccountActivation.NONE);
-        when(passwordEncoder.encode(password)).thenReturn("encoded_password");
-        when(userRepository.findByUsername(email)).thenReturn(Optional.empty());
-        when(userRepository.save(any(User.class))).thenReturn(mock(User.class));
-        when(sessionManager.prepareSession(any(User.class))).thenReturn(sessionReponse);
-        when(identityProvider.getIdentityType()).thenReturn(IdentityType.EMAIL);
-        when(userIdProvider.get()).thenReturn(id);
+        // when
+        AuthenticationTokensDto result = authService.authenticate(login, "password123");
 
-
-        // Act
-        RegisterResponse response = authService.register(request);
-
-        // Assert
-        assertEquals(response, expectedResponse);
-        verify(eventPublisher, times(1)).publish(any(EventWrapper.class));
-        verify(userRepository, times(1)).findByUsername(email);
-        verify(passwordEncoder, times(1)).encode(password);
-        verify(userRepository, times(1)).save(any(User.class));
-        verify(sessionManager, times(1)).prepareSession(any(User.class));
+        // then
+        assertTokens(result);
     }
 
-
     @Test
-    public void testRegister_ExistingUser() {
-        // Arrange
-        String email = "test@example.com";
-        String password = "password";
-        RegisterRequest request = new RegisterRequest(email, password);
+    void shouldRefreshToken_withValidToken() {
+        // given
+        String token = "refresh_token";
+        UserId userId = UserMother.userId();
+        RefreshTokenPayload payload = new RefreshTokenPayload(userId, new Date(), futureDate());
+        Session session = mockSession(userId);
+        when(tokenApplicationService.parseToken(token, TokenType.REFRESH)).thenReturn(payload);
+        when(sessionManager.currentSession(userId)).thenReturn(session);
+        when(authenticationService.revalidateUser(userId)).thenReturn(userDescriptor("user@example.com", "testuser"));
+        givenTokens();
 
-        when(userRepository.findByUsername(email)).thenReturn(Optional.of(mock(User.class)));
+        // when
+        AuthenticationTokensDto result = authService.refreshToken(token);
 
-        // Act & Assert
-        assertThrows(UserAlreadyExistsException.class, () -> authService.register(request));
-        verify(userRepository, times(1)).findByUsername(email);
-        verifyNoMoreInteractions(passwordEncoder, userRepository, sessionManager, jwtFacade);
+        // then
+        assertTokens(result);
     }
 
-
     @Test
-    public void test_RefreshToken() {
+    void shouldThrowException_whenTokenExpired() {
+        // given
+        String token = "expired_token";
+        UserId userId = UserMother.userId();
+        RefreshTokenPayload expired = new RefreshTokenPayload(userId, new Date(), pastDate());
+        when(tokenApplicationService.parseToken(token, TokenType.REFRESH)).thenReturn(expired);
 
-        // Arrange
-        RefreshTokenRequest request = new RefreshTokenRequest("refresh_token");
-        AuthenticationResponse expectedResponse = new AuthenticationResponse("access_token", "refresh_token");
+        // when + then
+        assertThatThrownBy(() -> authService.refreshToken(token))
+            .isInstanceOf(ExpiredRefreshTokenException.class)
+            .hasMessageContaining("Refresh token is expired");
+        verifyNoMoreInteractions(sessionManager, authenticationService);
+    }
 
-        var id = UUID.randomUUID();
-        RefreshTokenPayload refreshTokenPayload = new RefreshTokenPayload(
-                id,
-                new Date(),
-                new Date(System.currentTimeMillis() + 1000)
+    // ===== Helpers =====
+
+    private RegisterUserCommand registerUserCommand() {
+        return new RegisterUserCommand(
+            new EmailAddress("user@example.com"),
+            new Username("testuser"),
+            "password123",
+            Set.of(new Role("USER")),
+            new BusinessId("business123"),
+            AccountActivationType.VERIFY_EMAIL
         );
-        Session session = new Session(id);
-
-        when(jwtFacade.validateToken(anyString(), any(TokenType.class))).thenReturn(refreshTokenPayload);
-        when(sessionManager.getSession(id)).thenReturn(session);
-        when(userRepository.findById(id)).thenReturn(Optional.of(mock(User.class)));
-        when(sessionManager.prepareSession(any(User.class))).thenReturn(expectedResponse);
-
-        // Act
-        AuthenticationResponse response = authService.refreshToken(request);
-
-        // Assert
-        assertEquals(response, expectedResponse);
-        verify(jwtFacade, times(1)).validateToken(anyString(), any(TokenType.class));
-        verify(userRepository, times(1)).findById(id);
-        verify(sessionManager, times(1)).getSession(id);
-        verify(sessionManager, times(1)).prepareSession(any(User.class));
-
     }
 
-    @Test
-    public void test_RefreshToken_SessionNotFoundException() {
-
-        // Arrange
-        RefreshTokenRequest request = new RefreshTokenRequest("refresh_token");
-
-        var id = UUID.randomUUID();
-        RefreshTokenPayload refreshTokenPayload = new RefreshTokenPayload(
-                id,
-                new Date(),
-                new Date(System.currentTimeMillis() + 1000)
+    private RegisterCommand registerCommand() {
+        return new RegisterCommand(
+            new EmailAddress("user@example.com"),
+            new Username("testuser"),
+            "password123",
+            Set.of(new Role("USER")),
+            new BusinessId("business123")
         );
-        Session session = new Session(id);
-
-        when(jwtFacade.validateToken(anyString(), any(TokenType.class))).thenReturn(refreshTokenPayload);
-        when(sessionManager.getSession(id)).thenReturn(session);
-        when(userRepository.findById(id)).thenReturn(Optional.empty());
-
-        // Act
-        assertThrows(SessionExpiredException.class, () -> authService.refreshToken(request));
-
     }
 
-    @Test
-    public void test_RefreshToken_TokenExpired() {
+    private User mockUser() {
+        User user = mock(User.class);
+        when(user.id()).thenReturn(new UserId(UUID.randomUUID()));
+        when(user.businessId()).thenReturn(new BusinessId("business123"));
+        when(user.username()).thenReturn(new Username("testuser"));
+        when(user.email()).thenReturn(new EmailAddress("user@example.com"));
+        when(user.roles()).thenReturn(Set.of(new Role("USER")));
+        when(user.isVerified()).thenReturn(false);
+        return user;
+    }
 
-        // Arrange
-        RefreshTokenRequest request = new RefreshTokenRequest("refresh_token");
+    private void givenSessionAndTokens(UserId userId) {
+        when(sessionManager.startSession(userId)).thenReturn(new SessionId(UUID.randomUUID()));
+        givenTokens();
+    }
 
-        var id = UUID.randomUUID();
-        RefreshTokenPayload refreshTokenPayload = new RefreshTokenPayload(
-                id,
-                new Date(),
-                new Date(System.currentTimeMillis() - 1000)
+    private void givenTokens() {
+        when(tokenApplicationService.createToken(any(RefreshTokenSubject.class), eq(TokenType.REFRESH)))
+            .thenReturn("refresh_token");
+        when(tokenApplicationService.createToken(any(AccessTokenSubject.class), eq(TokenType.ACCESS)))
+            .thenReturn("access_token");
+    }
+
+    private void assertTokens(AuthenticationTokensDto dto) {
+        assertThat(dto.accessToken()).isEqualTo("access_token");
+        assertThat(dto.refreshToken()).isEqualTo("refresh_token");
+    }
+
+    private UserDescriptor userDescriptor(String email, String username) {
+        return new UserDescriptor(
+            new UserId(UUID.randomUUID()),
+            new Username(username),
+            new EmailAddress(email),
+            new BusinessId("business123"),
+            Set.of(new Role("USER")),
+            true
         );
-
-        when(jwtFacade.validateToken(anyString(), any(TokenType.class))).thenReturn(refreshTokenPayload);
-
-        // Act
-        assertThrows(TokenException.class, () -> authService.refreshToken(request));
-
     }
 
-    @Test
-    public void test_ValidateToken_expectAuthorized() {
-
-        // Arrange
-        ValidationResponse expectedResponse = ValidationResponseMother.authorized();
-
-        // Act
-        ValidationResponse response = authService.validateToken(expectedResponse.userId(), expectedResponse.authorities());
-
-        assertEquals(response, expectedResponse);
+    private Session mockSession(UserId userId) {
+        Session session = mock(Session.class);
+        when(session.userId()).thenReturn(userId);
+        return session;
     }
 
-    @Test
-    public void test_ValidateToken_expectUnauthorized() {
-
-        // Arrange
-        ValidationResponse expectedResponse = ValidationResponseMother.unAuthorized();
-
-        // Act
-        ValidationResponse response = authService.validateToken(expectedResponse.userId(), expectedResponse.authorities());
-
-        assertEquals(response, expectedResponse);
+    private Date futureDate() {
+        return new Date(System.currentTimeMillis() + 3600_000);
     }
 
-
+    private Date pastDate() {
+        return new Date(System.currentTimeMillis() - 3600_000);
+    }
 }

@@ -5,8 +5,29 @@ services:
     image: mongo:latest
     ports:
       - "27017:27017"
+    command: ["--replSet", "rs0"]
     volumes:
       - ./mongo:/data/db
+    networks:
+      - auth
+  mongo-init:
+    image: mongo:latest
+    depends_on:
+      - mongo
+    entrypoint: >
+      bash -c "
+        echo 'Waiting for MongoDB to start...';
+        for i in {1..30}; do
+          if mongosh --host mongo --eval "db.runCommand({ ping: 1 })" > /dev/null 2>&1; then
+            echo 'MongoDB is ready!';
+            break;
+          fi;
+          echo 'MongoDB is not ready yet. Retrying in 2 seconds...';
+          sleep 2;
+        done;
+        mongosh --host mongo --eval 'rs.initiate({_id: \"rs0\", members: [{ _id: 0, host: \"mongo:27017\" }]})';
+        echo 'Replica set initialized';
+      "
     networks:
       - auth
 
@@ -15,9 +36,6 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-    #    volumes:
-    #      - ./kafka/zookeeper/data:/var/lib/zookeeper/data
-    #      - ./kafka/zookeeper/log:/var/lib/zookeeper/log
     ports:
       - 22181:2181
     networks:
@@ -36,10 +54,24 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    #    volumes:
-    #      - ./kafka/broker/data:/var/lib/kafka/data
     networks:
       - auth
+  kafka-ui:
+    container_name: auth-kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - "9000:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: dev-local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_METRICS_PORT: 9997
+      DYNAMIC_CONFIG_ENABLED: true
+    depends_on:
+      - "kafka"
+    networks:
+      - auth
+
+
 
 networks:
   auth:

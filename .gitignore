@@ -40,3 +40,5 @@ mvnw
 mvnw.cmd
 
 log/*
+
+jacocoResults

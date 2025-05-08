@@ -1,131 +1,127 @@
 package com.oxygensend.auth.application.auth;
 
-import com.oxygensend.auth.config.IdentityType;
-import com.oxygensend.auth.config.properties.SettingsProperties;
-import com.oxygensend.auth.application.IdentityProvider;
-import com.oxygensend.auth.application.auth.request.AuthenticationRequest;
-import com.oxygensend.auth.application.auth.request.RefreshTokenRequest;
-import com.oxygensend.auth.application.auth.request.RegisterRequest;
-import com.oxygensend.auth.application.auth.response.AuthenticationResponse;
-import com.oxygensend.auth.application.auth.response.RegisterResponse;
-import com.oxygensend.auth.application.auth.response.ValidationResponse;
-import com.oxygensend.auth.application.jwt.JwtFacade;
-import com.oxygensend.auth.application.jwt.payload.RefreshTokenPayload;
-import com.oxygensend.auth.application.user.UserIdProvider;
-import com.oxygensend.auth.domain.AccountActivation;
-import com.oxygensend.auth.domain.TokenType;
-import com.oxygensend.auth.domain.User;
-import com.oxygensend.auth.domain.UserRepository;
-import com.oxygensend.auth.domain.event.EventPublisher;
-import com.oxygensend.auth.domain.event.EventWrapper;
-import com.oxygensend.auth.domain.event.RegisterEvent;
-import com.oxygensend.auth.domain.exception.SessionExpiredException;
-import com.oxygensend.auth.domain.exception.TokenException;
-import com.oxygensend.auth.domain.exception.UnauthorizedException;
-import com.oxygensend.auth.domain.exception.UserAlreadyExistsException;
-import java.util.Date;
-import java.util.List;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.oxygensend.auth.application.identity.UserService;
+import com.oxygensend.auth.application.settings.CurrentAccountActivationType;
+import com.oxygensend.auth.application.settings.LoginDto;
+import com.oxygensend.auth.application.settings.LoginProvider;
+import com.oxygensend.auth.application.token.TokenApplicationService;
+import com.oxygensend.auth.domain.model.identity.AuthenticationService;
+import com.oxygensend.auth.domain.model.identity.BusinessId;
+import com.oxygensend.auth.domain.model.identity.EmailAddress;
+import com.oxygensend.auth.domain.model.identity.Role;
+import com.oxygensend.auth.domain.model.identity.UserDescriptor;
+import com.oxygensend.auth.domain.model.identity.UserId;
+import com.oxygensend.auth.domain.model.identity.Username;
+import com.oxygensend.auth.domain.model.session.Session;
+import com.oxygensend.auth.domain.model.session.SessionManager;
+import com.oxygensend.auth.domain.model.token.AccessTokenSubject;
+import com.oxygensend.auth.domain.model.token.RefreshTokenSubject;
+import com.oxygensend.auth.domain.model.token.TokenType;
+import com.oxygensend.auth.domain.model.token.payload.RefreshTokenPayload;
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 
 @Service
 public class AuthService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthService.class);
+
+    private final TokenApplicationService tokenApplicationService;
+    private final AuthenticationService authenticationService;
+    private final LoginProvider loginProvider;
     private final SessionManager sessionManager;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
-    private final JwtFacade jwtFacade;
-    private final SettingsProperties.SignInProperties signInProperties;
-    private final EventPublisher eventPublisher;
-    private final IdentityProvider identityProvider;
-    private final UserIdProvider userIdProvider;
+    private final CurrentAccountActivationType currentAccountActivationType;
+    private final UserService userService;
 
-    public AuthService(SessionManager sessionManager, UserRepository userRepository, PasswordEncoder passwordEncoder,
-                       AuthenticationManager authenticationManager, JwtFacade jwtFacade, SettingsProperties settingsProperties,
-                       EventPublisher eventPublisher, IdentityProvider identityProvider, UserIdProvider userIdProvider) {
+    public AuthService(TokenApplicationService tokenApplicationService, AuthenticationService authenticationService,
+                       LoginProvider loginProvider, SessionManager sessionManager,
+                       CurrentAccountActivationType currentAccountActivationType, UserService userService) {
+        this.tokenApplicationService = tokenApplicationService;
+        this.authenticationService = authenticationService;
+        this.loginProvider = loginProvider;
         this.sessionManager = sessionManager;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
-        this.jwtFacade = jwtFacade;
-        this.signInProperties = settingsProperties.signIn();
-        this.eventPublisher = eventPublisher;
-        this.identityProvider = identityProvider;
-        this.userIdProvider = userIdProvider;
+        this.currentAccountActivationType = currentAccountActivationType;
+        this.userService = userService;
     }
 
-    public RegisterResponse register(RegisterRequest request) {
-        userRepository.findByUsername(request.identity()).ifPresent(user -> {
-            throw new UserAlreadyExistsException();
-        });
 
-        var verified = signInProperties.accountActivation() == AccountActivation.NONE;
-        var username = identityProvider.getIdentityType() == IdentityType.USERNAME ? request.identity() : null;
-        var email = identityProvider.getIdentityType() == IdentityType.EMAIL ? request.identity() : null;
+    @Transactional
+    public Pair<UserId, AuthenticationTokensDto> register(RegisterCommand command) {
+        LOGGER.info("Registering user with email: {}", command.email());
+        var user = userService.registerUser(command.toRegisterUserCommand(currentAccountActivationType.get()));
+        sessionManager.startSession(user.id());
 
-        var user = User.builder()
-                       .id(userIdProvider.get())
-                       .username(username)
-                       .email(email)
-                       .password(passwordEncoder.encode(request.password()))
-                       .roles(request.roles())
-                       .locked(false)
-                       .verified(verified)
-                       .businessId(request.businessId())
-                       .build();
-
-        userRepository.save(user);
-
-        publishRegisterEvent(user);
-
-        var tokens = sessionManager.prepareSession(user);
-
-        return new RegisterResponse(user.id(), tokens.accessToken(), tokens.refreshToken());
+        var authenticationTokensDto = generateTokens(user.id(),
+                                                     user.businessId(),
+                                                     user.username(),
+                                                     user.email(),
+                                                     user.roles(),
+                                                     user.isVerified());
+        LOGGER.info("User registered with email: {}", command.email());
+        return Pair.of(user.id(), authenticationTokensDto);
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.identity(),
-                            request.password()
-                    )
-            );
-            return sessionManager.prepareSession((User) authentication.getPrincipal());
-        } catch (BadCredentialsException e) {
-            throw new UnauthorizedException(e.getMessage());
-        }
+    @Transactional
+    public AuthenticationTokensDto authenticate(String login, String password) {
+        UserDescriptor userDescriptor = authenticateUser(loginProvider.get(login), password);
+        sessionManager.startSession(userDescriptor.userId());
+
+        return generateTokens(userDescriptor.userId(),
+                              userDescriptor.businessId(),
+                              userDescriptor.username(),
+                              userDescriptor.email(),
+                              userDescriptor.roles(),
+                              userDescriptor.verified());
     }
 
-    public AuthenticationResponse refreshToken(RefreshTokenRequest request) {
-        var payload = getRefreshTokenPayload(request.token());
-        var session = sessionManager.getSession(payload.sessionId());
-        var user = userRepository.findById(session.id())
-                                 .orElseThrow(() -> new SessionExpiredException("User not found by session id"));
-
-        return sessionManager.prepareSession(user);
+    @Transactional
+    public AuthenticationTokensDto refreshToken(String token) {
+        var payload = getRefreshTokenPayload(token);
+        Session session = sessionManager.currentSession(payload.userId());
+        UserDescriptor userDescriptor = authenticationService.revalidateUser(session.userId());
+        return generateTokens(userDescriptor.userId(),
+                              userDescriptor.businessId(),
+                              userDescriptor.username(),
+                              userDescriptor.email(),
+                              userDescriptor.roles(),
+                              userDescriptor.verified());
     }
 
-    public ValidationResponse validateToken(String userId, List<GrantedAuthority> authorities) {
-        return new ValidationResponse(userId, authorities);
+    private UserDescriptor authenticateUser(LoginDto login, String password) {
+        return switch (login.type()) {
+            case USERNAME -> authenticationService.authenticateWithUsername(new Username(login), password);
+            case EMAIL -> authenticationService.authenticateWithEmail(new EmailAddress(login), password);
+        };
+    }
+
+    private AuthenticationTokensDto generateTokens(UserId userId, BusinessId businessId,
+                                                   Username userName, EmailAddress email,
+                                                   Set<Role> roles, boolean verified) {
+        // Generate refresh token
+        String refreshToken = tokenApplicationService.createToken(new RefreshTokenSubject(userId), TokenType.REFRESH);
+
+        // Generate access token
+        var accessToken = tokenApplicationService.createToken(new AccessTokenSubject(userId,
+                                                                                     businessId,
+                                                                                     roles,
+                                                                                     verified,
+                                                                                     userName,
+                                                                                     email),
+                                                              TokenType.ACCESS);
+        return new AuthenticationTokensDto(accessToken, refreshToken);
     }
 
     private RefreshTokenPayload getRefreshTokenPayload(String token) {
-        var payload = (RefreshTokenPayload) jwtFacade.validateToken(token, TokenType.REFRESH);
-        if (payload.exp().before(new Date())) {
-            throw new TokenException("Token expired");
+        var payload = (RefreshTokenPayload) tokenApplicationService.parseToken(token, TokenType.REFRESH);
+        if (payload.isExpired()) {
+            throw new ExpiredRefreshTokenException();
         }
         return payload;
     }
 
-    private void publishRegisterEvent(User user) {
-        var event = new RegisterEvent(user.id(), user.businessId(), user.email(), signInProperties.accountActivation());
-        eventPublisher.publish(new EventWrapper(event, signInProperties.registerEventTopic()));
-    }
 }
