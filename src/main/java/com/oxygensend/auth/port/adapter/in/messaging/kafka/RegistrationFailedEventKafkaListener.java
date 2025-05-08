@@ -23,7 +23,7 @@ public class RegistrationFailedEventKafkaListener {
     @KafkaListener(id = "registrationFailed", topics = "${kafka.consumer.topic.registration-failed-topic}",
         containerFactory = "registrationFailedEventConcurrentKafkaListenerContainerFactory")
     public void handleEvent(RegistrationFailedEvent event) {
-        LOGGER.warn("Registration failed for user {}: {} at {}", event.userId(), event.reason(), event.occurredAt());
+        LOGGER.warn("Registration failed for user {}: {} at {}", event.userId(), event.reason(), event.occurredOn());
 
         userService.delete(event.userId());
     }

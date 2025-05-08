@@ -4,6 +4,6 @@ import com.oxygensend.auth.domain.model.identity.UserId;
 
 import java.time.Instant;
 
-public record RegistrationFailedEvent(UserId userId, String reason, Instant occurredAt) {
+public record RegistrationFailedEvent(UserId userId, String reason, Instant occurredOn) {
 
 }
