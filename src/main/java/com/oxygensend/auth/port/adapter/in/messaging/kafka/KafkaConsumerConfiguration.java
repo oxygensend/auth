@@ -2,7 +2,6 @@ package com.oxygensend.auth.port.adapter.in.messaging.kafka;
 
 import com.oxygensend.auth.port.Ports;
 import com.oxygensend.auth.port.adapter.in.messaging.RegistrationFailedEvent;
-import jakarta.ws.rs.ServiceUnavailableException;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -29,6 +28,8 @@ import org.springframework.util.backoff.FixedBackOff;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.naming.ServiceUnavailableException;
 
 import common.ExcludeFromJacocoGeneratedReport;
 import common.domain.model.DomainException;

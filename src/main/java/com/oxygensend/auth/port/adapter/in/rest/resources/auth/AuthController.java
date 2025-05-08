@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -40,7 +41,6 @@ class AuthController {
         this.authService = authService;
     }
 
-    @Operation(summary = SwaggerConstants.REGISTER_API_DESCRIPTION)
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     RegisterResponse register(@RequestBody @Validated RegisterRequest request) {

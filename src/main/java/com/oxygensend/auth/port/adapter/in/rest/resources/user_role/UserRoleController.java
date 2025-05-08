@@ -1,5 +1,6 @@
 package com.oxygensend.auth.port.adapter.in.rest.resources.user_role;
 
+import com.oxygensend.auth.application.auth.security.Admin;
 import com.oxygensend.auth.application.identity.UserRoleFeatureEnabled;
 import com.oxygensend.auth.application.identity.UserRoleService;
 import com.oxygensend.auth.domain.model.identity.Role;
@@ -31,6 +32,7 @@ class UserRoleController {
         this.service = service;
     }
 
+    @Admin
     @Operation(summary = SwaggerConstants.USER_ROLE_ADD_API_DESCRIPTION)
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/add")
@@ -40,6 +42,7 @@ class UserRoleController {
 
     }
 
+    @Admin
     @Operation(summary = SwaggerConstants.USER_ROLE_REMOVE_API_DESCRIPTION)
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/remove")

@@ -24,10 +24,11 @@ auth:
   settings:
     sign-in:
       account-activation: VERIFY_EMAIL
+    admin-roles:
+      - ROLE_ADMIN
     roles:
       - ROLE_DEVELOPER
       - ROLE_PRINCIPLE
-      - ROLE_ADMIN
       - ROLE_EDITOR
 
 

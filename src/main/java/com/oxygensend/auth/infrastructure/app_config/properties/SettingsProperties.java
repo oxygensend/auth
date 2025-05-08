@@ -10,7 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Stream;
 
 import common.ExcludeFromJacocoGeneratedReport;
 
@@ -20,21 +20,32 @@ import common.ExcludeFromJacocoGeneratedReport;
 public record SettingsProperties(@Valid SettingsProperties.SignInProperties signIn,
                                  @NotNull LoginType loginType,
                                  @NotEmpty List<String> roles,
-                                 @Valid SettingsProperties.UserRoleProperties userRoleFeature) {
+                                 @NotEmpty List<String> adminRoles
+) {
     @PostConstruct
     public void validate() {
         if (roles.stream().anyMatch(role -> !role.startsWith("ROLE_"))) {
             throw new IllegalArgumentException("Roles must start with ROLE_");
         }
 
+        if (adminRoles.stream().anyMatch(role -> !role.startsWith("ROLE_"))) {
+            throw new IllegalArgumentException("Roles must start with ROLE_");
+        }
+
+        if (roles.stream().anyMatch(adminRoles::contains)) {
+            throw new IllegalArgumentException("Admin roles must not be in the regular roles list");
+        }
+
+    }
+
+    public List<String> allRoles() {
+        return Stream.of(roles, adminRoles)
+                     .flatMap(List::stream)
+                     .toList();
     }
 
     public record SignInProperties(AccountActivationType accountActivation,
                                    String registerEventTopic) {
-    }
-
-    public record UserRoleProperties(@NotNull Boolean enabled) {
-
     }
 
 

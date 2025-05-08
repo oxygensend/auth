@@ -42,8 +42,6 @@ auth:
       require-admin-validation: false
       require-email-validation: true
       account-activation: none
-    user-role-feature:
-      enabled: true
     roles:
       - ROLE_USER
       - ROLE_ADMIN
