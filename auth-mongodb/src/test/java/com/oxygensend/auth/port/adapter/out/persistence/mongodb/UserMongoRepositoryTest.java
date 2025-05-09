@@ -16,6 +16,7 @@ import com.oxygensend.auth.domain.model.identity.User;
 import com.oxygensend.auth.domain.model.identity.UserId;
 import com.oxygensend.auth.domain.model.identity.Username;
 import com.oxygensend.auth.port.adapter.out.persistence.DataSourceObjectAdapter;
+import com.oxygensend.common.domain.model.DomainEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -100,7 +101,7 @@ class UserMongoRepositoryTest {
     void save_shouldSaveUserAndPublishEvents() {
         // Given
         User user = UserMother.getMocked();
-        List<common.domain.model.DomainEvent> events = List.of(new TestDomainEvent(
+        List<DomainEvent> events = List.of(new TestDomainEvent(
             UUID.randomUUID().toString(),
             Instant.now(),
             "data"

@@ -1,18 +1,14 @@
 package com.oxygensend.auth.port.adapter.out.messaging.kafka;
 
 
-import com.oxygensend.auth.port.Ports;
+import com.oxygensend.common.ExcludeFromJacocoGeneratedReport;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.apache.kafka.common.security.auth.SecurityProtocol;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Profile;
 import org.springframework.validation.annotation.Validated;
 
-import common.ExcludeFromJacocoGeneratedReport;
-
 @ExcludeFromJacocoGeneratedReport
-@Profile(Ports.KAFKA)
 @Validated
 @ConfigurationProperties("kafka.producer")
 public record KafkaProducerProperties(@NotNull String bootstrapServers,

@@ -6,7 +6,7 @@ import com.oxygensend.auth.application.settings.LoginDto;
 
 import java.util.Objects;
 
-import common.AssertionConcern;
+import com.oxygensend.common.AssertionConcern;
 
 public final class EmailAddress {
     public static final String EMAIL_PATTERN =

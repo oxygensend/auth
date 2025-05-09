@@ -2,7 +2,7 @@ package com.oxygensend.auth.domain.model.identity.exception;
 
 import com.oxygensend.auth.domain.model.identity.UserId;
 
-import common.domain.model.DomainException;
+import com.oxygensend.common.domain.model.DomainException;
 
 public class BlockedUserException extends DomainException {
     public BlockedUserException(UserId userId) {

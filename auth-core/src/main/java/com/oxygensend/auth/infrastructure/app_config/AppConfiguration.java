@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
-import common.ExcludeFromJacocoGeneratedReport;
+import com.oxygensend.common.ExcludeFromJacocoGeneratedReport;
 
 @ExcludeFromJacocoGeneratedReport
 @Configuration

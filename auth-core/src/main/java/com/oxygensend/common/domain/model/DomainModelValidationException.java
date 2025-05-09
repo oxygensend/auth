@@ -1,4 +1,4 @@
-package common.domain.model;
+package com.oxygensend.common.domain.model;
 
 public class DomainModelValidationException extends DomainException {
     public DomainModelValidationException(String message) {

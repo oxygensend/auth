@@ -12,8 +12,6 @@ import com.oxygensend.auth.domain.model.identity.exception.BadCredentialsExcepti
 import com.oxygensend.auth.domain.model.identity.exception.BlockedUserException;
 import com.oxygensend.auth.domain.model.identity.exception.ExpiredCredentialsException;
 import com.oxygensend.auth.domain.model.identity.exception.UserAlreadyExistsException;
-import com.oxygensend.auth.port.adapter.in.rest.exception.ApiExceptionHandler;
-import com.oxygensend.auth.port.adapter.in.rest.exception.ExceptionResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,9 +35,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import common.domain.model.DomainException;
-import common.domain.model.DomainModelConflictException;
-import common.domain.model.DomainModelValidationException;
+import com.oxygensend.common.domain.model.DomainException;
+import com.oxygensend.common.domain.model.DomainModelConflictException;
+import com.oxygensend.common.domain.model.DomainModelValidationException;
 
 @ExtendWith(MockitoExtension.class)
 class ApiExceptionHandlerTest {

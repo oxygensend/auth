@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.UUID;
 
-import common.AssertionConcern;
+import com.oxygensend.common.AssertionConcern;
 
 public record UserId(@JsonValue UUID value) {
 

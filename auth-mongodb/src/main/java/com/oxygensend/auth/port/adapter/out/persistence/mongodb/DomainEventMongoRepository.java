@@ -2,14 +2,12 @@ package com.oxygensend.auth.port.adapter.out.persistence.mongodb;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.context.annotation.Configuration;
+import com.oxygensend.common.domain.model.DomainEvent;
+import com.oxygensend.common.domain.model.EventPublisher;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
-
-import common.domain.model.DomainEvent;
-import common.domain.model.EventPublisher;
 
 
 @Repository

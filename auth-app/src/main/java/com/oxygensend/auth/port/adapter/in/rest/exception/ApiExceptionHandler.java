@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import common.domain.model.DomainException;
-import common.domain.model.DomainModelConflictException;
-import common.domain.model.DomainModelValidationException;
+import com.oxygensend.common.domain.model.DomainException;
+import com.oxygensend.common.domain.model.DomainModelConflictException;
+import com.oxygensend.common.domain.model.DomainModelValidationException;
 
 @ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {

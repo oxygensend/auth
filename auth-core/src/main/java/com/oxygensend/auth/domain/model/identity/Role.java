@@ -2,7 +2,7 @@ package com.oxygensend.auth.domain.model.identity;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import common.AssertionConcern;
+import com.oxygensend.common.AssertionConcern;
 
 public record Role(@JsonValue String value) {
 

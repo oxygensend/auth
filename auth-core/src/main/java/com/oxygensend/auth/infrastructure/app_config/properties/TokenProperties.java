@@ -14,7 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import java.time.Duration;
 import java.util.Map;
 
-import common.ExcludeFromJacocoGeneratedReport;
+import com.oxygensend.common.ExcludeFromJacocoGeneratedReport;
 
 @ExcludeFromJacocoGeneratedReport
 @Validated

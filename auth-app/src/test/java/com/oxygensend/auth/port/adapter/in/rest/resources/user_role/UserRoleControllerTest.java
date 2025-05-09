@@ -19,8 +19,6 @@ import com.oxygensend.auth.application.identity.exception.UserNotFoundException;
 import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.UserId;
 import com.oxygensend.auth.port.adapter.in.rest.exception.ApiExceptionHandler;
-import com.oxygensend.auth.port.adapter.in.rest.resources.user_role.UserRoleController;
-import com.oxygensend.auth.port.adapter.in.rest.resources.user_role.UserRoleRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +31,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.util.UUID;
 
-import common.domain.model.DomainModelValidationException;
+import com.oxygensend.common.domain.model.DomainModelValidationException;
 
 @ExtendWith(MockitoExtension.class)
 class UserRoleControllerTest {

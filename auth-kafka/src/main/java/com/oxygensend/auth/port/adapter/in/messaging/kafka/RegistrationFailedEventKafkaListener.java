@@ -1,15 +1,12 @@
 package com.oxygensend.auth.port.adapter.in.messaging.kafka;
 
 import com.oxygensend.auth.application.identity.UserService;
-import com.oxygensend.auth.port.Ports;
 import com.oxygensend.auth.port.adapter.in.messaging.RegistrationFailedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-@Profile(Ports.KAFKA)
 @Component
 public class RegistrationFailedEventKafkaListener {
 

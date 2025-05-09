@@ -1,11 +1,10 @@
-package common.domain.model;
+package com.oxygensend.common.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.oxygensend.auth.domain.model.identity.User;
+import com.oxygensend.common.ExcludeFromJacocoGeneratedReport;
 
 import java.time.Instant;
-
-import common.ExcludeFromJacocoGeneratedReport;
 
 @ExcludeFromJacocoGeneratedReport
 public interface DomainEvent {

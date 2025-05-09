@@ -39,6 +39,17 @@
 
     <profiles>
         <profile>
+            <id>all</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>auth-mongodb</module>
+                <module>auth-mysql</module>
+                <module>auth-kafka</module>
+            </modules>
+        </profile>
+        <profile>
             <id>mongo</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
@@ -65,6 +76,8 @@
                 <module>auth-kafka</module>
             </modules>
         </profile>
+
+
     </profiles>
 
     <build>

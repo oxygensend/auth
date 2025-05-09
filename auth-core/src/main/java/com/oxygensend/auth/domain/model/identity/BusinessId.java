@@ -1,6 +1,6 @@
 package com.oxygensend.auth.domain.model.identity;
 
-import static common.AssertionConcern.assertArgumentNotEmpty;
+import static com.oxygensend.common.AssertionConcern.assertArgumentNotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

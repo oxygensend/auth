@@ -26,8 +26,6 @@ import com.oxygensend.auth.port.adapter.in.rest.resources.auth.request.PasswordC
 import com.oxygensend.auth.port.adapter.in.rest.resources.auth.request.PasswordResetRequest;
 import com.oxygensend.auth.port.adapter.in.rest.resources.auth.request.UserIdRequest;
 import com.oxygensend.auth.port.adapter.in.rest.resources.auth.request.VerifyEmailRequest;
-import com.oxygensend.auth.port.adapter.in.rest.resources.user.CreateUserRequest;
-import com.oxygensend.auth.port.adapter.in.rest.resources.user.UserController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,7 +40,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
-import common.domain.model.DomainModelValidationException;
+import com.oxygensend.common.domain.model.DomainModelValidationException;
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {

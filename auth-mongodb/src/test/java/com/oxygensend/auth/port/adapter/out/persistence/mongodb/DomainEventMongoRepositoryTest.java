@@ -26,8 +26,8 @@ package com.oxygensend.auth.port.adapter.out.persistence.mongodb;//package com.o
 //import java.util.List;
 //import java.util.UUID;
 //
-//import common.domain.model.DomainEvent;
-//import common.domain.model.EventPublisher;
+//import com.oxygensend.common.domain.model.DomainEvent;
+//import com.oxygensend.common.domain.model.EventPublisher;
 //
 //@ExtendWith(MockitoExtension.class)
 //class DomainEventMongoRepositoryTest {

@@ -1,6 +1,6 @@
 package com.oxygensend.auth.domain.model.session;
 
-import common.domain.model.DomainException;
+import com.oxygensend.common.domain.model.DomainException;
 
 public class SessionExpiredException extends DomainException {
     public SessionExpiredException() {

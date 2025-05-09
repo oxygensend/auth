@@ -2,7 +2,7 @@ package com.oxygensend.auth.domain.model.session;
 
 import java.util.UUID;
 
-import common.AssertionConcern;
+import com.oxygensend.common.AssertionConcern;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 

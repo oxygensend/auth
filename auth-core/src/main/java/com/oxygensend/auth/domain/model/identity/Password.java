@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.Objects;
 
-import common.AssertionConcern;
+import com.oxygensend.common.AssertionConcern;
 
 public final class Password {
     private final String hashedValue;

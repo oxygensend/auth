@@ -1,6 +1,8 @@
 package com.oxygensend.auth.port.adapter.out.messaging.kafka;
 
-import com.oxygensend.auth.port.Ports;
+import com.oxygensend.common.ExcludeFromJacocoGeneratedReport;
+import com.oxygensend.common.domain.model.DomainEvent;
+import com.oxygensend.common.domain.model.EventPublisher;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -26,12 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-import common.ExcludeFromJacocoGeneratedReport;
-import common.domain.model.DomainEvent;
-import common.domain.model.EventPublisher;
-
 @ExcludeFromJacocoGeneratedReport
-@Profile(Ports.KAFKA)
 @EnableConfigurationProperties(KafkaProducerProperties.class)
 @Configuration
 public class KafkaProducerConfiguration {

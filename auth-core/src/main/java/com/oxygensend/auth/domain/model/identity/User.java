@@ -16,8 +16,8 @@ import com.oxygensend.auth.domain.model.identity.exception.UserAlreadyExistsExce
 import java.util.Objects;
 import java.util.Set;
 
-import common.AssertionConcern;
-import common.domain.model.DomainAggregate;
+import com.oxygensend.common.AssertionConcern;
+import com.oxygensend.common.domain.model.DomainAggregate;
 
 public class User extends DomainAggregate {
 

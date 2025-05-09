@@ -1,4 +1,4 @@
-package common.domain.model;
+package com.oxygensend.common.domain.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
