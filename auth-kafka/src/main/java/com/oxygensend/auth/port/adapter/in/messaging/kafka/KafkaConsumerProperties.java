@@ -1,6 +1,6 @@
 package com.oxygensend.auth.port.adapter.in.messaging.kafka;
 
-import com.oxygensend.auth.port.Ports;
+import com.oxygensend.common.ExcludeFromJacocoGeneratedReport;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -8,13 +8,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.apache.kafka.common.security.auth.SecurityProtocol;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Profile;
 import org.springframework.validation.annotation.Validated;
 
-import common.ExcludeFromJacocoGeneratedReport;
-
 @ExcludeFromJacocoGeneratedReport
-@Profile(Ports.KAFKA)
 @Validated
 @ConfigurationProperties(prefix = "kafka.consumer")
 public record KafkaConsumerProperties(@NotEmpty String applicationId,

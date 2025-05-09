@@ -16,7 +16,7 @@ import org.springframework.messaging.Message;
 import java.time.Instant;
 import java.util.UUID;
 
-import common.domain.model.DomainEvent;
+import com.oxygensend.common.domain.model.DomainEvent;
 
 @ExtendWith(MockitoExtension.class)
 class KafkaEventPublisherTest {

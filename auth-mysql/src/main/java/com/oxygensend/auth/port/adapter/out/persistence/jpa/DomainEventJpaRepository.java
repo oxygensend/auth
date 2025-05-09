@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 
-import common.domain.model.DomainEvent;
-import common.domain.model.EventPublisher;
+import com.oxygensend.common.domain.model.DomainEvent;
+import com.oxygensend.common.domain.model.EventPublisher;
 
 @Repository
 public class DomainEventJpaRepository {

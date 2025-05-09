@@ -1,7 +1,8 @@
 package com.oxygensend.auth.port.adapter.in.messaging.kafka;
 
-import com.oxygensend.auth.port.Ports;
 import com.oxygensend.auth.port.adapter.in.messaging.RegistrationFailedEvent;
+import com.oxygensend.common.ExcludeFromJacocoGeneratedReport;
+import com.oxygensend.common.domain.model.DomainException;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -14,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -30,11 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.naming.ServiceUnavailableException;
 
-import common.ExcludeFromJacocoGeneratedReport;
-import common.domain.model.DomainException;
-
 @ExcludeFromJacocoGeneratedReport
-@Profile(Ports.KAFKA)
 @EnableConfigurationProperties(KafkaConsumerProperties.class)
 @Configuration
 public class KafkaConsumerConfiguration {
