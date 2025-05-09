@@ -1,4 +1,4 @@
-package common.domain.model;
+package com.oxygensend.common.domain.model;
 
 public abstract class DomainException extends RuntimeException{
 

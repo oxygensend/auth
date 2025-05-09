@@ -1,6 +1,6 @@
 package com.oxygensend.auth.port.adapter.in.rest.resources;
 
-import common.ExcludeFromJacocoGeneratedReport;
+import com.oxygensend.common.ExcludeFromJacocoGeneratedReport;
 
 @ExcludeFromJacocoGeneratedReport
 

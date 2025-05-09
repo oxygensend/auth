@@ -12,7 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import java.util.List;
 import java.util.stream.Stream;
 
-import common.ExcludeFromJacocoGeneratedReport;
+import com.oxygensend.common.ExcludeFromJacocoGeneratedReport;
 
 @ExcludeFromJacocoGeneratedReport
 @Validated

@@ -2,7 +2,7 @@ package com.oxygensend.auth.domain.model.identity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-import common.AssertionConcern;
+import com.oxygensend.common.AssertionConcern;
 
 public record Credentials(EmailAddress email,
                           Username username,

@@ -2,7 +2,7 @@ package com.oxygensend.auth.domain.model.session;
 
 import com.oxygensend.auth.domain.model.identity.UserId;
 
-import common.AssertionConcern;
+import com.oxygensend.common.AssertionConcern;
 
 public record Session(SessionId id,
                       UserId userId) {

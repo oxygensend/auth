@@ -3,7 +3,7 @@ package com.oxygensend.auth.domain.model.identity;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.oxygensend.auth.application.settings.LoginDto;
 
-import common.AssertionConcern;
+import com.oxygensend.common.AssertionConcern;
 
 public record Username(@JsonValue String value) {
 

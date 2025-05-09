@@ -1,4 +1,4 @@
-package common;
+package com.oxygensend.common;
 
 import java.util.Collection;
 

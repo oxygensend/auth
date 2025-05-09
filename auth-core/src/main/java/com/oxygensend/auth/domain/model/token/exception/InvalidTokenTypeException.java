@@ -1,6 +1,6 @@
 package com.oxygensend.auth.domain.model.token.exception;
 
-import common.domain.model.DomainException;
+import com.oxygensend.common.domain.model.DomainException;
 
 public class InvalidTokenTypeException extends DomainException {
     public InvalidTokenTypeException() {

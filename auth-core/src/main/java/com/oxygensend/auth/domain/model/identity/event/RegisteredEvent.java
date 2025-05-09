@@ -7,7 +7,7 @@ import com.oxygensend.auth.domain.model.identity.User;
 import com.oxygensend.auth.domain.model.identity.UserId;
 import com.oxygensend.auth.domain.model.identity.Username;
 
-import common.domain.model.DomainEvent;
+import com.oxygensend.common.domain.model.DomainEvent;
 
 public record RegisteredEvent(UserId userId,
                               BusinessId businessId,
