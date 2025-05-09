@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Profile;
 import common.domain.model.DomainEvent;
 import common.domain.model.EventPublisher;
 
-@Profile(Ports.INTERNAL)
 final class InternalEventPublisher implements EventPublisher {
     private static final Logger log = LoggerFactory.getLogger(InternalEventPublisher.class);
     private final ApplicationEventPublisher applicationEventPublisher;

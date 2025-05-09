@@ -9,7 +9,6 @@ import common.ExcludeFromJacocoGeneratedReport;
 import common.domain.model.EventPublisher;
 
 @ExcludeFromJacocoGeneratedReport
-@Profile(Ports.INTERNAL)
 @Configuration
 public class EventPublisherConfiguration {
 

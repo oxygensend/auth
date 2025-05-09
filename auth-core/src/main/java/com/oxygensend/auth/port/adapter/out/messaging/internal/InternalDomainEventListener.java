@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import common.domain.model.DomainEvent;
 
 @Component
-@Profile(Ports.INTERNAL)
 public class InternalDomainEventListener {
 
     @EventListener
