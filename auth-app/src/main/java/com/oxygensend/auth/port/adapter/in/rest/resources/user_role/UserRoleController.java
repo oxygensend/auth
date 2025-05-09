@@ -1,15 +1,12 @@
 package com.oxygensend.auth.port.adapter.in.rest.resources.user_role;
 
 import com.oxygensend.auth.application.auth.security.Admin;
-import com.oxygensend.auth.application.identity.UserRoleFeatureEnabled;
 import com.oxygensend.auth.application.identity.UserRoleService;
 import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.UserId;
-import com.oxygensend.auth.port.Ports;
 import com.oxygensend.auth.port.adapter.in.rest.resources.SwaggerConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@Profile(Ports.REST)
+
 @Tag(name = SwaggerConstants.USER_ROLE_NAME, description = SwaggerConstants.USER_ROLE_DESCRIPTION)
 @CrossOrigin
 @RestController

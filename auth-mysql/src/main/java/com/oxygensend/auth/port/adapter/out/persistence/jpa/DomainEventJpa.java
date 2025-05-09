@@ -1,12 +1,10 @@
 package com.oxygensend.auth.port.adapter.out.persistence.jpa;
 
-import com.oxygensend.auth.port.Ports;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import org.springframework.context.annotation.Profile;
 
 import java.time.Instant;
 

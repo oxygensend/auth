@@ -1,12 +1,9 @@
 package com.oxygensend.auth.port.adapter.in.rest.resources;
 
-import com.oxygensend.auth.port.Ports;
-import org.springframework.context.annotation.Profile;
-
 import common.ExcludeFromJacocoGeneratedReport;
 
 @ExcludeFromJacocoGeneratedReport
-@Profile(Ports.REST)
+
 public class SwaggerConstants {
     public static final String AUTH_NAME = "Auth";
     public static final String AUTH_DESCRIPTION = "Auth Service API";

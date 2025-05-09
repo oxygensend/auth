@@ -5,17 +5,14 @@ import com.oxygensend.auth.domain.model.identity.BusinessId;
 import com.oxygensend.auth.domain.model.identity.EmailAddress;
 import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.Username;
-import com.oxygensend.auth.port.Ports;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import org.springframework.context.annotation.Profile;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Profile(Ports.REST)
+
 public record RegisterRequest(@NotNull @NotBlank String email,
                               @NotNull @NotBlank String username,
                               @Size(min = 4, max = 64) @NotBlank String password,

@@ -1,6 +1,5 @@
 package com.oxygensend.auth.port.adapter.out.messaging.internal;
 
-import com.oxygensend.auth.port.Ports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;

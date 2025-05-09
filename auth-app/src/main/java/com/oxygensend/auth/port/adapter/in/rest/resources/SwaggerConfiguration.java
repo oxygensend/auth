@@ -1,6 +1,5 @@
 package com.oxygensend.auth.port.adapter.in.rest.resources;
 
-import com.oxygensend.auth.port.Ports;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
@@ -10,12 +9,11 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 import common.ExcludeFromJacocoGeneratedReport;
 
 @ExcludeFromJacocoGeneratedReport
-@Profile(Ports.REST)
+
 @Configuration
 public class SwaggerConfiguration {
 
