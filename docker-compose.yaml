@@ -17,14 +17,7 @@ services:
     entrypoint: >
       bash -c "
         echo 'Waiting for MongoDB to start...';
-        for i in {1..30}; do
-          if mongosh --host mongo --eval "db.runCommand({ ping: 1 })" > /dev/null 2>&1; then
-            echo 'MongoDB is ready!';
-            break;
-          fi;
-          echo 'MongoDB is not ready yet. Retrying in 2 seconds...';
-          sleep 2;
-        done;
+        sleep 5;
         mongosh --host mongo --eval 'rs.initiate({_id: \"rs0\", members: [{ _id: 0, host: \"mongo:27017\" }]})';
         echo 'Replica set initialized';
       "
@@ -71,7 +64,16 @@ services:
     networks:
       - auth
 
-
+  mysql:
+    container_name: 'auth-mysql'
+    image: 'mysql:latest'
+    ports:
+      - '3309:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: 'auth'
+    networks:
+      - auth
 
 networks:
   auth:

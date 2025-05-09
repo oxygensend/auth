@@ -2,6 +2,15 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/auth
+  datasource:
+    url: jdbc:mysql://localhost:3309/auth
+    username: root
+    password: root
+  liquibase:
+    url: jdbc:mysql://localhost:3309/auth
+    user: root
+    password: root
+
 
 server:
   tomcat:
