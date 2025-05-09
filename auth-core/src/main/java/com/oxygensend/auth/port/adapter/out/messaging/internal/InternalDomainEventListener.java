@@ -1,11 +1,8 @@
 package com.oxygensend.auth.port.adapter.out.messaging.internal;
 
-import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
-
 import com.oxygensend.common.domain.model.DomainEvent;
+import org.springframework.context.event.EventListener;
 
-@Component
 public class InternalDomainEventListener {
 
     @EventListener
