@@ -10,9 +10,8 @@
     <name>Multi module coverage</name>
 
     <properties>
-        <code.coverage.project.folder>${basedir}/..</code.coverage.project.folder>
-        <code.coverage.overall.data.folder>${basedir}/target/jacoco.exec</code.coverage.overall.data.folder>
-
+        <code.coverage.project.folder>${basedir}/target</code.coverage.project.folder>
+        <code.coverage.overall.data.folder>${basedir}/../target</code.coverage.overall.data.folder>
     </properties>
 
     <dependencies>
@@ -55,6 +54,9 @@
                         <goals>
                             <goal>report-aggregate</goal>
                         </goals>
+                        <configuration>
+                            <skip>${skipJacocoReport}</skip>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>merge-results</id>
@@ -63,14 +65,16 @@
                             <goal>merge</goal>
                         </goals>
                         <configuration>
+                            <skip>${skipJacocoReport}</skip>
                             <fileSets>
                                 <fileSet>
                                     <directory>${code.coverage.project.folder}</directory>
                                     <includes>
-                                        <include>**/target/*.exec</include>
+                                        <include>*.exec</include>
                                     </includes>
                                 </fileSet>
                             </fileSets>
+                            <destFile>${code.coverage.overall.data.folder}/aggregate.exec</destFile>
                         </configuration>
                     </execution>
                 </executions>

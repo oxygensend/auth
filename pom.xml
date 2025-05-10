@@ -24,7 +24,7 @@
     </modules>
 
     <properties>
-        <skipJacoco>false</skipJacoco>
+        <skipJacocoReport>false</skipJacocoReport>
         <skipTests>false</skipTests>
         <skipUnitTests>${skipTests}</skipUnitTests>
         <skipIntegrationTests>${skipTests}</skipIntegrationTests>
@@ -121,7 +121,7 @@
                         <phase>initialize</phase>
                         <configuration>
                             <skip>${skipUnitTests}</skip>
-                            <destFile>${project.build.directory}/unit-tests-jacoco.exec</destFile>
+                            <destFile>${basedir}/../coverage/target/${artifactId}-unit-tests-jacoco.exec</destFile>
                         </configuration>
                     </execution>
 
@@ -132,7 +132,7 @@
                         </goals>
                         <phase>pre-integration-test</phase>
                         <configuration>
-                            <destFile>${project.build.directory}/integration-tests-jacoco.exec</destFile>
+                            <destFile>${basedir}/../coverage/target/${artifactId}-integration-tests-jacoco.exec</destFile>
                         </configuration>
                     </execution>
 
