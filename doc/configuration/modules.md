@@ -16,12 +16,14 @@ The service is designed to detect such conflicts and will fail gracefully with a
 
 # Modules
 
+Profile name is the same as the module name, for example, to enable Kafka and MongoDB, use `-Pkafka,mongo`.
+
 - [kafka](../../auth-kafka/README.md) - Kafka, enables Kafka as a message broker for domain events and consumer for
   input events
-- `rabbitmq` - RabbitMQ, enables RabbitMQ as a message broker for domain events and consumer for input events
 - [mysql](../../auth-mysql/README.md) - MySQL, enables MySQL as a storage
 - [mongo](../../auth-mongodb/README.md) - MongoDB, enables MongoDB as a storage
 - `eureka` - Eureka, enables Eureka as a service discovery registry
-- 'oauth2-google' - Google OAuth2, enables Google OAuth2 for authentication
 
-Profile name is the same as the module name, for example, to enable Kafka and MongoDB, use `-Pkafka,mongo`.
+## IN PROGRESS
+- `rabbitmq` - RabbitMQ, enables RabbitMQ as a message broker for domain events and consumer for input events
+- 'oauth2-google' - Google OAuth2, enables Google OAuth2 for authentication
