@@ -20,10 +20,19 @@
     <modules>
         <module>auth-core</module>
         <module>auth-app</module>
+        <module>coverage</module>
     </modules>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
     <properties>
-        <skipJacoco>false</skipJacoco>
+        <skipJacocoReport>false</skipJacocoReport>
         <skipTests>false</skipTests>
         <skipUnitTests>${skipTests}</skipUnitTests>
         <skipIntegrationTests>${skipTests}</skipIntegrationTests>
@@ -47,6 +56,7 @@
                 <module>auth-mongodb</module>
                 <module>auth-mysql</module>
                 <module>auth-kafka</module>
+                <module>coverage</module>
             </modules>
         </profile>
         <profile>
@@ -76,8 +86,6 @@
                 <module>auth-kafka</module>
             </modules>
         </profile>
-
-
     </profiles>
 
     <build>
@@ -119,7 +127,7 @@
                         <phase>initialize</phase>
                         <configuration>
                             <skip>${skipUnitTests}</skip>
-                            <destFile>${project.build.directory}/unit-tests-jacoco.exec</destFile>
+                            <destFile>${basedir}/../coverage/target/${project.artifactId}-unit-tests-jacoco.exec</destFile>
                         </configuration>
                     </execution>
 
@@ -130,39 +138,10 @@
                         </goals>
                         <phase>pre-integration-test</phase>
                         <configuration>
-                            <destFile>${project.build.directory}/integration-tests-jacoco.exec</destFile>
+                            <destFile>${basedir}/../coverage/target/${project.artifactId}-integration-tests-jacoco.exec</destFile>
                         </configuration>
                     </execution>
 
-                    <execution>
-                        <id>merge-exec-files</id>
-                        <goals>
-                            <goal>merge</goal>
-                        </goals>
-                        <phase>verify</phase>
-                        <configuration>
-                            <skip>${skipJacoco}</skip>
-                            <fileSets>
-                                <fileSet>
-                                    <directory>${project.build.directory}</directory>
-                                    <includes>
-                                        <include>*.exec</include>
-                                    </includes>
-                                </fileSet>
-                            </fileSets>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>report</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <skip>${skipJacoco}</skip>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
             <plugin>

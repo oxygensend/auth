@@ -1,5 +1,6 @@
 package com.oxygensend.auth.port.adapter.out.persistence.jpa;
 
+import com.oxygensend.common.ExcludeFromJacocoGeneratedReport;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,6 +9,7 @@ import jakarta.persistence.Id;
 
 import java.time.Instant;
 
+@ExcludeFromJacocoGeneratedReport
 @Entity(name = "domain_events")
 public class DomainEventJpa {
 
