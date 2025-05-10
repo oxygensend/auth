@@ -16,12 +16,13 @@ public class DomainEventJpaRepository {
 
     private final EventPublisher eventPublisher;
     private final ObjectMapper objectMapper;
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
-    public DomainEventJpaRepository(EventPublisher eventPublisher, ObjectMapper objectMapper) {
+    public DomainEventJpaRepository(EventPublisher eventPublisher, ObjectMapper objectMapper,
+                                    EntityManager entityManager) {
         this.eventPublisher = eventPublisher;
         this.objectMapper = objectMapper;
+        this.entityManager = entityManager;
     }
 
     public void saveAndPublish(Collection<DomainEvent> events) {
