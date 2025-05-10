@@ -2,6 +2,7 @@
 
 ## Documentation
 
+- [Core](./doc/core/index.md)
 - [Profiles](./doc/configuration/profiles.md)
 - [Features](./doc/features/features.md)
 - [Domain Events](./doc/features/domain-events.md)
