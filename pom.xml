@@ -78,8 +78,6 @@
                 <module>auth-kafka</module>
             </modules>
         </profile>
-
-
     </profiles>
 
     <build>
