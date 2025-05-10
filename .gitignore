@@ -39,4 +39,6 @@ mongo
 mvnw
 mvnw.cmd
 
-log/*
+log
+
+jacocoResults
