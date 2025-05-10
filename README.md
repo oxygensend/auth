@@ -30,27 +30,24 @@ List of features can be found in the [features documentation](./doc/features/fea
 
 ### Customization
 
-By default, the service is using the following profiles:
+By default, the service is using rest API profile, in future it could be replaced with gRPC or other protocols.
 
-- `rest`
-- `kafka`
-- `mysql`
+To enable specific features, please provide the appropriate **Maven profile** at compilation time.
+A complete list of available profiles can be found in the configuration documentation.
 
-To enable or features please provide `spring.profile.active` property with proper profiles. The list can be found in
-configuration documentation.
 eg. To run the service with REST API, Kafka and MongoDB, use the following command:
 
 ```bash
-mvn clean package 
-java -jar auth-service.jar 
+mvn clean package -Pkafka,mongo
+java -jar auth-app/target/auth-app.jar  --spring.additional-config.location=config/config-dev.yml
 
 ```
 
 eg. To run the service with REST API, RabbitMQ and MongoDB, use the following command:
 
 ```bash
-mvn clean package -Prest,rabbitmq,mongo
-java -jar auth-service.jar --spring.profiles.active=rest,rabbitmq,mongo
+mvn clean package -Prabbitmq,mongo
+java -jar auth-app/target/auth-app.jar  --spring.additional-config.location=config/config-dev.yml
 ```
 
 It is important to build the jar with the correct profiles to ensure that all dependencies are included and not
