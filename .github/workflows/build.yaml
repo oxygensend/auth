@@ -58,6 +58,13 @@ jobs:
             ${{ runner.os }}-maven
       - name: Build with Maven
         run: mvn clean package -DskipTests -Pall
+      - name: Cache Target Directories
+        uses: actions/cache@v4
+        with:
+          path: '**/target'
+          key: ${{ runner.os }}-target-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-target
   unit-test:
     runs-on: ubuntu-latest
     needs: build
@@ -73,6 +80,11 @@ jobs:
           key: ${{ runner.os }}-maven-${{ github.sha }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven
+      - name: Restore Target Directories
+        uses: actions/cache@v4
+        with:
+          path: '**/target'
+          key: ${{ runner.os }}-target-${{ github.sha }}
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -109,6 +121,11 @@ jobs:
           key: ${{ runner.os }}-maven-${{ github.sha }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven
+      - name: Restore Target Directories
+        uses: actions/cache@v4
+        with:
+          path: '**/target'
+          key: ${{ runner.os }}-target-${{ github.sha }}
       - name: Run integration tests
         run: mvn verify -DskipUnitTests -DskipJacocoReport -Pall
       - name: Upload jacoco exec results
@@ -138,6 +155,11 @@ jobs:
           key: ${{ runner.os }}-maven-${{ github.sha }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven
+      - name: Restore Target Directories
+        uses: actions/cache@v4
+        with:
+          path: '**/target'
+          key: ${{ runner.os }}-target-${{ github.sha }}
       - uses: actions/download-artifact@v4
         with:
           name: integration-tests-jacoco
