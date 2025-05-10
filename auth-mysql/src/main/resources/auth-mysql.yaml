@@ -9,6 +9,9 @@ spring:
       hibernate:
         format_sql: true
   liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.xml
+    change-log: classpath:changelog/db.changelog-master.xml
     enabled: true
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
 

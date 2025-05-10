@@ -1,9 +1,17 @@
 # Auth Service
 
+This repository provides a modular authentication service (`auth-app` module) designed primarily for microservices
+architecture, but
+flexible enough to be integrated into any backend application — including monoliths.
+
+Each module is self-contained and can be used as a dependency to extend the functionality of your application. Whether
+you're working in a microservices environment or a monolithic architecture, you can integrate and customize the
+components as needed.
+
 ## Documentation
 
 - [Core](./doc/core/index.md)
-- [Profiles](./doc/configuration/profiles.md)
+- [Modules](./doc/configuration/modules.md)
 - [Features](./doc/features/features.md)
 - [Domain Events](./doc/features/domain-events.md)
 - [Configuration](./doc/configuration/config.md)
