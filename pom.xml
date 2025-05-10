@@ -121,7 +121,7 @@
                         <phase>initialize</phase>
                         <configuration>
                             <skip>${skipUnitTests}</skip>
-                            <destFile>${basedir}/../coverage/target/${artifactId}-unit-tests-jacoco.exec</destFile>
+                            <destFile>${basedir}/../coverage/target/${project.artifactId}-unit-tests-jacoco.exec</destFile>
                         </configuration>
                     </execution>
 
@@ -132,7 +132,7 @@
                         </goals>
                         <phase>pre-integration-test</phase>
                         <configuration>
-                            <destFile>${basedir}/../coverage/target/${artifactId}-integration-tests-jacoco.exec</destFile>
+                            <destFile>${basedir}/../coverage/target/${project.artifactId}-integration-tests-jacoco.exec</destFile>
                         </configuration>
                     </execution>
 
