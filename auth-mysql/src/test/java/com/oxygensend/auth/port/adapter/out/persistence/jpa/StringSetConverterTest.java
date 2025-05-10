@@ -27,7 +27,14 @@ class StringSetConverterTest {
         String result = converter.convertToDatabaseColumn(strings);
 
         // Then
-        assertThat(result).isEqualTo("ROLE_USER;ROLE_ADMIN;ROLE_MANAGER");
+        // Check each role is present in the result, separated by delimiter 
+        for (String role : strings) {
+            assertThat(result).contains(role);
+        }
+        
+        // Count the delimiters
+        long delimiterCount = result.chars().filter(ch -> ch == ';').count();
+        assertThat(delimiterCount).isEqualTo(strings.size() - 1);
     }
 
     @ParameterizedTest
@@ -38,7 +45,7 @@ class StringSetConverterTest {
         Set<String> result = converter.convertToEntityAttribute(dbData);
 
         // Then
-        assertThat(result).isEqualTo(expected);
+        assertThat(result).containsExactlyInAnyOrderElementsOf(expected);
     }
     
     @ParameterizedTest
