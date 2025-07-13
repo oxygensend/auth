@@ -9,6 +9,7 @@ import com.oxygensend.auth.domain.model.identity.AuthenticationService;
 import com.oxygensend.auth.domain.model.identity.BusinessId;
 import com.oxygensend.auth.domain.model.identity.EmailAddress;
 import com.oxygensend.auth.domain.model.identity.Role;
+import com.oxygensend.auth.domain.model.identity.User;
 import com.oxygensend.auth.domain.model.identity.UserDescriptor;
 import com.oxygensend.auth.domain.model.identity.UserId;
 import com.oxygensend.auth.domain.model.identity.Username;
@@ -66,6 +67,16 @@ public class AuthService {
         return Pair.of(user.id(), authenticationTokensDto);
     }
 
+    @Transactional
+    public AuthenticationTokensDto authenticate(User user) {
+        sessionManager.startSession(user.id());
+        return generateTokens(user.id(),
+                              user.businessId(),
+                              user.username(),
+                              user.email(),
+                              user.roles(),
+                              user.isVerified());
+    }
     @Transactional
     public AuthenticationTokensDto authenticate(String login, String password) {
         UserDescriptor userDescriptor = authenticateUser(loginProvider.get(login), password);

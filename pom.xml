@@ -21,6 +21,7 @@
         <module>auth-core</module>
         <module>auth-app</module>
         <module>coverage</module>
+        <module>auth-oauth-google</module>
     </modules>
 
     <dependencies>
@@ -57,6 +58,7 @@
                 <module>auth-mysql</module>
                 <module>auth-kafka</module>
                 <module>coverage</module>
+                <module>auth-oauth-google</module>
             </modules>
         </profile>
         <profile>
@@ -84,6 +86,15 @@
             </activation>
             <modules>
                 <module>auth-kafka</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>oauth-google</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>auth-oauth-google</module>
             </modules>
         </profile>
     </profiles>

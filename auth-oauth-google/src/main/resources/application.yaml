@@ -1,0 +1,14 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 233508214055-da09g88u4k6c6q3ubru9pnmpuo55b4am.apps.googleusercontent.com
+            client-secret: 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
+            scope: profile, email
+            redirect-uri: "{baseUrl}/login/oauth2/code/google"
+auth:
+  oauth:
+    google:
+      auth-url: https://accounts.google.com/o/oauth2/v2/auth?client_id={clientId}&redirect_uri={redirectUri}&response_type=code&scope=openid+email+profile&access_type=offline

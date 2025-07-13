@@ -3,6 +3,7 @@ package com.oxygensend.auth.port.adapter.out.persistence.mongodb;
 import com.oxygensend.auth.domain.model.identity.BusinessId;
 import com.oxygensend.auth.domain.model.identity.Credentials;
 import com.oxygensend.auth.domain.model.identity.EmailAddress;
+import com.oxygensend.auth.domain.model.identity.GoogleId;
 import com.oxygensend.auth.domain.model.identity.Password;
 import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.User;
@@ -20,12 +21,14 @@ final class UserMongoAdapter implements DataSourceObjectAdapter<User, UserMongo>
         return new User(new UserId(userMongo.id()),
                         new Credentials(new EmailAddress(userMongo.email()),
                                         new Username(userMongo.username()),
-                                        Password.fromHashed(userMongo.password())),
+                                        userMongo.password() != null ? Password.fromHashed(userMongo.password()) :
+                                        null),
                         userMongo.roles().stream().map(Role::new).collect(Collectors.toSet()),
                         userMongo.locked(),
                         userMongo.verified(),
                         new BusinessId(userMongo.businessId()),
-                        userMongo.accountActivationType());
+                        userMongo.accountActivationType(),
+                        userMongo.googleId() != null ? new GoogleId(userMongo.googleId()) : null);
 
     }
 
@@ -34,12 +37,13 @@ final class UserMongoAdapter implements DataSourceObjectAdapter<User, UserMongo>
         return new UserMongo(user.id().value(),
                              user.credentials().email().address(),
                              user.credentials().username().value(),
-                             user.credentials().password().hashedValue(),
+                             user.credentials().password() != null ? user.credentials().password().hashedValue() : null,
                              user.roles().stream().map(Role::value).collect(Collectors.toSet()),
                              user.isBlocked(),
                              user.isVerified(),
                              user.businessId().value(),
-                             user.accountActivationType());
+                             user.accountActivationType(),
+                             user.googleId() != null ? user.googleId().value() : null);
     }
 
 }
