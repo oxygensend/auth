@@ -28,7 +28,7 @@ public class User extends DomainAggregate {
     private Credentials credentials;
     private boolean blocked;
     private boolean verified;
-    private GoogleId googleId;
+    private final GoogleId googleId;
 
     // Used only for adapter needs, users should be created using the factory method
     public User(UserId id,
