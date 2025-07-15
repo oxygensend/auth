@@ -4,8 +4,6 @@ spring:
       client:
         registration:
           google:
-            scope: profile, email
-            redirect-uri: "{baseUrl}/login/oauth2/code/google"
 auth:
   oauth:
     google:
