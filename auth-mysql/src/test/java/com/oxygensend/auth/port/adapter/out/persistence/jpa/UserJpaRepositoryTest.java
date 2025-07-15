@@ -248,7 +248,8 @@ class UserJpaRepositoryTest {
             false,
             true,
             businessId,
-            AccountActivationType.NONE
+            AccountActivationType.NONE,
+            null
         );
     }
 }

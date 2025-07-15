@@ -1,11 +1,13 @@
 package com.oxygensend.auth.port.adapter.out.persistence.jpa;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.oxygensend.auth.domain.model.identity.AccountActivationType;
 import com.oxygensend.auth.domain.model.identity.BusinessId;
 import com.oxygensend.auth.domain.model.identity.Credentials;
 import com.oxygensend.auth.domain.model.identity.EmailAddress;
+import com.oxygensend.auth.domain.model.identity.GoogleId;
 import com.oxygensend.auth.domain.model.identity.Password;
 import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.User;
@@ -34,6 +36,7 @@ class UserJpaAdapterTest {
         boolean verified = true;
         String businessId = "business123";
         AccountActivationType activationType = AccountActivationType.NONE;
+        String googleId = "XD";
 
         UserJpa userJpa = new UserJpa();
         userJpa.id = id;
@@ -45,6 +48,7 @@ class UserJpaAdapterTest {
         userJpa.verified = verified;
         userJpa.businessId = businessId;
         userJpa.accountActivationType = activationType;
+        userJpa.googleId = googleId;
 
         // When
         User user = adapter.toDomain(userJpa);
@@ -59,6 +63,7 @@ class UserJpaAdapterTest {
         assertThat(user.isVerified()).isEqualTo(verified);
         assertThat(user.businessId().value()).isEqualTo(businessId);
         assertThat(user.accountActivationType()).isEqualTo(activationType);
+        assertThat(user.googleId().value()).isEqualTo(googleId);
     }
 
     @Test
@@ -75,9 +80,10 @@ class UserJpaAdapterTest {
         boolean verified = true;
         BusinessId businessId = new BusinessId("business123");
         AccountActivationType activationType = AccountActivationType.NONE;
+        GoogleId googleId = new GoogleId("XD");
 
         User user = new User(
-            new UserId(id), credentials, roles, locked, verified, businessId, activationType
+            new UserId(id), credentials, roles, locked, verified, businessId, activationType, googleId
         );
 
         // When
@@ -93,5 +99,6 @@ class UserJpaAdapterTest {
         assertThat(userJpa.verified).isEqualTo(verified);
         assertThat(userJpa.businessId).isEqualTo("business123");
         assertThat(userJpa.accountActivationType).isEqualTo(activationType);
+        assertThat(userJpa.googleId).isEqualTo(googleId.value());
     }
 }

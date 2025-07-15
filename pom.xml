@@ -22,6 +22,8 @@
         <module>auth-app</module>
         <module>coverage</module>
         <module>auth-oauth-google</module>
+        <module>auth-mongodb</module>
+        <module>auth-mysql</module>
     </modules>
 
     <dependencies>
