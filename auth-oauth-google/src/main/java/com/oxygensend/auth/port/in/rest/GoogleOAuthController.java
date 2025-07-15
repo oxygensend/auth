@@ -26,7 +26,7 @@ public class GoogleOAuthController {
     }
 
 
-    @PostMapping
+    @PostMapping("/code")
     public AuthenticationResponse grantCode(@RequestBody @Validated GoogleLoginRequest request) throws Exception {
        var tokens =  googleOauthService.authenticate(request.code());
        return new AuthenticationResponse(tokens.accessToken(), tokens.refreshToken());

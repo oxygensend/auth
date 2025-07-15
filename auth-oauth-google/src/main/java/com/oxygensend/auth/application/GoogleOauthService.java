@@ -46,10 +46,8 @@ public class GoogleOauthService {
             .replace("{redirectUri}", oAuthData.redirectUri());
     }
 
-    public AuthenticationTokensDto authenticate(String code) throws Exception {
-        String accessToken = googleOAuthApi.getAccessToken(code, oAuthData.clientId(), oAuthData.clientSecret(),
-                                                           oAuthData.redirectUri());
-        Userinfo userInfo = googleOAuthApi.getUserInfo(accessToken);
+    public AuthenticationTokensDto authenticate(String code) {
+        Userinfo userInfo = getGoogleUserInfo(code);
 
         EmailAddress emailAddress = new EmailAddress(userInfo.getEmail());
         Optional<User> user = userRepository.findByEmail(emailAddress);
@@ -64,7 +62,7 @@ public class GoogleOauthService {
             }
 
             Username username = new Username(userInfo.getEmail().split("@")[0]);
-            var newUser = OauthUser.registerUser(userId,
+            OauthUser newUser = OauthUser.registerUser(userId,
                                                  oAuthData.defaultRoles(),
                                                  new Credentials(emailAddress, username),
                                                  businessId,
@@ -74,6 +72,17 @@ public class GoogleOauthService {
         }
 
         return authService.authenticate(user.get());
+    }
+
+    private Userinfo getGoogleUserInfo(String code) {
+        try {
+            String accessToken = googleOAuthApi.getAccessToken(code, oAuthData.clientId(), oAuthData.clientSecret(),
+                                                               oAuthData.redirectUri());
+            return googleOAuthApi.getUserInfo(accessToken);
+        } catch (Exception exception) {
+            throw new UnauthenticatedException(exception);
+        }
+
     }
 
     private boolean isBusinessCallbackDefined() {

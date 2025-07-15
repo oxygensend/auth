@@ -4,12 +4,11 @@ import com.oxygensend.auth.application.GoogleOAuthData;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
-@Configuration
+@org.springframework.context.annotation.Configuration
 @EnableConfigurationProperties(GoogleOAuthConfig.class)
-public class GoogleOAuthConfiguration {
+public class Configuration {
 
 
     @Bean

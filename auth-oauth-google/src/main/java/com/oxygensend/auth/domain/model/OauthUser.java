@@ -18,12 +18,12 @@ public class OauthUser extends User {
         super(id, credentials, roles, locked, verified, businessId, accountActivationType, googleId);
     }
 
-    public static User registerUser(UserId id,
+    public static OauthUser registerUser(UserId id,
                                     Set<Role> roles,
                                     Credentials credentials,
                                     BusinessId businessId,
                                     GoogleId googleId) {
-        return new User(id, credentials, roles, false, true, businessId,
+        return new OauthUser(id, credentials, roles, false, true, businessId,
                         AccountActivationType.GOOGLE_OAUTH, googleId);
     }
 }

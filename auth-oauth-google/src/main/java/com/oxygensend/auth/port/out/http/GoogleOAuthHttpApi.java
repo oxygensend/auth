@@ -1,4 +1,4 @@
-package com.oxygensend.auth.port.out.http.google;
+package com.oxygensend.auth.port.out.http;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;

@@ -89,7 +89,8 @@ public class UserMother {
             false,
             true,
             new BusinessId(UUID.randomUUID().toString()),
-            AccountActivationType.NONE
+            AccountActivationType.NONE,
+            null
         );
     }
     public static User getMocked(){
@@ -107,7 +108,8 @@ public class UserMother {
             false,
             true,
             new BusinessId(UUID.randomUUID().toString()),
-            AccountActivationType.NONE
+            AccountActivationType.NONE,
+            null
         );
     }
 
