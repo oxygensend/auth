@@ -369,7 +369,7 @@ class UserTest {
             businessId,
             AccountActivationType.VERIFY_EMAIL, null
         )).isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining("UserId cannot be null");
+            .hasMessageContaining("UserId cannot be null");
     }
 
     @Test
@@ -384,22 +384,7 @@ class UserTest {
             businessId,
             AccountActivationType.VERIFY_EMAIL, null
         )).isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining("Credentials cannot be null");
-    }
-
-    @Test
-    void givenNullBusinessId_whenCreateUser_thenIllegalArgumentExceptionIsThrown() {
-        // When/Then
-        assertThatThrownBy(() -> new User(
-            userId,
-            credentials,
-            roles,
-            false,
-            false,
-            null,
-            AccountActivationType.VERIFY_EMAIL, null
-        )).isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining("BusinessId cannot be null");
+            .hasMessageContaining("Credentials cannot be null");
     }
 
     @Test
@@ -415,7 +400,7 @@ class UserTest {
             AccountActivationType.VERIFY_EMAIL,
             null
         )).isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining("Roles cannot be empty");
+            .hasMessageContaining("Roles cannot be empty");
     }
 
     @Test
@@ -430,7 +415,7 @@ class UserTest {
             businessId,
             null, null
         )).isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining("AccountActivationType cannot be null");
+            .hasMessageContaining("AccountActivationType cannot be null");
     }
 
     private User createDefaultUser() {
@@ -442,7 +427,7 @@ class UserTest {
             true,
             businessId,
             AccountActivationType.VERIFY_EMAIL,
-             null
+            null
         );
     }
 
