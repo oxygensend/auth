@@ -33,7 +33,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
-public class GoogleOAuthServiceTest {
+class GoogleOAuthServiceTest {
 
     private static final String CLIENT_ID = "test-client-id";
     private static final String CLIENT_SECRET = "test-client-secret";
@@ -240,7 +240,7 @@ public class GoogleOAuthServiceTest {
 
         // When & Then
         assertThatThrownBy(() -> googleOauthService.authenticate(CODE))
-            .isInstanceOf(UnauthenticatedException.class)
+            .isInstanceOf(GoogleUnauthenticatedException.class)
             .hasCause(googleApiException);
 
         // Verify no user operations were performed

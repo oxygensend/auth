@@ -80,7 +80,7 @@ public class GoogleOauthService {
                                                                oAuthData.redirectUri());
             return googleOAuthApi.getUserInfo(accessToken);
         } catch (Exception exception) {
-            throw new UnauthenticatedException(exception);
+            throw new GoogleUnauthenticatedException(exception);
         }
 
     }
