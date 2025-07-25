@@ -26,14 +26,13 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 @ExtendWith(MockitoExtension.class)
 class GoogleOAuthControllerTest {
 
-    private static final String GOOGLE_AUTH_URL = "https://accounts.google.com/oauth/authorize?client_id=test&redirect_uri=https://example.com/callback&response_type=code&scope=email%20profile";
+    private static final String GOOGLE_AUTH_URL =
+        "https://accounts.google.com/oauth/authorize?client_id=test&redirect_uri=https://example.com/callback&response_type=code&scope=email%20profile";
     private static final String VALID_CODE = "valid-auth-code";
     private static final String ACCESS_TOKEN = "access-token";
     private static final String REFRESH_TOKEN = "refresh-token";
-
-    private MockMvc mockMvc;
     private final ObjectMapper objectMapper = new ObjectMapper();
-
+    private MockMvc mockMvc;
     @Mock
     private GoogleOauthService googleOauthService;
 
@@ -43,8 +42,9 @@ class GoogleOAuthControllerTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(googleOAuthController)
-                                 .setValidator(new LocalValidatorFactoryBean())
-                                 .build();
+            .setValidator(new LocalValidatorFactoryBean())
+            .setControllerAdvice(new GoogleOAuthExceptionHandler())
+            .build();
     }
 
     @Test
@@ -54,8 +54,8 @@ class GoogleOAuthControllerTest {
 
         // When & Then
         mockMvc.perform(get("/v1/oauth2/google/auth-url"))
-               .andExpect(status().is3xxRedirection())
-               .andExpect(redirectedUrl(GOOGLE_AUTH_URL));
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl(GOOGLE_AUTH_URL));
     }
 
     @Test
@@ -63,16 +63,16 @@ class GoogleOAuthControllerTest {
         // Given
         GoogleLoginRequest request = new GoogleLoginRequest(VALID_CODE);
         AuthenticationTokensDto tokens = new AuthenticationTokensDto(ACCESS_TOKEN, REFRESH_TOKEN);
-        
+
         when(googleOauthService.authenticate(eq(VALID_CODE))).thenReturn(tokens);
 
         // When & Then
         mockMvc.perform(post("/v1/oauth2/google/code")
                             .contentType(APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
-               .andExpect(status().isOk())
-               .andExpect(jsonPath("$.accessToken").value(ACCESS_TOKEN))
-               .andExpect(jsonPath("$.refreshToken").value(REFRESH_TOKEN));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.accessToken").value(ACCESS_TOKEN))
+            .andExpect(jsonPath("$.refreshToken").value(REFRESH_TOKEN));
     }
 
     @Test
@@ -84,7 +84,7 @@ class GoogleOAuthControllerTest {
         mockMvc.perform(post("/v1/oauth2/google/code")
                             .contentType(APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
-               .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -96,7 +96,20 @@ class GoogleOAuthControllerTest {
         mockMvc.perform(post("/v1/oauth2/google/code")
                             .contentType(APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
-               .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void grantCode_whenServiceThrowsUnauthenticatedException_shouldPropagateException() throws Exception {
+        // Given
+        GoogleLoginRequest request = new GoogleLoginRequest(VALID_CODE);
+        when(googleOauthService.authenticate(eq(VALID_CODE)))
+            .thenThrow(new GoogleUnauthenticatedException(new RuntimeException("Google API error")));
+
+        // When & Then
+        mockMvc.perform(post("/v1/oauth2/google/code")
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isUnauthorized());
+    }
 }
