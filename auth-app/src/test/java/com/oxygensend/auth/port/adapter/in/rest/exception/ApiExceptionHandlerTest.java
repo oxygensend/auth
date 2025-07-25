@@ -3,7 +3,6 @@ package com.oxygensend.auth.port.adapter.in.rest.exception;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import com.oxygensend.auth.application.GoogleUnauthenticatedException;
 import com.oxygensend.auth.application.identity.exception.UnexpectedRoleException;
 import com.oxygensend.auth.application.identity.exception.UserNotFoundException;
 import com.oxygensend.auth.application.token.InvalidTokenException;
@@ -73,8 +72,7 @@ class ApiExceptionHandlerTest {
     private static Stream<Arguments> provideUnauthenticatedExceptions() {
         return Stream.of(
             Arguments.of(new BadCredentialsException(), "Bad credentials"),
-            Arguments.of(new InvalidTokenException(), "Invalid token"),
-            Arguments.of(new GoogleUnauthenticatedException(new RuntimeException()), "Failed to authenticate in google")
+            Arguments.of(new InvalidTokenException(), "Invalid token")
         );
     }
 

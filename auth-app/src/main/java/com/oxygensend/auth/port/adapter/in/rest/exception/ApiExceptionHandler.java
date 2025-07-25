@@ -1,6 +1,5 @@
 package com.oxygensend.auth.port.adapter.in.rest.exception;
 
-import com.oxygensend.auth.application.GoogleUnauthenticatedException;
 import com.oxygensend.auth.application.identity.exception.UnexpectedRoleException;
 import com.oxygensend.auth.application.identity.exception.UserNotFoundException;
 import com.oxygensend.auth.application.token.InvalidTokenException;
@@ -60,7 +59,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(new ExceptionResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
     }
 
-    @ExceptionHandler({BadCredentialsException.class, InvalidTokenException.class, GoogleUnauthenticatedException.class})
+    @ExceptionHandler({BadCredentialsException.class, InvalidTokenException.class})
     public ResponseEntity<Object> handleUnauthenticated(RuntimeException ex) {
         logger.info("Throwing an exception: {}", ex);
         return buildResponseEntity(new ExceptionResponse(HttpStatus.UNAUTHORIZED, ex.getMessage()));
