@@ -59,17 +59,6 @@ class CredentialsTest {
             .hasMessageContaining("Email cannot be null");
     }
     
-    @Test
-    void shouldThrowExceptionWhenPasswordIsNull() {
-        // Given
-        EmailAddress email = new EmailAddress("test@example.com");
-        Username username = new Username("testuser");
-        
-        // When/Then
-        assertThatThrownBy(() -> new Credentials(email, username, null))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("Password cannot be null");
-    }
 
     @Test
     void shouldThrowExceptionWhenUsernameIsNull() {
@@ -80,7 +69,7 @@ class CredentialsTest {
         // When/Then
         assertThatThrownBy(() -> new Credentials(email, null, password))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("Expired cannot be null");
+            .hasMessageContaining("Username cannot be null");
     }
     
     @Test

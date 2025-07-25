@@ -14,10 +14,13 @@ public record Credentials(EmailAddress email,
         this(email, userName, password, false);
     }
 
+    public Credentials(EmailAddress email, Username username) {
+        this(email, username, null);
+    }
+
     public Credentials {
         AssertionConcern.assertArgumentNotNull(email, "Email cannot be null");
-        AssertionConcern.assertArgumentNotNull(password, "Password cannot be null");
-        AssertionConcern.assertArgumentNotNull(username, "Expired cannot be null");
+        AssertionConcern.assertArgumentNotNull(username, "Username cannot be null");
     }
 
     public Credentials passwordChanged(Password password) {
