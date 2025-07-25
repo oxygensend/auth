@@ -30,7 +30,7 @@ public class UserJpa {
     @Column(nullable = false)
     public Set<String> roles = new HashSet<>();
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     public String password;
 
     @Column(nullable = false)
@@ -42,5 +42,7 @@ public class UserJpa {
     @Column(nullable = false)
     public AccountActivationType accountActivationType;
 
+    @Column(nullable = true)
+    public String googleId;
 
 }

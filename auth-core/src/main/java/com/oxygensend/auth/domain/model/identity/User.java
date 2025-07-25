@@ -28,6 +28,7 @@ public class User extends DomainAggregate {
     private Credentials credentials;
     private boolean blocked;
     private boolean verified;
+    private final GoogleId googleId;
 
     // Used only for adapter needs, users should be created using the factory method
     public User(UserId id,
@@ -36,11 +37,11 @@ public class User extends DomainAggregate {
                 boolean locked,
                 boolean verified,
                 BusinessId businessId,
-                AccountActivationType accountActivationType) {
+                AccountActivationType accountActivationType,
+                GoogleId googleId) {
 
         AssertionConcern.assertArgumentNotNull(id, "UserId cannot be null");
         AssertionConcern.assertArgumentNotNull(credentials, "Credentials cannot be null");
-        AssertionConcern.assertArgumentNotNull(businessId, "BusinessId cannot be null");
         AssertionConcern.assertArgumentNotEmpty(roles, "Roles cannot be empty");
         AssertionConcern.assertArgumentNotNull(accountActivationType, "AccountActivationType cannot be null");
 
@@ -51,7 +52,9 @@ public class User extends DomainAggregate {
         this.businessId = businessId;
         this.roles = roles;
         this.accountActivationType = accountActivationType;
+        this.googleId = googleId;
     }
+
 
     public static User registerUser(UserId id,
                                     Credentials credentials,
@@ -60,7 +63,7 @@ public class User extends DomainAggregate {
                                     AccountActivationType accountActivation,
                                     UserUniquenessChecker userUniquenessChecker) {
         boolean isVerified = accountActivation == AccountActivationType.NONE;
-        var newUser = new User(id, credentials, roles, false, isVerified, businessId, accountActivation);
+        var newUser = new User(id, credentials, roles, false, isVerified, businessId, accountActivation, null);
         if (!userUniquenessChecker.isUnique(newUser)) {
             throw new UserAlreadyExistsException();
         }
@@ -108,38 +111,42 @@ public class User extends DomainAggregate {
         return businessId;
     }
 
+    public GoogleId googleId() {
+        return googleId;
+    }
+
     public AccountActivationType accountActivationType() {
         return accountActivationType;
     }
 
     public void addRole(Role newRole) {
         roles.stream()
-             .filter(role -> Objects.equals(role, newRole))
-             .findAny()
-             .ifPresentOrElse(
-                 role -> {
-                     throw new RoleAlreadyAssignedException();
-                 },
-                 () -> {
-                     roles.add(newRole);
-                     events.add(new AddedRoleEvent(id, newRole));
-                 }
-             );
+            .filter(role -> Objects.equals(role, newRole))
+            .findAny()
+            .ifPresentOrElse(
+                role -> {
+                    throw new RoleAlreadyAssignedException();
+                },
+                () -> {
+                    roles.add(newRole);
+                    events.add(new AddedRoleEvent(id, newRole));
+                }
+            );
     }
 
     public void removeRole(Role roleToRemove) {
         roles.stream()
-             .filter(role -> Objects.equals(role, roleToRemove))
-             .findAny()
-             .ifPresentOrElse(
-                 role -> {
-                     roles.remove(roleToRemove);
-                     events.add(new RemovedRoleEvent(id, roleToRemove));
-                 },
-                 () -> {
-                     throw new RoleNotAssignedException();
-                 }
-             );
+            .filter(role -> Objects.equals(role, roleToRemove))
+            .findAny()
+            .ifPresentOrElse(
+                role -> {
+                    roles.remove(roleToRemove);
+                    events.add(new RemovedRoleEvent(id, roleToRemove));
+                },
+                () -> {
+                    throw new RoleNotAssignedException();
+                }
+            );
     }
 
     public void block() {

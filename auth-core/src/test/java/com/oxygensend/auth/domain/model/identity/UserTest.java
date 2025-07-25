@@ -320,7 +320,7 @@ class UserTest {
     void givenUnverifiedUserWithChangePasswordActivation_whenResetPassword_thenUserIsVerifiedWithEvents() {
         // Given
         User user = new User(userId, credentials, roles, false, false,
-                             businessId, AccountActivationType.CHANGE_PASSWORD);
+                             businessId, AccountActivationType.CHANGE_PASSWORD, null);
 
         String newPassword = "new_password";
         String hashedPassword = "hashed_new_password";
@@ -344,7 +344,7 @@ class UserTest {
     void givenUnverifiedUser_whenVerifyEmail_thenUserIsVerifiedWithEvent() {
         // Given
         User user = new User(userId, credentials, roles, false, false,
-                             businessId, AccountActivationType.VERIFY_EMAIL);
+                             businessId, AccountActivationType.VERIFY_EMAIL, null);
         // When
         user.verifyEmail();
 
@@ -367,9 +367,9 @@ class UserTest {
             false,
             false,
             businessId,
-            AccountActivationType.VERIFY_EMAIL
+            AccountActivationType.VERIFY_EMAIL, null
         )).isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining("UserId cannot be null");
+            .hasMessageContaining("UserId cannot be null");
     }
 
     @Test
@@ -382,24 +382,9 @@ class UserTest {
             false,
             false,
             businessId,
-            AccountActivationType.VERIFY_EMAIL
+            AccountActivationType.VERIFY_EMAIL, null
         )).isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining("Credentials cannot be null");
-    }
-
-    @Test
-    void givenNullBusinessId_whenCreateUser_thenIllegalArgumentExceptionIsThrown() {
-        // When/Then
-        assertThatThrownBy(() -> new User(
-            userId,
-            credentials,
-            roles,
-            false,
-            false,
-            null,
-            AccountActivationType.VERIFY_EMAIL
-        )).isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining("BusinessId cannot be null");
+            .hasMessageContaining("Credentials cannot be null");
     }
 
     @Test
@@ -412,9 +397,10 @@ class UserTest {
             false,
             false,
             businessId,
-            AccountActivationType.VERIFY_EMAIL
+            AccountActivationType.VERIFY_EMAIL,
+            null
         )).isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining("Roles cannot be empty");
+            .hasMessageContaining("Roles cannot be empty");
     }
 
     @Test
@@ -427,9 +413,9 @@ class UserTest {
             false,
             false,
             businessId,
-            null
+            null, null
         )).isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining("AccountActivationType cannot be null");
+            .hasMessageContaining("AccountActivationType cannot be null");
     }
 
     private User createDefaultUser() {
@@ -440,7 +426,8 @@ class UserTest {
             false,
             true,
             businessId,
-            AccountActivationType.VERIFY_EMAIL
+            AccountActivationType.VERIFY_EMAIL,
+            null
         );
     }
 
@@ -452,7 +439,8 @@ class UserTest {
             true,
             true,
             businessId,
-            AccountActivationType.VERIFY_EMAIL
+            AccountActivationType.VERIFY_EMAIL,
+            null
         );
     }
 }

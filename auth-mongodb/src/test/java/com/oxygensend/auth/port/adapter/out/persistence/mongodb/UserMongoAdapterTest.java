@@ -1,11 +1,13 @@
 package com.oxygensend.auth.port.adapter.out.persistence.mongodb;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.oxygensend.auth.domain.model.identity.AccountActivationType;
 import com.oxygensend.auth.domain.model.identity.BusinessId;
 import com.oxygensend.auth.domain.model.identity.Credentials;
 import com.oxygensend.auth.domain.model.identity.EmailAddress;
+import com.oxygensend.auth.domain.model.identity.GoogleId;
 import com.oxygensend.auth.domain.model.identity.Password;
 import com.oxygensend.auth.domain.model.identity.Role;
 import com.oxygensend.auth.domain.model.identity.User;
@@ -34,9 +36,10 @@ class UserMongoAdapterTest {
         boolean verified = true;
         String businessId = "business123";
         AccountActivationType activationType = AccountActivationType.NONE;
+        String googleId = "XD";
 
         UserMongo userMongo = new UserMongo(
-                id, email, username, password, roles, locked, verified, businessId, activationType
+                id, email, username, password, roles, locked, verified, businessId, activationType, googleId
         );
 
         // When
@@ -52,6 +55,7 @@ class UserMongoAdapterTest {
         assertThat(user.isVerified()).isEqualTo(verified);
         assertThat(user.businessId().value()).isEqualTo(businessId);
         assertThat(user.accountActivationType()).isEqualTo(activationType);
+        assertThat(user.googleId().value()).isEqualTo(googleId);
     }
 
     @Test
@@ -68,9 +72,10 @@ class UserMongoAdapterTest {
         boolean verified = true;
         BusinessId businessId = new BusinessId("business123");
         AccountActivationType activationType = AccountActivationType.NONE;
+        GoogleId googleId  = new GoogleId("XD");
 
         User user = new User(
-            new UserId(id), credentials, roles, locked, verified, businessId, activationType
+            new UserId(id), credentials, roles, locked, verified, businessId, activationType, googleId
         );
 
         // When
@@ -86,5 +91,6 @@ class UserMongoAdapterTest {
         assertThat(userMongo.verified()).isEqualTo(verified);
         assertThat(userMongo.businessId()).isEqualTo("business123");
         assertThat(userMongo.accountActivationType()).isEqualTo(activationType);
+        assertThat(userMongo.googleId()).isEqualTo(googleId.value());
     }
 }

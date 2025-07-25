@@ -19,7 +19,8 @@ record UserMongo(
     boolean locked,
     boolean verified,
     String businessId,
-    AccountActivationType accountActivationType
+    AccountActivationType accountActivationType,
+    String googleId
 ) {
 
 }

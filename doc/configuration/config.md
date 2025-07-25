@@ -6,6 +6,13 @@ spring:
   data:
     mongodb: # Only if MONGODB PROFILE IS ENABLED, mongodb configuration
       uri: # database uri
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: # google client id
+            client-secret: #google client secret
 
 eureka: # ONLY if EUREKA PROFILE IS ENABLED, eureka configuration
   client:

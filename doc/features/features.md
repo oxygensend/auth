@@ -2,6 +2,7 @@
 Look at the following features of the service with use case details.
 
 - [Login](features/login.md)
+- [Google OAuth Authentication](features/google-oauth.md)
 - [Registration](features/register-user.md)
 - [Failed Registration](features/failed-registration.md)
 - [Password Reset](features/reset-password.md)

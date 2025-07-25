@@ -232,7 +232,8 @@ class UserMongoRepositoryTest {
             false,
             true,
             "business123",
-            AccountActivationType.NONE
+            AccountActivationType.NONE,
+            null
         );
     }
 
@@ -252,7 +253,8 @@ class UserMongoRepositoryTest {
             false,
             true,
             businessId,
-            AccountActivationType.NONE
+            AccountActivationType.NONE,
+            null
         );
     }
 }
